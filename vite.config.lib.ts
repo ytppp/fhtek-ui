@@ -9,14 +9,14 @@ export default defineConfig({
     vue(),
     vueJsx(),
     dts({
-      include: ['./**/*.ts', './**/*.vue'],
-      outDir: 'dist',
-      exclude: ['./**/*.spec.ts'],
+      include: ['packages/**/*.ts', 'packages/**/*.vue'],
+      outDir: 'dist/types',
+      exclude: ['packages/**/*.spec.ts'],
     }),
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'index.ts'),
+      entry: path.resolve(__dirname, 'packages/index.ts'),
       name: 'FhtekUi',
       fileName: (format) => `index.${format}.js`,
       formats: ['es', 'cjs'],

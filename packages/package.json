@@ -8,16 +8,13 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "vue": "^3.3.0"
-  },
   "scripts": {
     "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build",
-    "lint": "eslint . --fix"
+    "preview": "vite preview --config ../vite.config.lib.ts",
+    "test:unit": "vitest --config ../vite.config.lib.ts",
+    "build-only": "vite build --config ../vite.config.lib.ts",
+    "type-check": "vue-tsc --build --config ../vite.config.lib.ts",
+    "lint": "eslint . --fix --config ../vite.config.lib.ts"
   },
   "devDependencies": {
     "vite-plugin-dts": "^4.5.4"

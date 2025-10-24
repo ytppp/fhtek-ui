@@ -1,7 +1,7 @@
 import type { App } from 'vue'
 
-import FhAlert from './alert'
-import FhButton from './button'
+import FhAlert from '@fhtek-ui/components/alert'
+import FhButton from '@fhtek-ui/components/button'
 
 const components = [FhAlert, FhButton]
 
@@ -15,5 +15,5 @@ export { FhAlert, FhButton }
 
 export default { install }
 
-export type { IAlertProps } from './alert'
-export type { IButtonProps } from './button'
+export type { IAlertProps } from '@fhtek-ui/components/alert'
+export type { IButtonProps } from '@fhtek-ui/components/button'

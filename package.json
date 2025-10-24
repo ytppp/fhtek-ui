@@ -1,18 +1,21 @@
 {
   "name": "fhtek-ui",
-  "private": true,
   "type": "module",
+  "version": "1.0.0",
+  "description": "A Vue 3 component library",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "pnpm -F playground dev",
     "docs:dev": "pnpm -F docs dev",
     "docs:build": "pnpm -F docs docs:build",
     "docs:preview": "pnpm -F docs docs:preview",
-    "components:build": "pnpm -F @fhtek-ui/components build",
-    "components:preview": "pnpm -F @fhtek-ui/components preview",
-    "components:test:unit": "pnpm -F @fhtek-ui/components test:unit ",
-    "components:build-only": "pnpm -F @fhtek-ui/components build-only",
-    "components:type-check": "pnpm -F @fhtek-ui/components type-check",
-    "components:lint": "pnpm -F @fhtek-ui/components lint",
+    "components:build": "vite build --config vite.config.lib.ts",
+    "components:preview": "vite preview --config vite.config.lib.ts",
     "format": "prettier --write ./"
   },
   "engines": {
