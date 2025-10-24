@@ -1,0 +1,25 @@
+{
+  "name": "@fhtek-ui/components",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "vue": "^3.3.0"
+  },
+  "scripts": {
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "lint": "eslint . --fix"
+  },
+  "devDependencies": {
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
