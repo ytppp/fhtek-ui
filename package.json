@@ -22,8 +22,6 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
-    "@fhtek-ui/components": "workspace:^",
-    "@fhtek-ui/utils": "workspace:^",
     "vue": "^3.5.22"
   },
   "devDependencies": {
