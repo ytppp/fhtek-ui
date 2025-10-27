@@ -1,8 +1,5 @@
 import { withInstall } from '@fhtek-ui/utils/type'
 import Alert from './alert.vue'
 
-const FhAlert = withInstall(Alert)
-
-export default FhAlert
-export { FhAlert }
+export default withInstall(Alert)
 export type { IAlertProps, IAlertEmits } from './alert.vue'
