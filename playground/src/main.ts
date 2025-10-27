@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-// import FhtekUI from '@fhtek-ui/components'
+// import FhtekUI from 'fhtek-ui'
 
 const app = createApp(App)
 // app.use(FhtekUI)
