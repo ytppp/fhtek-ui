@@ -8,14 +8,6 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview --config ../vite.config.lib.ts",
-    "test:unit": "vitest --config ../vite.config.lib.ts",
-    "build-only": "vite build --config ../vite.config.lib.ts",
-    "type-check": "vue-tsc --build --config ../vite.config.lib.ts",
-    "lint": "eslint . --fix --config ../vite.config.lib.ts"
-  },
   "devDependencies": {
     "vite-plugin-dts": "^4.5.4"
   }

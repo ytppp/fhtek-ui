@@ -13,7 +13,10 @@ const install = (app: App): void => {
 
 export { FhAlert, FhButton }
 
-export default { install }
+export default {
+  install,
+  version: '0.0.1',
+}
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
 export type { IButtonProps } from '@fhtek-ui/components/button'

@@ -10,18 +10,22 @@
     "dist"
   ],
   "scripts": {
-    "dev": "pnpm -F playground dev",
+    "dev": "vite --config playground/vite.config.ts",
+    "components:build": "vue-tsc --noEmit && vite build --config vite.config.lib.ts",
+    "components:build:types": "vue-tsc --emitDeclarationOnly --outDir dist",
+    "components:preview": "vite preview --config playground/vite.config.ts",
     "docs:dev": "pnpm -F docs dev",
     "docs:build": "pnpm -F docs docs:build",
     "docs:preview": "pnpm -F docs docs:preview",
-    "components:build": "vite build --config vite.config.lib.ts",
-    "components:preview": "vite preview --config vite.config.lib.ts",
-    "format": "prettier --write ./"
+    "format": "prettier --write packages/",
+    "lint": "eslint . --fix",
+    "test": "vitest"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
+    "@fhtek-ui/components": "workspace:^",
     "vue": "^3.5.22"
   },
   "devDependencies": {

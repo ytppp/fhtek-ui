@@ -19,7 +19,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'packages/index.ts'),
       name: 'FhtekUi',
       fileName: (format) => `index.${format}.js`,
-      formats: ['es', 'cjs'],
+      // formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: ['vue'],
