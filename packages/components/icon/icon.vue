@@ -53,7 +53,6 @@ const out = () => {
 </script>
 
 <style>
-@import '../style/base.less';
 .svg-icon {
   width: 1em;
   height: 1em;

@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import path from 'path'
 
 export default defineConfig({
   plugins: [vue(), vueJsx(), vueDevTools()],
@@ -17,6 +18,7 @@ export default defineConfig({
       less: {
         math: 'always',
         javascriptEnabled: true,
+        additionalData: `@import "${path.resolve(__dirname, '../packages/components/style/variables.less')}";`,
       },
     },
   },

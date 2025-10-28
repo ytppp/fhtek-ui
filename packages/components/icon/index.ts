@@ -1,5 +1,7 @@
 import { withInstall } from '@fhtek-ui/utils/type'
 import Icon from './icon.vue'
 
-export default withInstall(Icon)
+const FhIcon = withInstall(Icon)
+export default FhIcon
+export { FhIcon }
 export type { IIconProps, IIconEmits } from './icon.vue'

@@ -34,7 +34,6 @@ export interface IButtonProps {
   needInserted?: boolean // Add a space between two Chinese characters
 }
 
-// Emits 类型
 export interface IButtonEmits {
   click: [e: MouseEvent]
 }
@@ -92,7 +91,6 @@ const insertSpace = (node: VNode) => {
 </script>
 
 <style lang="less">
-@import '../style/base.less';
 .btn {
   outline: none;
   cursor: pointer;

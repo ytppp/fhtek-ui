@@ -95,8 +95,6 @@ const close = () => {
 </script>
 
 <style lang="less">
-@import '../style/base.less';
-
 .alert {
   width: 100%;
   padding: 8px 16px;

@@ -10,6 +10,4 @@ defineOptions({
 })
 </script>
 
-<style lang="less">
-@import '../style/base.less';
-</style>
+<style lang="less"></style>

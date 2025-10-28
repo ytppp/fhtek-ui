@@ -1,5 +1,6 @@
 {
   "name": "fhtek-ui",
+  "private": false,
   "type": "module",
   "version": "1.0.0",
   "description": "A Vue 3 component library",
@@ -7,21 +8,24 @@
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "package.json",
+    "README.md"
   ],
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/fhtek-ui.es.js",
-      "require": "./dist/fhtek-ui.umd.js"
+      "require": "./dist/fhtek-ui.umd.js",
+      "import": "./dist/fhtek-ui.es.js"
     },
     "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "pnpm -F playground dev",
-    "lib:build": "vue-tsc --noEmit && vite build",
+    "lib:build": "pnpm run -C packages/components build",
     "?lib:build:types": "vue-tsc --outDir dist",
     "lib:preview": "pnpm -F playground build-only && pnpm -F playground preview",
+    "gen:i18n": "pnpm run -C i18n transform",
     "docs:dev": "pnpm -F docs dev",
     "docs:build": "pnpm -F docs docs:build",
     "docs:preview": "pnpm -F docs docs:preview",
@@ -35,7 +39,9 @@
   "dependencies": {
     "@fhtek-ui/components": "workspace:^",
     "@fhtek-ui/utils": "workspace:^",
-    "vue": "^3.5.22"
+    "@fhtek-ui/i18n": "workspace:^",
+    "vue": "^3.5.22",
+    "vue-i18n": "^11.1.12"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
@@ -55,10 +61,11 @@
     "less": "^4.4.2",
     "npm-run-all2": "^8.0.4",
     "prettier": "3.6.2",
+    "rimraf": "^6.0.1",
     "typescript": "~5.9.0",
     "vite": "^7.1.12",
-    "vite-plugin-vue-devtools": "^8.0.2",
     "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-vue-devtools": "^8.0.2",
     "vitest": "^3.2.4",
     "vue-tsc": "^3.1.0"
   }
