@@ -38,8 +38,12 @@
   },
   "dependencies": {
     "@fhtek-ui/components": "workspace:^",
-    "@fhtek-ui/utils": "workspace:^",
     "@fhtek-ui/i18n": "workspace:^",
+    "@fhtek-ui/utils": "workspace:^",
+    "@fhtek-ui/hooks": "workspace:^",
+    "highlight.js": "^11.11.1",
+    "marked": "^16.4.1",
+    "marked-highlight": "^2.2.2",
     "vue": "^3.5.22",
     "vue-i18n": "^11.1.12"
   },

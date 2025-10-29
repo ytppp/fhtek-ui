@@ -11,9 +11,24 @@ importers:
       '@fhtek-ui/components':
         specifier: workspace:^
         version: link:packages/components
+      '@fhtek-ui/hooks':
+        specifier: workspace:^
+        version: link:packages/hooks
+      '@fhtek-ui/i18n':
+        specifier: workspace:^
+        version: link:i18n
       '@fhtek-ui/utils':
         specifier: workspace:^
         version: link:packages/utils
+      highlight.js:
+        specifier: ^11.11.1
+        version: 11.11.1
+      marked:
+        specifier: ^16.4.1
+        version: 16.4.1
+      marked-highlight:
+        specifier: ^2.2.2
+        version: 2.2.2(marked@16.4.1)
       vue:
         specifier: ^3.5.22
         version: 3.5.22(typescript@5.9.3)
@@ -108,9 +123,15 @@ importers:
 
   packages/components: {}
 
+  packages/hooks: {}
+
   packages/utils: {}
 
-  playground: {}
+  playground:
+    dependencies:
+      vue-router:
+        specifier: ^4.6.3
+        version: 4.6.3(vue@3.5.22(typescript@5.9.3))
 
 packages:
 
@@ -1901,6 +1922,10 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
+  highlight.js@11.11.1:
+    resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
+    engines: {node: '>=12.0.0'}
+
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
 
@@ -2128,6 +2153,16 @@ packages:
 
   mark.js@8.11.1:
     resolution: {integrity: sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==}
+
+  marked-highlight@2.2.2:
+    resolution: {integrity: sha512-KlHOP31DatbtPPXPaI8nx1KTrG3EW0Z5zewCwpUj65swbtKOTStteK3sNAjBqV75Pgo3fNEVNHeptg18mDuWgw==}
+    peerDependencies:
+      marked: '>=4 <17'
+
+  marked@16.4.1:
+    resolution: {integrity: sha512-ntROs7RaN3EvWfy3EZi14H4YxmT6A5YvywfhO+0pm+cH/dnSQRmdAmoFIc3B9aiwTehyk7pESH4ofyBY+V5hZg==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   mdast-util-to-hast@13.2.0:
     resolution: {integrity: sha512-QGYKEuUsYT9ykKBCMOEDLsU5JRObWQusAolFMeko/tYPufNkRffBAQjIE+99jbA87xv6FgmjLtwjh9wBWajwAA==}
@@ -2878,6 +2913,11 @@ packages:
     engines: {node: '>= 16'}
     peerDependencies:
       vue: ^3.0.0
+
+  vue-router@4.6.3:
+    resolution: {integrity: sha512-ARBedLm9YlbvQomnmq91Os7ck6efydTSpRP3nuOKCvgJOHNrhRoJDSKtee8kcL1Vf7nz6U+PMBL+hTvR3bTVQg==}
+    peerDependencies:
+      vue: ^3.5.0
 
   vue-tsc@3.1.1:
     resolution: {integrity: sha512-fyixKxFniOVgn+L/4+g8zCG6dflLLt01Agz9jl3TO45Bgk87NZJRmJVPsiK+ouq3LB91jJCbOV+pDkzYTxbI7A==}
@@ -4844,6 +4884,8 @@ snapshots:
 
   he@1.2.0: {}
 
+  highlight.js@11.11.1: {}
+
   hookable@5.5.3: {}
 
   html-encoding-sniffer@4.0.0:
@@ -5066,6 +5108,12 @@ snapshots:
     optional: true
 
   mark.js@8.11.1: {}
+
+  marked-highlight@2.2.2(marked@16.4.1):
+    dependencies:
+      marked: 16.4.1
+
+  marked@16.4.1: {}
 
   mdast-util-to-hast@13.2.0:
     dependencies:
@@ -5852,6 +5900,11 @@ snapshots:
     dependencies:
       '@intlify/core-base': 11.1.12
       '@intlify/shared': 11.1.12
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.22(typescript@5.9.3)
+
+  vue-router@4.6.3(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.22(typescript@5.9.3)
 
