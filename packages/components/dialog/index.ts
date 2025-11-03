@@ -1,11 +1,11 @@
 import { h } from 'vue'
-import { mergeOptions } from '@/util/tool'
-import { usePopup } from '@/hooks/popup'
-import { DialogType, DefaultOpt, type IDialogOpt } from './config'
+import { mergeOptions } from '@fhtek-ui/utils/type'
+import { usePopup } from '@fhtek-ui/hooks/popup'
+import { type DialogType, DefaultOpt, type IDialogProps } from './interfac'
 import FhDialog from './dialog.vue'
 
-const dialog = (options: IDialogOpt, type: DialogType = DialogType.info): Promise<void> => {
-  const opt: IDialogOpt = mergeOptions(DefaultOpt[type], options)
+const dialog = (options: IDialogProps, type: DialogType = 'info'): Promise<void> => {
+  const opt: IDialogProps = mergeOptions<IDialogProps>(DefaultOpt[type], options)
   return new Promise((resolve, reject) => {
     const dialogInstance = usePopup(
       h(FhDialog, {
@@ -25,10 +25,10 @@ const dialog = (options: IDialogOpt, type: DialogType = DialogType.info): Promis
 }
 
 export default {
-  info(options: IDialogOpt) {
+  info(options: IDialogProps) {
     return dialog(options)
   },
-  confirm(options: IDialogOpt) {
-    return dialog(options, DialogType.confirm)
+  confirm(options: IDialogProps) {
+    return dialog(options, 'confirm')
   },
 }

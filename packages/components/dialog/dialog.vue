@@ -4,7 +4,7 @@
       <div v-if="title" class="dialog__title">{{ title }}</div>
       <div class="dialog__message">{{ message }}</div>
       <div class="dialog__buttons">
-        <fh-button size="small" v-if="dialogType !== DialogType.info" @click="cancel">
+        <fh-button size="small" v-if="dialogType !== 'info'" @click="cancel">
           {{ cancelText }}
         </fh-button>
         <fh-button size="small" @click="ok">{{ okText }}</fh-button>
@@ -14,39 +14,30 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, useTemplateRef } from 'vue'
-import FhButton from '@/components/button/button.vue'
-import FhPopup from '@/components/popup/popup.vue'
-import { DialogType } from './config'
+import { useTemplateRef, withDefaults } from 'vue'
+import FhButton from '@fhtek-ui/components/button'
+import FhPopup from '@fhtek-ui/components/popup'
+import type { IDialogProps } from './interfac'
 
 defineOptions({
   name: 'FhDialog',
 })
-defineProps({
-  dialogType: {
-    type: String,
-    default: DialogType.info,
-  },
-  message: {
-    type: String,
-    default: '',
-  },
-  title: {
-    type: String,
-    default: '',
-  },
-  okText: {
-    type: String,
-    default: 'ok',
-  },
-  cancelText: {
-    type: String,
-    default: 'cancel',
-  },
+
+export interface IDialogEmits {
+  (e: 'ok'): void
+  (e: 'cancel'): void
+}
+
+withDefaults(defineProps<IDialogProps>(), {
+  dialogType: 'info',
+  message: '',
+  title: '',
+  okText: 'ok',
+  cancelText: 'cancel',
 })
-const timer = ref<number | undefined>(undefined)
-const popupRef = useTemplateRef('popupRef')
-const emits = defineEmits(['ok', 'cancel'])
+let timer: ReturnType<typeof setTimeout> | undefined
+const popupRef = useTemplateRef<typeof FhPopup>('popupRef')
+const emits = defineEmits<IDialogEmits>()
 
 const ok = () => {
   startTimer(() => {
@@ -61,12 +52,13 @@ const cancel = () => {
   })
 }
 const startTimer = (fn: () => void) => {
+  if (!popupRef.value) return
   popupRef.value.close()
-  timer.value = setTimeout(fn, 310)
+  timer = setTimeout(fn, 310)
 }
 const clearTimer = () => {
-  clearTimeout(timer.value)
-  timer.value = undefined
+  clearTimeout(timer)
+  timer = undefined
 }
 </script>
 

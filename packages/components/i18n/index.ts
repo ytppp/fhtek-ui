@@ -1,6 +1,7 @@
 import { createI18n } from 'vue-i18n'
 import zhCN from '@fhtek-ui/i18n/trans/lang/zh-CN.json'
 import enUS from '@fhtek-ui/i18n/trans/lang/en-US.json'
+import type { App } from 'vue'
 
 const i18n = createI18n({
   locale: 'en-US',
@@ -58,28 +59,24 @@ const i18n = createI18n({
   },
 })
 
-const registerI18n = (app) => {
+const registerI18n = (app: App) => {
   app.use(i18n)
 }
 
-export function changeLanguage(lang) {
-  if (VITE_CUSTOMER_CONFIG.languages.includes(lang)) {
-    localStorage.setItem('lang', lang)
-    window.location.reload()
-  } else {
-    console.log('language not exist!')
-  }
+export function changeLanguage(lang: string) {
+  localStorage.setItem('lang', lang)
+  window.location.reload()
 }
 
-export function translate(key, locale) {
+export function translate(key: string, locale?: string) {
   return i18n.global.t(key, locale || i18n.global.locale)
 }
 
 export function toLocaleNumber(
-  number,
-  locale = 'en-US',
-  minimumFractionDigits = 1,
-  maximumFractionDigits = 1,
+  number: number,
+  locale: string = 'en-US',
+  minimumFractionDigits: number = 1,
+  maximumFractionDigits: number = 1,
 ) {
   // 有时候传入是不是数字，是占位符字符串
   if (typeof number === 'number') {

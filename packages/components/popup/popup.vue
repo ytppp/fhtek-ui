@@ -1,7 +1,7 @@
 <template>
   <teleport to="body" :disabled="!isAppendBody">
     <transition name="wrap">
-      <div ref="wrapRef" class="wrap" v-show="visible">
+      <div ref="wrapRef" class="wrap" v-show="visible" role="dialog" aria-modal="true">
         <div
           class="wrap__mask"
           :style="wrapStyleObj"
@@ -15,97 +15,105 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted, useTemplateRef, withDefaults } from 'vue'
 
 defineOptions({
   name: 'FhPopup',
 })
 
-const props = defineProps({
-  closeOnClickWrap: {
-    type: Boolean,
-    default: false,
-  },
-  wrapBgColor: {
-    type: String,
-    default: 'rgba(0, 0, 0, 0.4)',
-  },
-  beforeClose: {
-    type: Function,
-    default: () => ({}),
-  },
-  isAppendBody: {
-    type: Boolean,
-    default: true,
-  }, // When set to false, perent node must set position
-  isManual: {
-    type: Boolean,
-    default: false,
-  }, // functional component must be set true
+export interface IPopupProps {
+  closeOnClickWrap?: boolean
+  wrapBgColor?: string
+  beforeClose?: () => void | boolean | Promise<boolean | void>
+  isAppendBody?: boolean // When set to false, parent node must set position
+  isManual?: boolean // functional component must be set true
+  closeOnEsc?: boolean // Whether to close when pressing ESC key
+  preventScroll?: boolean // Whether to prevent body scrolling when popup is visible
+}
+
+const props = withDefaults(defineProps<IPopupProps>(), {
+  closeOnClickWrap: false,
+  wrapBgColor: 'rgba(0, 0, 0, 0.4)',
+  beforeClose: () => {},
+  isAppendBody: true,
+  isManual: false,
+  closeOnEsc: false,
+  preventScroll: true,
 })
 const visible = ref(false)
-const wrapRef = ref(null)
-// const overflow = ref('')
+const wrapRef = useTemplateRef<HTMLDivElement | null>('wrapRef')
 
-const wrapStyleObj = computed(() => {
-  return {
-    backgroundColor: props.wrapBgColor,
-  }
-})
-// const parentNode = computed(() => {
-//   if (props.isAppendBody) {
-//     return document.body
-//   } else if (props.isManual) {
-//     return wrapRef.value.parentNode.parentNode // mount-node's parent node
-//   } else {
-//     return wrapRef.value.parentNode
-//   }
-// })
+const wrapStyleObj = computed(() => ({
+  backgroundColor: props.wrapBgColor,
+}))
 
 watch(visible, (val) => {
-  if (val) {
+  if (val && wrapRef.value) {
     wrapRef.value.style.position = props.isAppendBody ? 'fixed' : 'absolute'
-    // overflow.value = parentNode.value ? parentNode.value.style.overflow : ''
-    // if (parentNode.value) {
-    //   parentNode.value.style.overflow = 'hidden'
-    //   parentNode.value.addEventListener('touchmove', preventDefault, false)
-    // }
-  } else {
-    // if (parentNode.value) {
-    //   parentNode.value.style.overflow = overflow.value
-    //   parentNode.value.removeEventListener('touchmove', preventDefault, false)
-    // }
+  }
+
+  if (props.preventScroll) {
+    if (val) {
+      document.body.style.overflow = 'hidden'
+      document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`
+    } else {
+      document.body.style.overflow = ''
+      document.body.style.paddingRight = ''
+    }
   }
 })
-
-// const preventDefault = (e) => {
-//   e.preventDefault()
-// }
 const wrapClose = () => {
   if (!props.closeOnClickWrap) {
     return
   }
   close()
 }
-const close = () => {
+
+const close = async () => {
   if (props.beforeClose) {
-    props.beforeClose()
+    const result = props.beforeClose()
+
+    if (result instanceof Promise) {
+      const asyncResult = await result
+      if (asyncResult === false) return
+    } else if (result === false) {
+      return
+    }
   }
+
   visible.value = false
 }
 const open = () => {
   visible.value = true
 }
 
+const handleKeydown = (e: KeyboardEvent) => {
+  if (props.closeOnEsc && e.key === 'Escape' && visible.value) {
+    close()
+  }
+}
+
 onMounted(() => {
-  // prevent auto open
   if (props.isManual) {
     visible.value = true
+  }
+
+  if (props.closeOnEsc) {
+    document.addEventListener('keydown', handleKeydown)
   }
 })
 
 onUnmounted(() => {
   visible.value = false
+
+  if (props.closeOnEsc) {
+    document.removeEventListener('keydown', handleKeydown)
+  }
+
+  if (props.preventScroll) {
+    document.body.style.overflow = ''
+    document.body.style.paddingRight = ''
+  }
 })
 
 defineExpose({
@@ -125,22 +133,19 @@ defineExpose({
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease;
+  position: fixed; // Default position
+
   &.wrap-enter-from,
   &.wrap-leave-to {
     opacity: 0;
   }
-  &.wrap-enter-from .modal,
-  &.wrap-leave-to .modal {
+
+  // Consolidate transition styles for common components
+  &.wrap-enter-from :is(.modal, .dialog, .upgrade),
+  &.wrap-leave-to :is(.modal, .dialog, .upgrade) {
     transform: scale(1.1);
   }
-  &.wrap-enter-from .dialog,
-  &.wrap-leave-to .dialog {
-    transform: scale(1.1);
-  }
-  &.wrap-enter-from .upgrade,
-  &.wrap-leave-to .upgrade {
-    transform: scale(1.1);
-  }
+
   .wrap__mask {
     z-index: -1;
     position: absolute;
@@ -148,6 +153,8 @@ defineExpose({
     top: 0;
     width: 100%;
     height: 100%;
+    // Add transition for mask
+    transition: background-color 0.3s ease;
   }
 }
 </style>

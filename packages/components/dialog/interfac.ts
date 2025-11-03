@@ -1,25 +1,23 @@
-export enum DialogType {
-  info = 'info',
-  confirm = 'confirm',
-}
-export interface IDialogOpt {
+export type DialogType = 'info' | 'confirm'
+
+export interface IDialogProps {
   dialogType: DialogType
-  title: string
   message: string
+  title: string
   okText: string
   cancelText?: string
 }
 export const DefaultOpt: {
-  [key in DialogType]: IDialogOpt
+  [key in DialogType]: IDialogProps
 } = {
-  [DialogType.info]: {
-    dialogType: DialogType.info,
+  info: {
+    dialogType: 'info',
     title: '',
     message: 'info',
     okText: 'ok',
   },
-  [DialogType.confirm]: {
-    dialogType: DialogType.confirm,
+  confirm: {
+    dialogType: 'confirm',
     title: '',
     message: 'confirm',
     okText: 'ok',

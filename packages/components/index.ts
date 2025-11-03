@@ -6,14 +6,26 @@ import { default as FhCheckbox, FhCheckboxGroup } from '@fhtek-ui/components/che
 import { default as FhDescriptions } from '@fhtek-ui/components/descriptions'
 import { default as FhMarkdownPreview } from '@fhtek-ui/components/markdown-preview'
 
+import dialog from '@fhtek-ui/components/dialog'
+
 import '@fhtek-ui/components/style/base.less'
 
-const components = [FhAlert, FhButton, FhCheckbox, FhCheckboxGroup, FhDescriptions, FhMarkdownPreview]
+const components = [
+  FhAlert,
+  FhButton,
+  FhCheckbox,
+  FhCheckboxGroup,
+  FhDescriptions,
+  FhMarkdownPreview,
+]
 
-const install = (app: App): void => {
+const install = (app: App, options?: { lang?: string }): void => {
   components.forEach((component) => {
     app.use(component)
   })
+
+  app.config.globalProperties.$dialog = dialog
+  app.provide('dialog', app.config.globalProperties.$dialog)
 }
 
 export default {
@@ -21,7 +33,15 @@ export default {
   version: '0.0.1',
 }
 
-export { registerI18n, FhAlert, FhButton, FhCheckbox, FhCheckboxGroup, FhDescriptions, FhMarkdownPreview }
+export {
+  registerI18n,
+  FhAlert,
+  FhButton,
+  FhCheckbox,
+  FhCheckboxGroup,
+  FhDescriptions,
+  FhMarkdownPreview,
+}
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
 export type { IButtonProps } from '@fhtek-ui/components/button'

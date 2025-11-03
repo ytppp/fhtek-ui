@@ -17,7 +17,7 @@
               (menu.selected || menu.hovered) && isEnlargeFontSize ? 'scale(1.15)' : 'scale(1)',
           }"
         >
-          {{ $t(menu.text) }}
+          {{ menu.text }}
         </span>
         <fh-icon
           class="menu-item__arrow"
@@ -58,7 +58,7 @@
                   fontSize: childMenuFontSizeCom,
                 }"
               >
-                {{ $t(child.text) }}
+                {{ child.text }}
               </span>
             </div>
           </li>
