@@ -1,34 +1,19 @@
-import { h } from 'vue'
-import { mergeOptions } from '@fhtek-ui/utils/type'
-import { usePopup } from '@fhtek-ui/hooks/popup'
-import { type DialogType, DefaultOpt, type IDialogProps } from './interfac'
-import FhDialog from './dialog.vue'
+import type { App } from 'vue'
+import { dialogManager } from './dialog-manager'
+import { type IDialogProps } from './interface'
 
-const dialog = (options: IDialogProps, type: DialogType = 'info'): Promise<void> => {
-  const opt: IDialogProps = mergeOptions<IDialogProps>(DefaultOpt[type], options)
-  return new Promise((resolve, reject) => {
-    const dialogInstance = usePopup(
-      h(FhDialog, {
-        ...opt,
-        onOk: () => {
-          dialogInstance.close()
-          resolve()
-        },
-        onCancel: () => {
-          dialogInstance.close()
-          reject()
-        },
-      }),
-    )
-    dialogInstance.show()
-  })
-}
+export { type IDialogProps }
 
-export default {
+const dialogMethod = {
   info(options: IDialogProps) {
-    return dialog(options)
+    return dialogManager(options)
   },
   confirm(options: IDialogProps) {
-    return dialog(options, 'confirm')
+    return dialogManager(options, 'confirm')
   },
+}
+
+export function registerDialog(app: App) {
+  app.config.globalProperties.$dialog = dialogMethod
+  app.provide('$dialog', dialogMethod)
 }

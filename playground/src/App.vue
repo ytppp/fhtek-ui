@@ -6,6 +6,8 @@
       <li><RouterLink to="/button">Button</RouterLink></li>
       <li><RouterLink to="/descriptions">Descriptions</RouterLink></li>
       <li><RouterLink to="/markdown-preview">Markdown Preview</RouterLink></li>
+      <li><RouterLink to="/dialog">Dialog</RouterLink></li>
+      <li><RouterLink to="/loading">Loading</RouterLink></li>
     </ul>
   </nav>
   <main>

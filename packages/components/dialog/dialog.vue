@@ -17,7 +17,7 @@
 import { useTemplateRef, withDefaults } from 'vue'
 import FhButton from '@fhtek-ui/components/button'
 import FhPopup from '@fhtek-ui/components/popup'
-import type { IDialogProps } from './interfac'
+import type { IDialogProps } from './interface'
 
 defineOptions({
   name: 'FhDialog',

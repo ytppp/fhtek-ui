@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@fhtek-ui/locale'
 
 defineOptions({
   name: 'FhDescriptions',
@@ -47,7 +47,7 @@ const hasColon = computed(() => {
   return colon
 })
 const colonText = computed(() => {
-  return hasColon.value ? t('trans0001') : ''
+  return hasColon.value ? t('descriptions.colon') : ''
 })
 const hasStripe = computed(() => {
   return border && stripe

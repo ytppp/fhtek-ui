@@ -1,12 +1,19 @@
 import type { App } from 'vue'
-import registerI18n from '@fhtek-ui/components/i18n'
+
+import { i18nPlugin, type I18nConfig } from '@fhtek-ui/locale'
+
 import { default as FhAlert } from '@fhtek-ui/components/alert'
 import { default as FhButton } from '@fhtek-ui/components/button'
 import { default as FhCheckbox, FhCheckboxGroup } from '@fhtek-ui/components/checkbox'
 import { default as FhDescriptions } from '@fhtek-ui/components/descriptions'
 import { default as FhMarkdownPreview } from '@fhtek-ui/components/markdown-preview'
 
-import dialog from '@fhtek-ui/components/dialog'
+// plugins
+import { registerDialog } from '@fhtek-ui/components/dialog'
+import { registerLoading } from '@fhtek-ui/components/loading'
+
+// directives
+import { registerVLoading } from '@fhtek-ui/components/directives/loading'
 
 import '@fhtek-ui/components/style/base.less'
 
@@ -19,32 +26,28 @@ const components = [
   FhMarkdownPreview,
 ]
 
-const install = (app: App, options?: { lang?: string }): void => {
+const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
+  app.use(i18nPlugin, options.i18n)
+
   components.forEach((component) => {
     app.use(component)
   })
 
-  app.config.globalProperties.$dialog = dialog
-  app.provide('dialog', app.config.globalProperties.$dialog)
+  registerDialog(app)
+  registerLoading(app)
+  registerVLoading(app)
 }
 
 export default {
   install,
-  version: '0.0.1',
+  version: '__VERSION__',
 }
 
-export {
-  registerI18n,
-  FhAlert,
-  FhButton,
-  FhCheckbox,
-  FhCheckboxGroup,
-  FhDescriptions,
-  FhMarkdownPreview,
-}
+export { FhAlert, FhButton, FhCheckbox, FhCheckboxGroup, FhDescriptions, FhMarkdownPreview }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
 export type { IButtonProps } from '@fhtek-ui/components/button'
 export type { ICheckboxProps, ICheckboxGroupProps } from '@fhtek-ui/components/checkbox'
 export type { IDescriptionsProps } from '@fhtek-ui/components/descriptions'
 export type { IMarkdownPreviewProps } from '@fhtek-ui/components/markdown-preview'
+export type { IDialogProps } from '@fhtek-ui/components/dialog'

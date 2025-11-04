@@ -3,7 +3,7 @@ export type DialogType = 'info' | 'confirm'
 export interface IDialogProps {
   dialogType: DialogType
   message: string
-  title: string
+  title?: string
   okText: string
   cancelText?: string
 }

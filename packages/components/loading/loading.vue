@@ -10,21 +10,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { withDefaults } from 'vue'
 
-export default defineComponent({
+defineOptions({
   name: 'FhLoading',
-  props: {
-    title: {
-      type: String,
-      default: '',
-    },
-    tip: {
-      type: String,
-      default: '',
-    },
-  },
+})
+
+export interface ILoadingProps {
+  title?: string
+  tip?: string
+}
+
+withDefaults(defineProps<ILoadingProps>(), {
+  title: '',
+  tip: '',
 })
 </script>
 

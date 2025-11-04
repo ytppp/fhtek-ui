@@ -17,6 +17,9 @@ importers:
       '@fhtek-ui/i18n':
         specifier: workspace:^
         version: link:i18n
+      '@fhtek-ui/locale':
+        specifier: workspace:^
+        version: link:packages/locale
       '@fhtek-ui/utils':
         specifier: workspace:^
         version: link:packages/utils
@@ -124,6 +127,8 @@ importers:
   packages/components: {}
 
   packages/hooks: {}
+
+  packages/locale: {}
 
   packages/utils: {}
 

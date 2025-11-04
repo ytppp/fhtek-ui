@@ -22,6 +22,16 @@ export const router = createRouter({
       name: 'markdown-preview',
       component: () => import('../pages/markdown-preview/index.vue'),
     },
+    {
+      path: '/dialog',
+      name: 'dialog',
+      component: () => import('../pages/dialog/index.vue'),
+    },
+    {
+      path: '/loading',
+      name: 'loading',
+      component: () => import('../pages/loading/index.vue'),
+    },
   ],
 })
 

@@ -1,6 +1,7 @@
 <template>
   <div>
     <fh-descriptions :data="data" border />
+    <fh-descriptions :data="data" />
   </div>
 </template>
 
