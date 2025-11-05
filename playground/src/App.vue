@@ -8,6 +8,7 @@
       <li><RouterLink to="/markdown-preview">Markdown Preview</RouterLink></li>
       <li><RouterLink to="/dialog">Dialog</RouterLink></li>
       <li><RouterLink to="/loading">Loading</RouterLink></li>
+      <li><RouterLink to="/drawer">Drawer</RouterLink></li>
     </ul>
   </nav>
   <main>

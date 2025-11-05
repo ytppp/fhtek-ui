@@ -32,6 +32,11 @@ export const router = createRouter({
       name: 'loading',
       component: () => import('../pages/loading/index.vue'),
     },
+    {
+      path: '/drawer',
+      name: 'drawer',
+      component: () => import('../pages/drawer/index.vue'),
+    },
   ],
 })
 

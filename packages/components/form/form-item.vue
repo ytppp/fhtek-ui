@@ -35,42 +35,19 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, provide, inject, useSlots, useTemplateRef, useId } from 'vue'
+<script lang="ts" setup>
+import { ref, computed, provide, inject, useSlots, useTemplateRef, useId, withDefaults } from 'vue'
 import LabelWrap from './label-wrap.vue'
+import type { IFormContext, IFormItemProps } from './interface'
+import { FormContextKey } from './interface'
 
 defineOptions({
   name: 'FormItem',
   componentName: 'FormItem',
 })
 
-const props = defineProps({
-  label: {
-    type: String,
-  },
-  prop: {
-    type: String,
-  },
-  for: {
-    type: String,
-  },
-  rules: {
-    type: Array,
-    default: () => [],
-  },
-  labelPosition: {
-    type: String,
-    validator: function (value) {
-      return ['top', 'left', 'right'].indexOf(value) !== -1
-    },
-  },
-  labelWidth: {
-    type: String,
-  },
-  cancelBlurValidate: {
-    type: Boolean,
-    default: false,
-  },
+const props = withDefaults(defineProps<IFormItemProps>(), {
+  cancelBlurValidate: false,
 })
 const id = useId()
 const slots = useSlots()
@@ -78,17 +55,16 @@ const formItemRef = useTemplateRef('formItemRef')
 const validateMessage = ref('')
 const computedLabelWidth = ref('')
 const result = ref(null) // null表示没有进行校验，true通过，false未通过
-const form = inject('form', {})
-const registerFormItem = inject('registerFormItem')
+const form = inject<IFormContext | null>(FormContextKey, null)
 
 const labelWidthCom = computed(() => {
-  return props.labelWidth || form.labelWidth.value
+  return props.labelWidth || form?.labelWidth.value
 })
 const labelPositionCom = computed(() => {
-  return props.labelPosition || form.labelPosition.value
+  return props.labelPosition || form?.labelPosition.value
 })
 const labelStyle = computed(() => {
-  const ret = {}
+  const ret: { width?: string } = {}
   if (labelPositionCom.value === 'top') return ret
   if (labelWidthCom.value) {
     ret.width = labelWidthCom.value
@@ -96,13 +72,13 @@ const labelStyle = computed(() => {
   return ret
 })
 const contentStyle = computed(() => {
-  const ret = {}
+  const ret: { marginLeft?: string } = {}
   if (labelPositionCom.value === 'top') return ret
   if (labelWidthCom.value === 'auto') {
     if (props.labelWidth === 'auto') {
       ret.marginLeft = computedLabelWidth.value
-    } else if (form.labelWidth.value === 'auto') {
-      ret.marginLeft = form.autoLabelWidth.value
+    } else if (form?.labelWidth.value === 'auto') {
+      ret.marginLeft = form?.autoLabelWidth.value
     }
   } else {
     ret.marginLeft = labelWidthCom.value
@@ -119,10 +95,10 @@ const success = computed(() => {
   return result.value === true
 })
 
-const updateComputedLabelWidth = (width) => {
+const updateComputedLabelWidth = (width: number) => {
   computedLabelWidth.value = width ? `${width}px` : ''
 }
-const getValueByPath = (obj, path) => {
+const getValueByPath = (obj: object, path: string) => {
   let tempObj = obj
   // remove start dot in path
   path = path.replace(/^\./, '')
@@ -146,12 +122,12 @@ const getValueByPath = (obj, path) => {
 }
 const validate = () => {
   if (props.prop && formItemRef.value) {
-    const rules = form.rules.value || {}
+    const rules = form?.rules.value || {}
     let validators = rules[props.prop] || []
     if (props.rules) {
       validators = validators.concat(props.rules)
     }
-    const value = getValueByPath(form.model.value, props.prop)
+    const value = getValueByPath(form?.model.value, props.prop)
     let this_result = true
     if (validators && validators.length) {
       for (let j = 0; j < validators.length; j++) {
@@ -181,7 +157,7 @@ const extraValidate = (validator, msg, ...arg) => {
   return result
 }
 
-registerFormItem({
+form?.registerFormItemValidation({
   validate,
   clearValidate,
 })

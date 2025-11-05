@@ -81,74 +81,46 @@
   </div>
 </template>
 
-<script setup>
-import { computed, ref, useSlots, useAttrs, inject, useTemplateRef } from 'vue'
+<script lang="ts" setup>
+import { computed, ref, useSlots, useAttrs, inject, useTemplateRef, withDefaults } from 'vue'
 
 defineOptions({
   name: 'FhButton',
   // inheritAttrs: false,
 })
-const props = defineProps({
-  prefixIcon: {
-    type: String,
-    default: '',
-  },
-  suffixIcon: {
-    type: String,
-    default: '',
-  },
-  tabindex: {
-    type: String,
-    default: '',
-  },
-  label: {
-    type: String,
-    default: '',
-  },
-  name: {
-    type: String,
-    default: '',
-  },
-  placeholder: {
-    type: String,
-    default: '',
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  notDisabled: {
-    type: Boolean,
-    default: false,
-  }, // Determine whether the input is not disabled. If true, it will override the disabled property.
-  readonly: {
-    type: Boolean,
-    default: false,
-  },
-  type: {
-    type: String,
-    default: 'text',
-  },
-  autocomplete: {
-    type: String,
-    default: 'new-password',
-  },
-  clearable: {
-    type: Boolean,
-    default: false,
-  },
-  showPassword: {
-    type: Boolean,
-    default: false,
-  },
-  showWordLimit: {
-    type: Boolean,
-    default: false,
-  },
-  isSelectCompChildNode: {
-    type: Boolean,
-    default: false,
-  },
+export interface IInputProps {
+  prefixIcon: string
+  suffixIcon: string
+  tabindex: string
+  label: string
+  name: string
+  placeholder: string
+  disabled: boolean
+  notDisabled: boolean // Determine whether the input is not disabled. If true, it will override the disabled property.
+  readonly: boolean
+  type: string
+  autocomplete: string
+  clearable: boolean
+  showPassword: boolean
+  showWordLimit: boolean
+  isSelectCompChildNode: boolean
+}
+const props = withDefaults(defineProps<IInputProps>(), {
+  prefixIcon: '',
+  suffixIcon: '',
+  tabindex: '',
+  label: '',
+  name: '',
+  placeholder: '',
+  disabled: false,
+  notDisabled: false,
+  readonly: false,
+  type: 'text',
+  autocomplete: 'new-password',
+  clearable: false,
+  showPassword: false,
+  showWordLimit: false,
+  isSelectCompChildNode: false,
 })
 
 const slots = useSlots()
@@ -215,33 +187,33 @@ const handleCompositionStart = () => {
 const handleCompositionUpdate = () => {
   isComposing.value = true
 }
-const handleCompositionEnd = (event) => {
+const handleCompositionEnd = (event: Event) => {
   if (isComposing.value) {
     isComposing.value = false
     handleInput(event)
   }
 }
-const handleInput = (event) => {
+const handleInput = (event: Event) => {
   if (isComposing.value) return
   model.value = event.target.value
   emits('input', model.value)
 }
-const handleFocus = (event) => {
+const handleFocus = (event: Event) => {
   focused.value = true
   emits('focus', event)
   if (!props.isSelectCompChildNode) formItem?.clearValidate()
 }
-const handleBlur = (event) => {
+const handleBlur = (event: Event) => {
   focused.value = false
   emits('blur', event)
   if (!props.isSelectCompChildNode && !formItem?.cancelBlurValidate.value) formItem?.validate()
 }
-const handleChange = (event) => {
+const handleChange = (event: Event) => {
   model.value = event.target.value
   emits('change', model.value)
   if (!props.isSelectCompChildNode) formItem?.clearValidate()
 }
-const clear = (event) => {
+const clear = (event: Event) => {
   model.value = ''
   emits('clear', event)
 }
@@ -252,8 +224,8 @@ const getSuffixVisible = () => {
   return (
     slots.suffix ||
     props.suffixIcon ||
-    showClear.value ||
     props.showPassword ||
+    showClear.value ||
     isWordLimitVisible.value
   )
 }
@@ -275,7 +247,7 @@ const getSuffixVisible = () => {
     border-radius: @input-border-radius;
     border: @input-border;
     box-sizing: border-box;
-    -webkit-appearance: none;
+    appearance: none;
     background-color: @input-background-color;
     display: inline-block;
     transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);

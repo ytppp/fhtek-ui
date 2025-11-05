@@ -7,6 +7,7 @@ import { default as FhButton } from '@fhtek-ui/components/button'
 import { default as FhCheckbox, FhCheckboxGroup } from '@fhtek-ui/components/checkbox'
 import { default as FhDescriptions } from '@fhtek-ui/components/descriptions'
 import { default as FhMarkdownPreview } from '@fhtek-ui/components/markdown-preview'
+import { default as FhDrawer } from '@fhtek-ui/components/drawer'
 
 // plugins
 import { registerDialog } from '@fhtek-ui/components/dialog'
@@ -24,6 +25,7 @@ const components = [
   FhCheckboxGroup,
   FhDescriptions,
   FhMarkdownPreview,
+  FhDrawer
 ]
 
 const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
@@ -43,7 +45,7 @@ export default {
   version: '__VERSION__',
 }
 
-export { FhAlert, FhButton, FhCheckbox, FhCheckboxGroup, FhDescriptions, FhMarkdownPreview }
+export { FhAlert, FhButton, FhCheckbox, FhCheckboxGroup, FhDescriptions, FhMarkdownPreview, FhDrawer }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
 export type { IButtonProps } from '@fhtek-ui/components/button'
@@ -51,3 +53,4 @@ export type { ICheckboxProps, ICheckboxGroupProps } from '@fhtek-ui/components/c
 export type { IDescriptionsProps } from '@fhtek-ui/components/descriptions'
 export type { IMarkdownPreviewProps } from '@fhtek-ui/components/markdown-preview'
 export type { IDialogProps } from '@fhtek-ui/components/dialog'
+export type { IDrawerProps } from '@fhtek-ui/components/drawer'
