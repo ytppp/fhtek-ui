@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<IFormProps>(), {
   rules: () => ({}),
   disabled: false,
   labelPosition: 'top',
-  labelWidth: '200px', // auto
+  labelWidth: '', // auto
 })
 const potentialLabelWidthArr = ref([])
 const formItemValidations = ref<FormItemValidation[]>([])
@@ -69,16 +69,16 @@ const deregisterLabelWidth: DeregisterLabelWidth = (val: number) => {
   potentialLabelWidthArr.value.splice(index, 1)
 }
 
-const formContext: IFormContext = {
-  autoLabelWidth: computed(() => `${Math.max(...potentialLabelWidthArr.value)}px`),
-  labelWidth: computed(() => props.labelWidth),
-  labelPosition: computed(() => props.labelPosition),
-  rules: computed(() => props.rules),
-  model: computed(() => props.model),
+const formContext: IFormContext = computed(() => ({
+  autoLabelWidth: `${Math.max(...potentialLabelWidthArr.value)}px`,
+  labelWidth: props.labelWidth,
+  labelPosition: props.labelPosition,
+  rules: props.rules,
+  model: props.model,
   registerLabelWidth,
   deregisterLabelWidth,
   registerFormItemValidation,
-}
+}))
 
 provide(FormContextKey, formContext)
 

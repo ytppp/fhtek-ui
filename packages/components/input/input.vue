@@ -48,7 +48,7 @@
         <i class="input__icon" v-if="prefixIcon" :class="prefixIcon"> </i>
       </span>
       <!-- 后置内容 -->
-      <span class="input__suffix" v-if="getSuffixVisible()">
+      <span class="input__suffix" v-if="suffixVisible">
         <span class="input__suffix-inner">
           <template v-if="!showClear || !showPwdVisible || !isWordLimitVisible">
             <slot name="suffix"></slot>
@@ -82,29 +82,41 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, useSlots, useAttrs, inject, useTemplateRef, withDefaults } from 'vue'
+import { computed, ref, useSlots, useAttrs, inject, withDefaults } from 'vue'
+import FhIcon from '@fhtek-ui/components/icon'
+import { FormItemContextKey, type IFormItemContext } from '@fhtek-ui/components/form'
+import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
 
 defineOptions({
-  name: 'FhButton',
+  name: 'FhInput',
   // inheritAttrs: false,
 })
+
 export interface IInputProps {
-  prefixIcon: string
-  suffixIcon: string
-  tabindex: string
-  label: string
-  name: string
-  placeholder: string
-  disabled: boolean
-  notDisabled: boolean // Determine whether the input is not disabled. If true, it will override the disabled property.
-  readonly: boolean
-  type: string
-  autocomplete: string
-  clearable: boolean
-  showPassword: boolean
-  showWordLimit: boolean
-  isSelectCompChildNode: boolean
+  prefixIcon?: string
+  suffixIcon?: string
+  tabindex?: string
+  label?: string
+  name?: string
+  placeholder?: string
+  disabled?: boolean
+  notDisabled?: boolean // Determine whether the input is not disabled. If true, it will override the disabled property.
+  readonly?: boolean
+  type?: string
+  autocomplete?: string
+  clearable?: boolean
+  showPassword?: boolean
+  showWordLimit?: boolean
+  isSelectCompChildNode?: boolean
 }
+export interface IInputEmits {
+  (e: 'focus'): void
+  (e: 'blur'): void
+  (e: 'change', value: string | number): void
+  (e: 'input', value: string | number): void
+  (e: 'clear'): void
+}
+
 const props = withDefaults(defineProps<IInputProps>(), {
   prefixIcon: '',
   suffixIcon: '',
@@ -122,33 +134,28 @@ const props = withDefaults(defineProps<IInputProps>(), {
   showWordLimit: false,
   isSelectCompChildNode: false,
 })
-
 const slots = useSlots()
 const attrs = useAttrs()
-const form = inject('form', null)
-const formItem = inject('formItem', null)
-const model = defineModel({
-  type: [String, Number],
-  default: '',
-})
+const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
+const model = defineModel<string | number>()
 const hovering = ref(false)
 const focused = ref(false)
 const isComposing = ref(false)
 const passwordVisible = ref(false)
-const input = useTemplateRef('input')
-const emits = defineEmits(['focus', 'blur', 'change', 'input', 'clear'])
+const disabledContext = useInjectDisabled()
+const emits = defineEmits<IInputEmits>()
 
 const inputDisabled = computed(() => {
   if (props.notDisabled) {
     return false
   }
-  return props.disabled || form?.disabled.value
+  return props.disabled || disabledContext.value
 })
 const currentLabel = computed(() => {
-  return props.label || formItem?.label.value || ''
+  return props.label || formItem?.value.label || ''
 })
 const id = computed(() => {
-  return formItem?.id
+  return formItem?.value.id
 })
 const isWordLimitVisible = computed(() => {
   return (
@@ -171,8 +178,8 @@ const showClear = computed(() => {
 const showPwdVisible = computed(() => {
   return props.showPassword && !inputDisabled.value && !props.readonly //  && focused.value
 })
-const upperLimit = computed(() => {
-  return attrs.maxlength
+const upperLimit = computed<number>(() => {
+  return Number(attrs.maxlength)
 })
 const textLength = computed(() => {
   if (typeof model.value === 'number') {
@@ -180,6 +187,14 @@ const textLength = computed(() => {
   }
   return (model.value || '').length
 })
+const suffixVisible = computed(
+  () =>
+    slots.suffix ||
+    props.suffixIcon ||
+    props.showPassword ||
+    showClear.value ||
+    isWordLimitVisible.value,
+)
 
 const handleCompositionStart = () => {
   isComposing.value = true
@@ -195,39 +210,31 @@ const handleCompositionEnd = (event: Event) => {
 }
 const handleInput = (event: Event) => {
   if (isComposing.value) return
-  model.value = event.target.value
+  model.value = (event.target as HTMLInputElement)?.value
   emits('input', model.value)
 }
-const handleFocus = (event: Event) => {
+const handleFocus = () => {
   focused.value = true
-  emits('focus', event)
-  if (!props.isSelectCompChildNode) formItem?.clearValidate()
+  emits('focus')
+  if (!props.isSelectCompChildNode) formItem?.value.clearValidate()
 }
-const handleBlur = (event: Event) => {
+const handleBlur = () => {
   focused.value = false
-  emits('blur', event)
-  if (!props.isSelectCompChildNode && !formItem?.cancelBlurValidate.value) formItem?.validate()
+  emits('blur')
+  if (!props.isSelectCompChildNode && !formItem?.value.cancelBlurValidate)
+    formItem?.value.validate()
 }
 const handleChange = (event: Event) => {
-  model.value = event.target.value
+  model.value = (event.target as HTMLInputElement)?.value
   emits('change', model.value)
-  if (!props.isSelectCompChildNode) formItem?.clearValidate()
+  if (!props.isSelectCompChildNode) formItem?.value.clearValidate()
 }
-const clear = (event: Event) => {
+const clear = () => {
   model.value = ''
-  emits('clear', event)
+  emits('clear')
 }
 const handlePasswordVisible = () => {
   passwordVisible.value = !passwordVisible.value
-}
-const getSuffixVisible = () => {
-  return (
-    slots.suffix ||
-    props.suffixIcon ||
-    props.showPassword ||
-    showClear.value ||
-    isWordLimitVisible.value
-  )
 }
 </script>
 

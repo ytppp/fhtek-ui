@@ -1,10 +1,17 @@
-<script>
-import { h } from 'vue'
+<script lang="ts">
+import { h, defineComponent, inject } from 'vue'
+import { withInstall } from '@fhtek-ui/utils/type'
+import {
+  FormContextKey,
+  FormItemContextKey,
+  type IFormContext,
+  type IFormItemContext,
+} from './interface'
 
-export default {
+const LabelWrap = defineComponent({
   name: 'LabelWrap',
   inheritAttrs: false,
-  inject: ['form', 'formItem'],
+  // inject: ['form', 'formItem'],
   props: {
     isAutoWidth: Boolean,
     updateAll: Boolean,
@@ -18,8 +25,8 @@ export default {
   watch: {
     computedWidth(val, oldVal) {
       if (this.updateAll) {
-        this.form.registerLabelWidth(val, oldVal)
-        this.formItem.updateComputedLabelWidth(val)
+        this.form?.registerLabelWidth(val, oldVal)
+        this.formItem?.updateComputedLabelWidth(val)
       }
     },
   },
@@ -33,21 +40,38 @@ export default {
       }
     },
     updateLabelWidth(action = 'update') {
-      if (this.$slots.default() && this.isAutoWidth && this.$el.firstElementChild) {
+      if (this.$slots.default?.() && this.isAutoWidth && this.$el.firstElementChild) {
         if (action === 'update') {
           this.computedWidth = this.getLabelWidth()
         } else if (action === 'remove') {
-          this.form.deregisterLabelWidth(this.computedWidth)
+          this.form?.deregisterLabelWidth(this.computedWidth)
         }
       }
     },
   },
+  mounted() {
+    this.updateLabelWidth('update')
+  },
+  updated() {
+    this.updateLabelWidth('update')
+  },
+  beforeUnmount() {
+    this.updateLabelWidth('remove')
+  },
+  setup() {
+    const form = inject<IFormContext | null>(FormContextKey, null)
+    const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
+    return {
+      form,
+      formItem,
+    }
+  },
   render() {
-    const slots = this.$slots.default()
+    const slots = this.$slots.default?.()
     if (!slots) return null
     if (this.isAutoWidth) {
-      const autoLabelWidth = this.form.autoLabelWidth.value
-      const style = {}
+      const autoLabelWidth = this.form?.autoLabelWidth
+      const style: { marginLeft?: string; marginRight?: string } = {}
       if (autoLabelWidth && autoLabelWidth !== 'auto') {
         const margin = parseInt(autoLabelWidth, 10) - this.computedWidth
         if (margin) {
@@ -71,14 +95,6 @@ export default {
       return slots[0]
     }
   },
-  mounted() {
-    this.updateLabelWidth('update')
-  },
-  updated() {
-    this.updateLabelWidth('update')
-  },
-  beforeUnmount() {
-    this.updateLabelWidth('remove')
-  },
-}
+})
+export default withInstall(LabelWrap)
 </script>

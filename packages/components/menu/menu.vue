@@ -68,7 +68,7 @@
   </ul>
 </template>
 
-<script>
+<script lang="ts">
 import { isObjArrHasVal } from '@/util/tool'
 import Velocity from 'velocity-animate'
 

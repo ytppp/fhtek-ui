@@ -9,6 +9,7 @@
       <li><RouterLink to="/dialog">Dialog</RouterLink></li>
       <li><RouterLink to="/loading">Loading</RouterLink></li>
       <li><RouterLink to="/drawer">Drawer</RouterLink></li>
+      <li><RouterLink to="/form">Form</RouterLink></li>
     </ul>
   </nav>
   <main>

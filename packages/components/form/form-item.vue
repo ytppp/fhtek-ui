@@ -37,13 +37,13 @@
 
 <script lang="ts" setup>
 import { ref, computed, provide, inject, useSlots, useTemplateRef, useId, withDefaults } from 'vue'
+// import Schema from 'async-validator'
 import LabelWrap from './label-wrap.vue'
-import type { IFormContext, IFormItemProps } from './interface'
-import { FormContextKey } from './interface'
+import type { IFormContext, IFormItemContext, IFormItemProps, IFormItemRule } from './interface'
+import { FormContextKey, FormItemContextKey } from './interface'
 
 defineOptions({
-  name: 'FormItem',
-  componentName: 'FormItem',
+  name: 'FhFormItem',
 })
 
 const props = withDefaults(defineProps<IFormItemProps>(), {
@@ -54,14 +54,14 @@ const slots = useSlots()
 const formItemRef = useTemplateRef('formItemRef')
 const validateMessage = ref('')
 const computedLabelWidth = ref('')
-const result = ref(null) // null表示没有进行校验，true通过，false未通过
+const result = ref<boolean | null>(null) // null表示没有进行校验，true通过，false未通过
 const form = inject<IFormContext | null>(FormContextKey, null)
 
 const labelWidthCom = computed(() => {
-  return props.labelWidth || form?.labelWidth.value
+  return props.labelWidth || form?.value.labelWidth
 })
 const labelPositionCom = computed(() => {
-  return props.labelPosition || form?.labelPosition.value
+  return props.labelPosition || form?.value.labelPosition
 })
 const labelStyle = computed(() => {
   const ret: { width?: string } = {}
@@ -77,8 +77,8 @@ const contentStyle = computed(() => {
   if (labelWidthCom.value === 'auto') {
     if (props.labelWidth === 'auto') {
       ret.marginLeft = computedLabelWidth.value
-    } else if (form?.labelWidth.value === 'auto') {
-      ret.marginLeft = form?.autoLabelWidth.value
+    } else if (form?.value.labelWidth === 'auto') {
+      ret.marginLeft = form?.value.autoLabelWidth
     }
   } else {
     ret.marginLeft = labelWidthCom.value
@@ -99,47 +99,70 @@ const updateComputedLabelWidth = (width: number) => {
   computedLabelWidth.value = width ? `${width}px` : ''
 }
 const getValueByPath = (obj: object, path: string) => {
-  let tempObj = obj
-  // remove start dot in path
-  path = path.replace(/^\./, '')
-  // replace .=>[]
-  path = path.replace(/\.(\w+)(?=\.|\[|$)/g, '[$1]')
-  // replace start key
-  path = path.replace(/^(\w+)/, '[$1]')
-  // sometime path is empty when init, so match will get null
-  let keyArr = path.match(/(?:\[)(.*?)(?:\])/g) || []
-  // remove [|]|"|' in key
-  keyArr = keyArr.map((k) => k.replace(/(\[|\]|"|')/g, ''))
-  let i = 0
-  for (let len = keyArr.length; i < len - 1; i += 1) {
-    if (!tempObj) break
-    const key = keyArr[i]
-    if (key in tempObj) {
-      tempObj = tempObj[key]
+  let tempObj: any = obj
+  // // remove start dot in path
+  // path = path.replace(/^\./, '')
+  // // replace .=>[]
+  // path = path.replace(/\.(\w+)(?=\.|\[|$)/g, '[$1]')
+  // // replace start key
+  // path = path.replace(/^(\w+)/, '[$1]')
+  // // sometime path is empty when init, so match will get null
+  // let keyArr = path.match(/(?:\[)(.*?)(?:\])/g) || []
+  // // remove [|]|"|' in key
+  // keyArr = keyArr.map((k) => k.replace(/(\[|\]|"|')/g, ''))
+  // let i = 0
+  // for (let len = keyArr.length; i < len - 1; i += 1) {
+  //   if (!tempObj) break
+  //   const key = keyArr[i]
+  //   if (key in tempObj) {
+  //     tempObj = tempObj[key]
+  //   }
+  // }
+  // return tempObj ? tempObj[keyArr[i]] : null
+
+  const keys = path.split('.')
+  for (const k of keys) {
+    if (tempObj && typeof tempObj === 'object' && k in tempObj) {
+      tempObj = tempObj[k]
+    } else {
+      return ''
     }
   }
-  return tempObj ? tempObj[keyArr[i]] : null
+  return typeof tempObj !== 'object' ? tempObj : ''
 }
 const validate = () => {
   if (props.prop && formItemRef.value) {
-    const rules = form?.rules.value || {}
-    let validators = rules[props.prop] || []
+    const rules: { [key: string]: any } = form?.value.rules || {}
+    let validators: IFormItemRule[] = []
+    if (rules[props.prop]) {
+      validators = validators.concat(rules[props.prop])
+    } else {
+      const keys = props.prop.split('.')
+      let tempObj: any = rules
+      for (const k of keys) {
+        tempObj = tempObj[k]
+        if (tempObj && Array.isArray(tempObj) && k in tempObj) {
+          validators = validators.concat(tempObj)
+          break
+        }
+      }
+    }
     if (props.rules) {
       validators = validators.concat(props.rules)
     }
-    const value = getValueByPath(form?.model.value, props.prop)
-    let this_result = true
+    const value = getValueByPath(form?.value.model as object, props.prop)
+    let flag = true
     if (validators && validators.length) {
       for (let j = 0; j < validators.length; j++) {
-        const validator = validators[j]
+        const validator = validators[j] as IFormItemRule
         if (!validator.rule(value)) {
-          this_result = false
+          flag = false
           validateMessage.value = validator.message
           break
         }
       }
     }
-    result.value = this_result
+    result.value = flag
     return result.value
   }
   return true
@@ -147,29 +170,33 @@ const validate = () => {
 const clearValidate = () => {
   result.value = null
 }
-const extraValidate = (validator, msg, ...arg) => {
-  let this_result = true
-  if (!validator(...arg)) {
-    this_result = false
+const extraValidate = (validator: (val?: any) => boolean, msg: string, ...arg: any[]) => {
+  let flag = true
+  if (!validator(...(arg as [any]))) {
+    flag = false
     validateMessage.value = msg
   }
-  result.value = this_result
+  result.value = flag
   return result
 }
 
-form?.registerFormItemValidation({
-  validate,
-  clearValidate,
-})
+if (props.prop) {
+  form?.value.registerFormItemValidation({
+    validate,
+    clearValidate,
+  })
+}
 
-provide('formItem', {
+const formItemContext: IFormItemContext = computed(() => ({
   clearValidate,
   validate,
   updateComputedLabelWidth,
-  label: computed(() => props.label),
-  cancelBlurValidate: computed(() => props.cancelBlurValidate),
+  label: props.label as string,
+  cancelBlurValidate: props.cancelBlurValidate,
   id,
-})
+}))
+
+provide(FormItemContextKey, formItemContext)
 defineExpose({
   extraValidate,
   clearValidate,

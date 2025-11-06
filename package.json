@@ -42,9 +42,11 @@
     "@fhtek-ui/i18n": "workspace:^",
     "@fhtek-ui/locale": "workspace:^",
     "@fhtek-ui/utils": "workspace:^",
+    "async-validator": "^4.2.5",
     "highlight.js": "^11.11.1",
     "marked": "^16.4.1",
     "marked-highlight": "^2.2.2",
+    "velocity-animate": "^1.5.2",
     "vue": "^3.5.22",
     "vue-i18n": "^11.1.12"
   },

@@ -37,6 +37,11 @@ export const router = createRouter({
       name: 'drawer',
       component: () => import('../pages/drawer/index.vue'),
     },
+    {
+      path: '/form',
+      name: 'form',
+      component: () => import('../pages/form/index.vue'),
+    },
   ],
 })
 
