@@ -42,6 +42,11 @@ export const router = createRouter({
       name: 'form',
       component: () => import('../pages/form/index.vue'),
     },
+    {
+      path: '/menu',
+      name: 'menu',
+      component: () => import('../pages/menu/index.vue'),
+    },
   ],
 })
 

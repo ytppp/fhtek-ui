@@ -1,7 +1,7 @@
 import { h } from 'vue'
 import FhToast from './toast.vue'
 import { usePopup } from '@/hooks/popup'
-import { mergeOptions } from '@/util/tool'
+import { shallowMergeOptions } from '@/util/tool'
 
 const DefaultOpt = {
   duration: 3000,
@@ -12,11 +12,11 @@ const DefaultOpt = {
 const toast = (options) => {
   let opt = null
   if (typeof options === 'string') {
-    opt = mergeOptions(DefaultOpt, {
+    opt = shallowMergeOptions(DefaultOpt, {
       text: options,
     })
   } else {
-    opt = mergeOptions(DefaultOpt, options)
+    opt = shallowMergeOptions(DefaultOpt, options)
   }
   const toastInstance = usePopup(
     h(FhToast, {

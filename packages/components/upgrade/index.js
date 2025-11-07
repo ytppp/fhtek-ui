@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import FhUpgrade from './upgrade.vue'
-import { mergeOptions, handleLogout } from '@/util/tool'
+import { shallowMergeOptions, handleLogout } from '@/util/tool'
 import { usePopup } from '@/hooks/popup'
 
 const defaultOptions = {
@@ -15,7 +15,7 @@ let instance = null
 
 export default {
   open(options) {
-    const opt = mergeOptions(defaultOptions, options)
+    const opt = shallowMergeOptions(defaultOptions, options)
     if (!instance) {
       instance = usePopup(
         h(FhUpgrade, {

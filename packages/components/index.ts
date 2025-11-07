@@ -10,7 +10,8 @@ import { default as FhMarkdownPreview } from '@fhtek-ui/components/markdown-prev
 import { default as FhDrawer } from '@fhtek-ui/components/drawer'
 import { default as FhForm, FhFormItem } from '@fhtek-ui/components/form'
 import { default as FhInput } from '@fhtek-ui/components/input'
-import FhIcon from '@fhtek-ui/components/icon'
+import { default as FhIcon } from '@fhtek-ui/components/icon'
+import { default as FhMenu } from '@fhtek-ui/components/menu'
 
 // plugins
 import { registerDialog } from '@fhtek-ui/components/dialog'
@@ -33,6 +34,7 @@ const components = [
   FhFormItem,
   FhInput,
   FhIcon,
+  FhMenu,
 ]
 
 const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
@@ -63,6 +65,7 @@ export {
   FhForm,
   FhFormItem,
   FhInput,
+  FhMenu,
 }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
@@ -79,5 +82,6 @@ export type {
   IFormContext,
   IFormItemContext,
 } from '@fhtek-ui/components/form'
+export type { IMenuProps } from '@fhtek-ui/components/menu'
 
 export { FormContextKey, FormItemContextKey } from '@fhtek-ui/components/form'

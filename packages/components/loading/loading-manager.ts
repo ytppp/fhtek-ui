@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import FhLoading, { type ILoadingProps } from './loading.vue'
-import { mergeOptions } from '@fhtek-ui/utils/type'
+import { shallowMergeOptions } from '@fhtek-ui/utils/tool'
 import { usePopup } from '@fhtek-ui/hooks/popup'
 import FhPopup from '@fhtek-ui/components/popup'
 
@@ -11,7 +11,7 @@ const defaultOptions: ILoadingProps = {
 let instance: ReturnType<typeof usePopup> | null = null
 export const loadingManager = {
   open(options: ILoadingProps) {
-    const opt = mergeOptions(defaultOptions, options)
+    const opt = shallowMergeOptions(defaultOptions, options)
     if (!instance) {
       instance = usePopup(
         h(

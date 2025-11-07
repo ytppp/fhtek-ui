@@ -1,23 +1,25 @@
 <template>
   <ul class="menu" :class="[`menu--${mode}`]" :style="menuObj">
-    <li class="menu-item" v-for="menu in menuList" :key="menu.key">
-      <div
-        class="menu-item__main"
-        :class="{ 'is-disabled': menu.disabled }"
-        :style="getMenuStyleObj(menu)"
-        @click="handleClick(menu)"
-        @mouseenter="(e) => onMenuMouseEnter(e, menu)"
-        @mouseleave="(e) => onMenuMouseLeave(e, menu)"
-        @focus="(e) => onMenuMouseEnter(e, menu)"
-        @blur="(e) => onMenuMouseLeave(e, menu)"
-      >
+    <li
+      v-for="menu in menuList"
+      :key="menu.key"
+      class="menu-item"
+      :class="{ 'is-disabled': menu.disabled }"
+      :style="getMenuStyleObj(menu, false)"
+      @click="handleClick(menu)"
+      @mouseenter="(e) => onMenuMouseEnter(e, menu)"
+      @mouseleave="(e) => onMenuMouseLeave(e, menu)"
+      @focus="(e) => onMenuMouseEnter(e, menu)"
+      @blur="(e) => onMenuMouseLeave(e, menu)"
+    >
+      <div class="menu-item__main">
         <span
           :style="{
             transform:
               (menu.selected || menu.hovered) && isEnlargeFontSize ? 'scale(1.15)' : 'scale(1)',
           }"
         >
-          {{ menu.text }}
+          {{ menu.label }}
         </span>
         <fh-icon
           class="menu-item__arrow"
@@ -38,17 +40,19 @@
         @leave="leave"
       >
         <ul class="child-menu" v-if="isShowChildMenu && menu.children" v-show="menu.showChild">
-          <li class="child-menu-item" :key="child.key" v-for="child in menu.children">
-            <div
-              class="child-menu-item__main"
-              :class="{ 'is-disabled': child.disabled }"
-              :style="getChildMenuStyleObj(child)"
-              @click.stop="handleClick(child)"
-              @mouseenter="(e) => onMouseEnter(e, child)"
-              @mouseleave="(e) => onMouseLeave(e, child)"
-              @focus="(e) => onMouseEnter(e, child)"
-              @blur="(e) => onMouseLeave(e, child)"
-            >
+          <li
+            v-for="child in menu.children"
+            :key="child.key"
+            class="child-menu-item"
+            :class="{ 'is-disabled': child.disabled }"
+            :style="getMenuStyleObj(child, true)"
+            @click.stop="handleClick(child)"
+            @mouseenter="(e) => onMouseEnter(e, child)"
+            @mouseleave="(e) => onMouseLeave(e, child)"
+            @focus="(e) => onMouseEnter(e, child)"
+            @blur="(e) => onMouseLeave(e, child)"
+          >
+            <div class="child-menu-item__main">
               <span
                 :style="{
                   transform:
@@ -58,7 +62,7 @@
                   fontSize: childMenuFontSizeCom,
                 }"
               >
-                {{ child.text }}
+                {{ child.label }}
               </span>
             </div>
           </li>
@@ -69,84 +73,84 @@
 </template>
 
 <script lang="ts">
-import { isObjArrHasVal } from '@/util/tool'
-import Velocity from 'velocity-animate'
+import { ref, defineComponent, type PropType, type ExtractPublicPropTypes } from 'vue'
+import { gsap } from 'gsap'
 
-const Mode = {
-  horizontal: 'horizontal',
-  vertical: 'vertical',
+type MenuMode = 'horizontal' | 'vertical'
+
+interface MenuItem {
+  key: string
+  label: string
+  disabled?: boolean
+  selected?: boolean
+  hovered?: boolean
+  showChild?: boolean
+  children?: MenuItem[]
 }
-export default {
-  props: {
-    mode: {
-      type: String,
-      default: Mode.horizontal,
-      validator: function (value) {
-        return [Mode.vertical, Mode.horizontal].indexOf(value) !== -1
-      },
-    },
-    active: String,
-    activeKeyName: {
-      type: String,
-      default: 'name',
-    },
-    menus: {
-      type: Array,
-      default: () => [],
-    },
-    isShowChildMenu: {
-      type: Boolean,
-      default: true,
-    }, // 是否显示子菜单
-    timeout: {
-      type: Number,
-      default: 200,
-    }, // 子菜单显示或关闭延迟时间
-    fontSize: {
-      type: String,
-      default: '18px',
-    },
-    childMenuFontSize: String,
-    backgroundColor: {
-      type: String,
-      default: '#fff',
-    }, // 菜单的背景色 （仅支持 hex 格式）
-    textColor: {
-      type: String,
-      default: '#303133',
-    }, // 菜单的文字颜色 （仅支持 hex 格式）
-    hoverTextColor: String, // 鼠标hover菜单的文字颜色 （仅支持 hex 格式）
-    hoverBackgroundColor: String, // 鼠标hover菜单的背景色 （仅支持 hex 格式）
-    hoverChildMenuTextColor: String, // 鼠标hover子菜单的文字颜色 （仅支持 hex 格式）
-    hoverChildMenuBackgroundColor: String, // 鼠标hover子菜单的背景色 （仅支持 hex 格式），不设置此项是使用 hoverBackgroundColor
-    activeTextColor: String, // 激活菜单的文字颜色 （仅支持 hex 格式）
-    activeBackgroundColor: String, // 激活菜单的背景颜色 （仅支持 hex 格式）
-    activeChildMenuTextColor: String, // 激活子菜单的文字颜色 （仅支持 hex 格式），不设置此项是使用 activeTextColor
-    activeChildMenuBackgroundColor: String, // 激活子菜单的背景颜色 （仅支持 hex 格式），不设置此项是使用 activeBackgroundColor
-    isEnlargeFontSize: {
-      type: Boolean,
-      default: false,
-    }, // hover或激活时是否放大文本
-    accordion: {
-      type: Boolean,
-      default: true,
-    }, // 是否开启手风琴效果
+
+const menuProps = {
+  mode: {
+    type: String as PropType<MenuMode>,
+    default: 'horizontal',
   },
-  data() {
-    return {
-      Mode,
-      menuList: [],
-      timer: null,
-      prevMenu: null,
-      activeMenu: null,
-    }
+  active: {
+    type: String,
+    required: true,
   },
+  menus: {
+    type: Array as PropType<MenuItem[]>,
+    default: () => [],
+  },
+  isShowChildMenu: {
+    type: Boolean,
+    default: true,
+  }, // 是否显示子菜单
+  timeout: {
+    type: Number,
+    default: 200,
+  }, // 子菜单显示或关闭延迟时间
+  fontSize: {
+    type: String,
+    default: '18px',
+  },
+  childMenuFontSize: String,
+  textColor: {
+    type: String,
+    default: '#303133',
+  }, // 菜单的文字颜色 （仅支持 hex 格式）
+  backgroundColor: {
+    type: String,
+    default: '#fff',
+  }, // 菜单的背景色 （仅支持 hex 格式）
+  hoverTextColor: String, // 鼠标hover菜单的文字颜色 （仅支持 hex 格式）
+  hoverBackgroundColor: String, // 鼠标hover菜单的背景色 （仅支持 hex 格式）
+  hoverChildMenuTextColor: String, // 鼠标hover子菜单的文字颜色 （仅支持 hex 格式）
+  hoverChildMenuBackgroundColor: String, // 鼠标hover子菜单的背景色 （仅支持 hex 格式），不设置此项是使用 hoverBackgroundColor
+  activeTextColor: String, // 激活菜单的文字颜色 （仅支持 hex 格式）
+  activeBackgroundColor: String, // 激活菜单的背景颜色 （仅支持 hex 格式）
+  activeChildMenuTextColor: String, // 激活子菜单的文字颜色 （仅支持 hex 格式），不设置此项是使用 activeTextColor
+  activeChildMenuBackgroundColor: String, // 激活子菜单的背景颜色 （仅支持 hex 格式），不设置此项是使用 activeBackgroundColor
+  isEnlargeFontSize: {
+    type: Boolean,
+    default: false,
+  }, // hover或激活时是否放大文本
+  accordion: {
+    type: Boolean,
+    default: true,
+  }, // 是否开启手风琴效果
+} as const
+
+export type IMenuProps = ExtractPublicPropTypes<typeof menuProps>
+
+export default defineComponent({
+  name: 'FhMenu',
+  props: menuProps,
   computed: {
     isHorizontal() {
-      return this.mode === Mode.horizontal
+      return this.mode === 'horizontal'
     },
     isVertical() {
-      return this.mode === Mode.vertical
+      return this.mode === 'vertical'
     },
     menuObj() {
       return {
@@ -160,27 +164,43 @@ export default {
   },
   watch: {
     menus() {
-      this.menuList = this.getMenuList(this.menus)
+      this.menuList = this.cleanMenu(this.menus, this.active)
     },
     active() {
-      this.menuList = this.getMenuList(this.menus)
+      this.menuList = this.cleanMenu(this.menus, this.active)
     },
   },
   emits: ['click'],
   methods: {
-    getMenuList(menus) {
-      return this.cleanMenuArr(menus, this.active) // 清理 menus 数据，添加菜单组件需要的参数
+    isActiveMenu(arr: MenuItem[], val: string): boolean {
+      if (!Array.isArray(arr)) {
+        return false
+      }
+      return arr.some((item) => {
+        if (!item) return false
+
+        if (item.key === val) {
+          return true
+        }
+
+        const children = item.children
+        if (Array.isArray(children) && children.length > 0) {
+          return this.isActiveMenu(children, val)
+        }
+
+        return false
+      })
     },
-    cleanMenuArr(arr, active, childNodeName = 'children', keyName = 'url') {
-      return arr.map((item, index) => {
-        if (item[childNodeName]) {
-          const flag = isObjArrHasVal(item[childNodeName], active, childNodeName, keyName)
+    cleanMenu(arr: MenuItem[], active: string): MenuItem[] {
+      return arr.map((item) => {
+        if (item.children) {
+          const flag = this.isActiveMenu(item.children, active)
           const menuCleaned = {
             ...item,
             showChild: flag, // 是否展开子菜单
             selected: flag, // 是否选中
             hovered: false,
-            children: this.cleanMenuArr(item[childNodeName], active, childNodeName, keyName),
+            children: this.cleanMenu(item.children, active),
           }
           if (flag && this.accordion && this.isVertical) {
             this.prevMenu = menuCleaned
@@ -189,25 +209,24 @@ export default {
         } else {
           const childMenuCleaned = {
             ...item,
-            key: index,
-            selected: active === item[keyName],
+            selected: active === item.key,
             hovered: false,
           }
-          if (active === item[keyName]) {
+          if (active === item.key) {
             this.activeMenu = childMenuCleaned
           }
           return childMenuCleaned
         }
-      })
+      }) as MenuItem[]
     },
-    getColorChannels(color) {
+    getColorChannels(color: string) {
       color = color.replace('#', '')
       if (/^[0-9a-fA-F]{3}$/.test(color)) {
-        color = color.split('')
+        const colorArr = color.split('')
         for (let i = 2; i >= 0; i--) {
-          color.splice(i, 0, color[i])
+          colorArr.splice(i, 0, colorArr[i]!)
         }
-        color = color.join('')
+        color = colorArr.join('')
       }
       if (/^[0-9a-fA-F]{6}$/.test(color)) {
         return {
@@ -223,7 +242,7 @@ export default {
         }
       }
     },
-    mixColor(color, percent) {
+    mixColor(color: string, percent: number) {
       let { red, green, blue } = this.getColorChannels(color)
       if (percent > 0) {
         // shade given color
@@ -238,130 +257,150 @@ export default {
       }
       return `rgb(${Math.round(red)}, ${Math.round(green)}, ${Math.round(blue)})`
     },
-    onMenuMouseEnter(e, menu) {
+    onMenuMouseEnter(e: Event, menu: MenuItem) {
+      if (menu.selected) {
+        return
+      }
       this.onMouseEnter(e, menu)
       if (menu.hasOwnProperty('showChild') && this.isHorizontal && this.isShowChildMenu) {
-        this.toggleChildMenuVisible(menu, !menu.showChild)
+        menu.showChild = !menu.showChild
       }
     },
-    onMenuMouseLeave(e, menu) {
+    onMenuMouseLeave(e: Event, menu: MenuItem) {
+      if (menu.selected) {
+        return
+      }
       this.onMouseLeave(e, menu)
       if (menu.hasOwnProperty('showChild') && this.isHorizontal && this.isShowChildMenu) {
-        this.toggleChildMenuVisible(menu, !menu.showChild)
+        menu.showChild = !menu.showChild
       }
     },
-    onMouseEnter(e, menu) {
+    onMouseEnter(e: Event, menu: MenuItem) {
       if (menu.selected) {
         return
       }
       menu.hovered = true
-      if (menu.children) {
-        if (this.hoverBackgroundColor) {
-          e.target.style.backgroundColor = this.hoverBackgroundColor
-        } else {
-          e.target.style.backgroundColor = this.mixColor(this.backgroundColor, 0.8)
-        }
-        this.hoverTextColor && (e.target.style.color = this.hoverTextColor)
-      } else {
-        if (this.hoverChildMenuBackgroundColor || this.hoverBackgroundColor) {
-          e.target.style.backgroundColor =
-            this.hoverChildMenuBackgroundColor || this.hoverBackgroundColor
-        } else {
-          e.target.style.backgroundColor = this.mixColor(this.backgroundColor, 0.8)
-        }
-        if (this.hoverChildMenuTextColor || this.hoverTextColor) {
-          e.target.style.color = this.hoverChildMenuTextColor || this.hoverTextColor
-        }
-      }
     },
-    onMouseLeave(e, menu) {
+    onMouseLeave(e: Event, menu: MenuItem) {
       if (menu.selected) {
         return
       }
       menu.hovered = false
-      e.target.style.color = this.textColor
-      e.target.style.backgroundColor = this.backgroundColor
     },
-    toggleChildMenuVisible(menu, flag) {
-      clearTimeout(this.timer)
-      this.timer = setTimeout(() => {
-        this.setChildMenuVisible(menu, flag)
-      }, this.timeout)
+    beforeEnter(el: Element) {
+      if (el instanceof HTMLElement) {
+        el.style.height = '0'
+      }
     },
-    setChildMenuVisible(menu, visible) {
-      menu.showChild = visible
-    },
-    beforeEnter(el) {
-      el.style.height = 0
-    },
-    enter(el, done) {
+    enter(el: Element, done: () => void) {
       setTimeout(() => {
         let height = 0
         for (let i = 0; i < el.childElementCount; i++) {
-          height += el.children[0].clientHeight
+          height += (el.children[i] as HTMLElement).clientHeight
         }
-        Velocity(el, { height: `${height}px` }, { complete: done })
+        gsap.to(el, {
+          height: `${height}px`,
+          duration: 0.2,
+          ease: 'power2.inOut',
+          onComplete: done,
+        })
       })
     },
-    leave(el, done) {
-      setTimeout(() => {
-        Velocity(el, { height: 0 }, { complete: done })
-      })
+    leave(el: Element, done: () => void) {
+      gsap.to(el, { height: 0, duration: 0.2, ease: 'power2.inOut', onComplete: done })
     },
-    handleClick(menu) {
+    handleClick(menu: MenuItem) {
       if (menu.hasOwnProperty('showChild') && this.isVertical && this.isShowChildMenu) {
         if (this.accordion) {
           if (!this.prevMenu) {
-            this.toggleChildMenuVisible(menu, !menu.showChild)
+            menu.showChild = !menu.showChild
           } else {
             if (this.prevMenu == menu) {
-              this.toggleChildMenuVisible(menu, !menu.showChild)
+              menu.showChild = !menu.showChild
             } else {
-              this.setChildMenuVisible(this.prevMenu, false)
-              this.toggleChildMenuVisible(menu, true)
+              this.prevMenu.showChild = false
+              menu.showChild = true
             }
           }
           this.prevMenu = menu
         } else {
-          this.toggleChildMenuVisible(menu, !menu.showChild)
+          menu.showChild = !menu.showChild
         }
       } else {
         this.$emit('click', menu)
       }
     },
-    getMenuStyleObj(menu) {
+    getMenuStyleObj(menu: MenuItem, isChildMenu: boolean) {
+      if (menu.selected) {
+        return {
+          backgroundColor: this.getColor(isChildMenu, 'active', 'Background'),
+          color: this.getColor(isChildMenu, 'active', 'Text'),
+        }
+      }
+      if (menu.hovered) {
+        return {
+          backgroundColor: this.getColor(isChildMenu, 'hover', 'Background'),
+          color: this.getColor(isChildMenu, 'hover', 'Text'),
+        }
+      }
       return {
-        backgroundColor:
-          menu.selected && this.activeBackgroundColor
-            ? this.activeBackgroundColor
-            : this.backgroundColor,
-        color: menu.selected && this.activeTextColor ? this.activeTextColor : this.textColor,
+        backgroundColor: this.backgroundColor,
+        color: this.textColor,
       }
     },
-    getChildMenuStyleObj(menu) {
-      let activeBackgroundColor = ''
-      let activeTextColor = ''
-      if (this.activeChildMenuBackgroundColor) {
-        activeBackgroundColor = this.activeChildMenuBackgroundColor
-      } else if (this.activeBackgroundColor) {
-        activeBackgroundColor = this.activeBackgroundColor
+    getColor(isChildMenu: boolean, action: 'hover' | 'active', type: 'Background' | 'Text') {
+      if (action === 'active') {
+        if (type === 'Background') {
+          const color = this.activeBackgroundColor
+            ? this.activeBackgroundColor
+            : this.backgroundColor
+          if (isChildMenu) {
+            return this.activeChildMenuBackgroundColor ? this.activeChildMenuBackgroundColor : color
+          }
+          return color
+        }
+        if (type === 'Text') {
+          const color = this.activeTextColor ? this.activeTextColor : this.textColor
+          if (isChildMenu) {
+            return this.activeChildMenuTextColor ? this.activeChildMenuTextColor : color
+          }
+          return color
+        }
       }
-      if (this.activeChildMenuTextColor) {
-        activeTextColor = this.activeChildMenuTextColor
-      } else if (this.activeTextColor) {
-        activeTextColor = this.activeTextColor
-      }
-      return {
-        backgroundColor:
-          menu.selected && activeBackgroundColor ? activeBackgroundColor : this.backgroundColor,
-        color: menu.selected && activeTextColor ? activeTextColor : this.textColor,
+      if (action === 'hover') {
+        if (type === 'Background') {
+          const color = this.hoverBackgroundColor
+            ? this.hoverBackgroundColor
+            : this.mixColor(this.backgroundColor, 0.8)
+          if (isChildMenu) {
+            return this.hoverChildMenuBackgroundColor ? this.hoverChildMenuBackgroundColor : color
+          }
+          return color
+        }
+        if (type === 'Text') {
+          const color = this.hoverTextColor ? this.hoverTextColor : this.textColor
+          if (isChildMenu) {
+            return this.hoverChildMenuTextColor ? this.hoverChildMenuTextColor : color
+          }
+          return color
+        }
       }
     },
   },
   mounted() {
-    this.menuList = this.getMenuList(this.menus)
+    this.menuList = this.cleanMenu(this.menus, this.active)
   },
-}
+  setup() {
+    const menuList = ref<MenuItem[]>([])
+    const prevMenu = ref<MenuItem>()
+    const activeMenu = ref<MenuItem>()
+    return {
+      menuList,
+      prevMenu,
+      activeMenu,
+    }
+  },
+})
 </script>
 
 <style lang="less">
@@ -377,6 +416,9 @@ export default {
       height: 100%;
       cursor: pointer;
       box-sizing: border-box;
+      span {
+        transition: transform 200ms linear;
+      }
     }
     .menu-item__arrow {
       margin-left: 6px;
@@ -396,6 +438,9 @@ export default {
       .child-menu-item__main {
         box-sizing: border-box;
         cursor: pointer;
+        span {
+          transition: transform 200ms linear;
+        }
       }
     }
     // ?
@@ -429,17 +474,15 @@ export default {
   }
   &.menu--horizontal {
     height: 100%;
-    justify-content: space-between;
+    line-height: 60px;
     .menu-item {
       .menu-item__main {
         padding: 0 30px;
-        span {
-          transition: transform 200ms linear;
-        }
       }
     }
     .child-menu {
-      width: 180px;
+      top: calc(100% + 5px);
+      width: 100%;
       border-radius: 6px;
       overflow: hidden;
       box-shadow: -10px 9px 21px 0 rgba(128, 152, 213, 0.08);

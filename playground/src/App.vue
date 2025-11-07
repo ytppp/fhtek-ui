@@ -10,6 +10,7 @@
       <li><RouterLink to="/loading">Loading</RouterLink></li>
       <li><RouterLink to="/drawer">Drawer</RouterLink></li>
       <li><RouterLink to="/form">Form</RouterLink></li>
+      <li><RouterLink to="/menu">Menu</RouterLink></li>
     </ul>
   </nav>
   <main>

@@ -7,10 +7,3 @@ export const withInstall = <T extends Component>(component: T) => {
   }
   return c as T & Plugin
 }
-
-export function mergeOptions<T>(opt1: T, opt2: T) {
-  return {
-    ...opt1,
-    ...opt2,
-  }
-}
