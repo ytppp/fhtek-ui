@@ -5,13 +5,13 @@
 - [x] description
 - [x] dialog
 - [x] drawer
-- ~~ footer ~~
+- ~~footer~~
 - [x] form
 - [x] form-item
-- ~~ header ~~
+- ~~header~~
 - [x] icon
 - [x] input
-- ~~ layout ~~
+- ~~layout~~
 - [x] loading
 - [x] menu
 - [x] modal
