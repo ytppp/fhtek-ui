@@ -10,6 +10,7 @@
       <fh-checkbox label="Checkbox3" value="123" checked />
       <fh-checkbox label="Checkbox4" value="456" disabled />
     </fh-checkbox-group>
+    <fh-pagination :total="100" :default-page-size="10" :default-current="1" />
   </div>
 </template>
 

@@ -12,7 +12,7 @@ import type {
   IFormProps,
   RegisterLabelWidth,
   DeregisterLabelWidth,
-  FormItemValidation,
+  FormValidation,
 } from './interface'
 import { FormContextKey } from './interface'
 
@@ -28,13 +28,13 @@ const props = withDefaults(defineProps<IFormProps>(), {
   labelWidth: '', // auto
 })
 const potentialLabelWidthArr = ref([])
-const formItemValidations = ref<FormItemValidation[]>([])
+const formItemValidations = ref<FormValidation[]>([])
 
 const disabled = computed(() => props.disabled)
 
 useProviderDisabled(disabled)
 
-const registerFormItemValidation = (validates: FormItemValidation) => {
+const registerFormItemValidation = (validates: FormValidation) => {
   formItemValidations.value.push(validates)
 }
 const validate = () => {
@@ -82,7 +82,7 @@ const formContext: IFormContext = computed(() => ({
 
 provide(FormContextKey, formContext)
 
-defineExpose<FormItemValidation>({
+defineExpose<FormValidation>({
   validate,
   clearValidate,
 })

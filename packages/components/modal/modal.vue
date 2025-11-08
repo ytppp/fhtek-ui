@@ -34,55 +34,46 @@
   </fh-popup>
 </template>
 
-<script setup>
-import { ref, useSlots, watch } from 'vue'
-import FhPopup from '@/components/popup/popup.vue'
+<script lang="ts" setup>
+import { useTemplateRef, useSlots, watch, withDefaults } from 'vue'
+import FhPopup from '@fhtek-ui/components/popup/popup.vue'
 
 defineOptions({
   name: 'FhModal',
 })
-const props = defineProps({
-  title: String,
-  width: {
-    type: String,
-    default: '50%',
-  },
-  fullscreen: {
-    type: Boolean,
-    default: false,
-  },
-  showClose: {
-    type: Boolean,
-    default: true,
-  },
-  beforeClose: {
-    type: Function,
-    default: () => ({}),
-  },
-  closeOnClickWrap: {
-    type: Boolean,
-    default: true,
-  },
-  isAppendBody: {
-    type: Boolean,
-    default: true,
-  }, // When set to false, perent node must set position
-  wrapBgColor: {
-    type: String,
-    default: 'rgba(0, 0, 0, 0.4)',
-  },
+
+export interface IModalProps {
+  title?: string
+  width?: string
+  fullscreen?: boolean
+  showClose?: boolean
+  beforeClose?: () => void
+  closeOnClickWrap?: boolean
+  isAppendBody?: boolean
+  wrapBgColor?: string
+}
+
+const props = withDefaults(defineProps<IModalProps>(), {
+  title: '',
+  width: '50%',
+  fullscreen: false,
+  showClose: true,
+  beforeClose: () => ({}),
+  closeOnClickWrap: true,
+  isAppendBody: true, // When set to false, perent node must set position
+  wrapBgColor: 'rgba(0, 0, 0, 0.4)',
 })
 const model = defineModel({
   type: Boolean,
   default: false,
 })
 const slots = useSlots()
-const popupRef = ref(null)
+const popupRef = useTemplateRef<typeof FhPopup>('popupRef')
 watch(model, (val) => {
   if (val) {
-    popupRef.value.open()
+    popupRef.value?.open()
   } else {
-    popupRef.value.close()
+    popupRef.value?.close()
   }
 })
 const onBeforeClose = () => {

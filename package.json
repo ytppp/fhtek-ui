@@ -42,6 +42,7 @@
     "@fhtek-ui/i18n": "workspace:^",
     "@fhtek-ui/locale": "workspace:^",
     "@fhtek-ui/utils": "workspace:^",
+    "@floating-ui/vue": "^1.1.9",
     "async-validator": "^4.2.5",
     "gsap": "^3.13.0",
     "highlight.js": "^11.11.1",

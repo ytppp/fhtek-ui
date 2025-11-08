@@ -39,7 +39,7 @@ export interface IFormLabelWrap {
   labelPosition: FormLabelPositionType
 }
 
-export interface FormItemValidation {
+export interface FormValidation {
   validate: () => boolean
   clearValidate: () => void
 }
@@ -52,7 +52,7 @@ export type IFormContext = ComputedRef<{
   model?: object
   registerLabelWidth: RegisterLabelWidth
   deregisterLabelWidth: DeregisterLabelWidth
-  registerFormItemValidation: (validates: FormItemValidation) => void
+  registerFormItemValidation: (validates: FormValidation) => void
 }>
 
 export type IFormItemContext = ComputedRef<{

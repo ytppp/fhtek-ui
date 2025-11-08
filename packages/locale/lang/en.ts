@@ -4,9 +4,14 @@ export default {
     empty: 'No Directory',
     show: 'Show Directory',
     hide: 'Hide Directory',
-    noCheckedFormat: '{total} items',
   },
   descriptions: {
     colon: ':',
+  },
+  pagination: {
+    total: '{items} items',
+    pageSize: '{items} items per page',
+    jump: 'Jump to',
+    page: 'page',
   },
 }

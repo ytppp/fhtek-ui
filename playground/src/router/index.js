@@ -47,6 +47,11 @@ export const router = createRouter({
       name: 'menu',
       component: () => import('../pages/menu/index.vue'),
     },
+    {
+      path: '/modal',
+      name: 'modal',
+      component: () => import('../pages/modal/index.vue'),
+    },
   ],
 })
 

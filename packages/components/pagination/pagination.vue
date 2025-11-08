@@ -37,61 +37,49 @@
       v-if="showSizeChanger"
     ></fh-select>
     <div class="pagination__jump" v-if="showQuickJumper">
-      <span class="pagination__jump-text pagination__jump-text--left">{{ $t('trans0866') }}</span>
+      <span class="pagination__jump-text pagination__jump-text--left">{{ t('pagination.jump') }}</span>
       <fh-input @change="changePageJump" class="pagination__input" v-model="pageJump"></fh-input>
-      <span class="pagination__jump-text pagination__jump-text--right">{{ $t('trans0867') }}</span>
+      <span class="pagination__jump-text pagination__jump-text--right">{{ t('pagination.page') }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useSlots, watchEffect, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { isValidInteger } from '@/util/tool'
+import { ref, computed, useSlots, watchEffect, watch, withDefaults } from 'vue'
+import { isValidInteger } from '@fhtek-ui/utils/tool'
+import { useI18n } from '@fhtek-ui/locale'
 
 defineOptions({
   name: 'FhPagination',
 })
 
-const { t } = useI18n()
-const props = defineProps({
-  total: {
-    type: Number,
-    default: 0,
-  },
-  defaultPageSize: {
-    type: Number,
-    default: 10,
-    validator(value, props) {
-      return props.pageSizeOptions.includes(value)
-    },
-  },
-  defaultCurrent: {
-    type: Number,
-    default: 1,
-  },
-  showTotal: {
-    type: Boolean,
-    default: true,
-  },
-  showSizeChanger: {
-    type: Boolean,
-    default: true,
-  },
-  showQuickJumper: {
-    type: Boolean,
-    default: true,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  pageSizeOptions: {
-    type: Array,
-    default: () => [10, 20, 50, 100],
-  },
+export interface IPaginationProps {
+  total?: number
+  defaultPageSize?: number
+  defaultCurrent?: number
+  showTotal?: boolean
+  showSizeChanger?: boolean
+  showQuickJumper?: boolean
+  disabled?: boolean
+  pageSizeOptions?: number[]
+}
+
+export interface IPaginationEmits {
+  (e: 'change', current: number, pageSize: number): void
+}
+
+const props = withDefaults(defineProps<IPaginationProps>(), {
+  total: 0,
+  defaultPageSize: 10,
+  defaultCurrent: 1,
+  showTotal: true,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  disabled: false,
+  pageSizeOptions: () => [10, 20, 50, 100],
 })
 
+const { t } = useI18n()
 const slots = useSlots()
 const ellipsis = 'ellipsis'
 const pageJump = ref('')
@@ -109,13 +97,13 @@ const pageSizeOpt = computed(() => {
   for (let i = 0; i < props.pageSizeOptions.length; i++) {
     result.push({
       value: props.pageSizeOptions[i],
-      text: t('trans0128').format(props.pageSizeOptions[i]),
+      text: t('pagination.pageSize', { items: props.pageSizeOptions[i] }),
     })
   }
   return result
 })
 const totalText = computed(() => {
-  return t('trans0858').format(props.total)
+  return t('pagination.total', { items: props.total })
 })
 const list = computed(() => {
   const result = []
@@ -149,7 +137,7 @@ const list = computed(() => {
   return result
 })
 
-const emit = defineEmits(['change'])
+const emit = defineEmits<IPaginationEmits>()
 watchEffect(() => {
   emit('change', currentPage.value, currentPageSize.value)
 })

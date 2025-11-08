@@ -7,7 +7,6 @@
     >
       <div class="toc__header">
         <h3>{{ t('markdownPreview.directory') }}</h3>
-        <!-- <p>{{ t('markdownPreview.noCheckedFormat', { total: tocItems.length }) }}</p> -->
       </div>
       <nav class="toc__nav" ref="tocNavRef">
         <ul class="toc-list" v-if="tocItems.length" ref="tocListRef">

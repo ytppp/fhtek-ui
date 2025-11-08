@@ -13,3 +13,24 @@ export function shallowMergeOptions<T extends Record<string, any>>(opt1: T, opt2
   // Shallow merge for simple cases
   return { ...opt1, ...opt2 }
 }
+
+export const isReal = (value: number | string) => {
+  value = Number(value)
+  return value === 0 ? true : !!value
+}
+
+export function isValidInteger(value: number | string, min?: number, max?: number) {
+  let flag = true
+  const reg = /^(\+|-)?[0-9]\d*$/
+  const val = Number(value)
+  if (!reg.test(value.toString())) {
+    flag = false
+  }
+  if (min && isReal(min) && val < min) {
+    flag = false
+  }
+  if (max && isReal(max) && val > max) {
+    flag = false
+  }
+  return flag
+}

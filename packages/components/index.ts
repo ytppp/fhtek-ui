@@ -12,6 +12,8 @@ import { default as FhForm, FhFormItem } from '@fhtek-ui/components/form'
 import { default as FhInput } from '@fhtek-ui/components/input'
 import { default as FhIcon } from '@fhtek-ui/components/icon'
 import { default as FhMenu } from '@fhtek-ui/components/menu'
+import { default as FhModal } from '@fhtek-ui/components/modal'
+import { default as FhPagination } from '@fhtek-ui/components/pagination'
 
 // plugins
 import { registerDialog } from '@fhtek-ui/components/dialog'
@@ -35,6 +37,8 @@ const components = [
   FhInput,
   FhIcon,
   FhMenu,
+  FhModal,
+  FhPagination,
 ]
 
 const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
@@ -66,6 +70,8 @@ export {
   FhFormItem,
   FhInput,
   FhMenu,
+  FhModal,
+  FhPagination,
 }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
@@ -74,7 +80,9 @@ export type { ICheckboxProps, ICheckboxGroupProps } from '@fhtek-ui/components/c
 export type { IDescriptionsProps } from '@fhtek-ui/components/descriptions'
 export type { IMarkdownPreviewProps } from '@fhtek-ui/components/markdown-preview'
 export type { IDialogProps } from '@fhtek-ui/components/dialog'
+export type { IModalProps } from '@fhtek-ui/components/modal'
 export type { IInputProps } from '@fhtek-ui/components/input'
+export type { IPaginationProps, IPaginationEmits } from '@fhtek-ui/components/pagination'
 export type { IDrawerProps } from '@fhtek-ui/components/drawer'
 export type {
   IFormProps,

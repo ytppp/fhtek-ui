@@ -17,52 +17,54 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { type ExtractPublicPropTypes, type PropType, defineComponent } from 'vue'
 import { computePosition, flip, shift, offset, arrow } from '@floating-ui/vue'
 
-const Positions = {
-  topStart: 'top-start',
-  top: 'top',
-  topEnd: 'top-end',
-  bottomStart: 'bottom-start',
-  bottom: 'bottom',
-  bottomEnd: 'bottom-end',
-  left: 'left',
-  right: 'right',
+enum Positions {
+  topStart = 'top-start',
+  top = 'top',
+  topEnd = 'top-end',
+  bottomStart = 'bottom-start',
+  bottom = 'bottom',
+  bottomEnd = 'bottom-end',
+  left = 'left',
+  right = 'right',
 }
-const StaticSide = {
-  top: 'bottom',
-  right: 'left',
-  bottom: 'top',
-  left: 'right',
+enum StaticSide {
+  top = 'bottom',
+  right = 'left',
+  bottom = 'top',
+  left = 'right',
 }
-const Trigger = {
-  click: 'click',
-  hover: 'hover',
+enum Trigger {
+  click = 'click',
+  hover = 'hover',
 }
-export default {
-  name: 'FhPopover',
-  props: {
-    position: {
-      type: String,
-      default: Positions.bottom,
-    },
-    trigger: {
-      type: String,
-      default: Trigger.hover,
-      validator(value) {
-        return [Trigger.click, Trigger.hover].includes(value)
-      },
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-    content: {
-      type: String,
-      default: '',
-    },
+const popoverProps = {
+  position: {
+    type: String as PropType<Positions>,
+    default: Positions.bottom,
   },
+  trigger: {
+    type: String as PropType<Trigger>,
+    default: Trigger.hover,
+  },
+  title: {
+    type: String,
+    default: '',
+  },
+  content: {
+    type: String,
+    default: '',
+  },
+}
+
+export type IPopoverProps = ExtractPublicPropTypes<typeof popoverProps>
+
+export default defineComponent({
+  name: 'FhPopover',
+  props: popoverProps,
   data() {
     return {
       visible: false,
@@ -73,13 +75,13 @@ export default {
       computePosition(this.$refs.triggerWrapper, this.$refs.popoverWrapper, {
         placement: this.position,
         middleware: [flip(), shift(), offset(6), arrow({ element: this.$refs.popoverTriangle })],
-      }).then(({ x, y, placement, strategy, middlewareData }) => {
+      }).then(({ x, y, placement, middlewareData }) => {
         Object.assign(this.$refs.popoverWrapper.style, {
           left: `${x}px`,
           top: `${y}px`,
         })
         const { x: arrowX, y: arrowY } = middlewareData.arrow
-        const staticSide = StaticSide[placement.split('-')[0]]
+        const staticSide = StaticSide[placement.split('-')[0] as StaticSide]
         Object.assign(this.$refs.popoverTriangle.style, {
           left: arrowX != null ? `${arrowX}px` : '',
           top: arrowY != null ? `${arrowY}px` : '',
@@ -89,7 +91,7 @@ export default {
         })
       })
     },
-    handleClick(event) {
+    handleClick(event: MouseEvent) {
       if (this.$refs.triggerWrapper.contains(event.target)) {
         if (this.visible === true) {
           this.onClose()
@@ -109,7 +111,7 @@ export default {
       this.visible = false
       document.removeEventListener('click', this.eventHandler)
     },
-    eventHandler(e) {
+    eventHandler(e: MouseEvent) {
       if (
         this.$refs.popover &&
         (this.$refs.popover === e.target || this.$refs.popover.contains(e.target))
@@ -141,7 +143,7 @@ export default {
       this.$refs.popover.removeEventListener('mouseleave', this.onClose)
     }
   },
-}
+})
 </script>
 
 <style lang="less">

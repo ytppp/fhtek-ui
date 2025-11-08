@@ -11,6 +11,7 @@
       <li><RouterLink to="/drawer">Drawer</RouterLink></li>
       <li><RouterLink to="/form">Form</RouterLink></li>
       <li><RouterLink to="/menu">Menu</RouterLink></li>
+      <li><RouterLink to="/modal">Modal</RouterLink></li>
     </ul>
   </nav>
   <main>
