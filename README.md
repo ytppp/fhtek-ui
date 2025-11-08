@@ -2,20 +2,20 @@
 - [x] button
 - [x] checkbox
 - [x] checkbox-group
-- description
-- dialog
-- drawer
-- footer
-- form
-- form-item
-- header
+- [x] description
+- [x] dialog
+- [x] drawer
+- ~~ footer ~~
+- [x] form
+- [x] form-item
+- ~~ header ~~
 - [x] icon
-- input
-- layout
-- loading
-- menu
-- modal
-- pagination
+- [x] input
+- ~~ layout ~~
+- [x] loading
+- [x] menu
+- [x] modal
+- [x] pagination
 - popover
 - radio
 - radio-group
