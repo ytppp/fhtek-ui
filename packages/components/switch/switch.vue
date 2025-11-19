@@ -21,50 +21,51 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, inject } from 'vue'
+import { FormItemContextKey, type IFormItemContext } from '@fhtek-ui/components/form'
+import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
 
 defineOptions({
-  name: 'FhButton',
+  name: 'FhSwitch',
 })
 
-const form = inject('form', null)
-const formItem = inject('formItem', null)
+export interface ISwitchProps {
+  modelValue?: boolean | string | number
+  disabled?: boolean
+  label?: string
+  value?: boolean | string | number
+  activeValue?: boolean | string | number
+  inactiveValue?: boolean | string | number
+  name?: string
+}
+export interface ISwitchEmits {
+  (e: 'change', value: boolean | string | number): void
+  (e: 'input', value: boolean | string | number): void
+}
 
-const props = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  label: { type: String },
-  value: {
-    type: [Boolean, String, Number],
-    default: false,
-  },
-  activeValue: {
-    type: [Boolean, String, Number],
-    default: true,
-  },
-  inactiveValue: {
-    type: [Boolean, String, Number],
-    default: false,
-  },
-  name: String,
+const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
+const disabledContext = useInjectDisabled()
+
+const props = withDefaults(defineProps<ISwitchProps>(), {
+  disabled: false,
+  value: false,
+  activeValue: true,
+  inactiveValue: false,
 })
-const model = defineModel({
-  type: [Boolean, String, Number],
+const model = defineModel<boolean | string | number>({
   default: '',
 })
-const emit = defineEmits(['change', 'input'])
+const emit = defineEmits<ISwitchEmits>()
 
 const id = computed(() => {
-  return formItem?.id
+  return formItem?.value.id
 })
 const checked = computed(() => {
   return model.value === props.activeValue
 })
 const switchDisabled = computed(() => {
-  return props.disabled || form?.disabled.value
+  return props.disabled || disabledContext.value
 })
 
 const handleChange = () => {

@@ -34,3 +34,12 @@ export function isValidInteger(value: number | string, min?: number, max?: numbe
   }
   return flag
 }
+
+export function scrollTo(el: HTMLElement, x = 0, y = 0) {
+  if (el.scrollTo) {
+    el.scrollTo(x, y)
+  } else {
+    el.scrollLeft = x
+    el.scrollTop = y
+  }
+}

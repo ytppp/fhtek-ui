@@ -4,7 +4,7 @@ type CheckboxGroupDirection = 'horizontal' | 'vertical'
 type CheckboxValuaType = boolean | string | number
 
 export interface ICheckboxGroupProps {
-  modelValue?: CheckboxValuaType[]
+  modelValue: CheckboxValuaType[]
   circle?: boolean
   direction?: CheckboxGroupDirection
   disabled?: boolean

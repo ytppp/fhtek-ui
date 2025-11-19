@@ -49,67 +49,75 @@
             <span v-else>{{ option.text }}</span>
           </li>
         </template>
-        <li class="select__popup-item--empty" v-else>{{ $t('trans0142') }}</li>
+        <li class="select__popup-item--empty" v-else>{{ t('select.empty') }}</li>
       </ul>
     </transition>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   computed,
   inject,
   watch,
   nextTick,
-  reactive,
   ref,
   onMounted,
   useSlots,
   useTemplateRef,
+  withDefaults,
 } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { scrollTo } from '@/util/tool'
+import { useI18n } from '@fhtek-ui/locale'
+import { scrollTo } from '@fhtek-ui/utils/tool'
 import { computePosition, flip, shift, offset } from '@floating-ui/vue'
+import { FormItemContextKey, type IFormItemContext } from '@fhtek-ui/components/form'
+import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
 
 defineOptions({
   name: 'FhSelect',
 })
 
-const form = inject('form', null)
-const formItem = inject('formItem', null)
+interface ISelectOption {
+  value: string | number
+  text: string
+  render?: () => string
+}
 
-const props = defineProps({
-  options: {
-    type: Array,
-    default: () => [],
-  },
-  height: {
-    type: Number,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  name: String,
-  placeholder: String,
-  label: String,
-  beforeChange: {
-    type: Function,
-    default: () => {},
-  },
-  notDisabled: {
-    type: Boolean,
-    default: false,
-  },
+export interface ISelectProps {
+  options: ISelectOption[]
+  height?: number
+  disabled?: boolean
+  name?: string
+  placeholder?: string
+  label?: string
+  beforeChange?: (value: string | number) => boolean
+  notDisabled?: boolean
+}
+export interface ISelectEmits {
+  (e: 'focus'): void
+  (e: 'blur'): void
+  (e: 'change', value: string | number): void
+}
+
+const props = withDefaults(defineProps<ISelectProps>(), {
+  options: () => [],
+  height: 0,
+  disabled: false,
+  name: '',
+  placeholder: '',
+  label: '',
+  notDisabled: false,
 })
+
+const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
 const model = defineModel({
   required: true,
 })
-const emit = defineEmits(['focus', 'blur', 'change'])
+const emit = defineEmits<ISelectEmits>()
 
 const { t } = useI18n()
 const slots = useSlots()
-const selected = reactive({
+const selected = ref<ISelectOption>({
   value: '',
   text: '',
 })
@@ -117,25 +125,26 @@ const opened = ref(false)
 const selectRef = useTemplateRef('selectRef')
 const selectInputRef = useTemplateRef('selectInputRef')
 const selectPopupRef = useTemplateRef('selectPopupRef')
+const disabledContext = useInjectDisabled()
 
 const currentLabel = computed(() => {
-  return props.label || formItem?.label.value || ''
+  return props.label || formItem?.value.label || ''
 })
 const selectPlaceholder = computed(() => {
-  return typeof props.placeholder !== 'undefined' ? props.placeholder : t('trans0001')
+  return typeof props.placeholder !== 'undefined' ? props.placeholder : t('select.placeholder')
 })
 const selectDisabled = computed(() => {
   if (props.notDisabled) return false
-  return props.disabled || form?.disabled.value
+  return props.disabled || disabledContext.value
 })
 
 watch(opened, (val) => {
   if (val) {
-    formItem?.clearValidate()
+    formItem?.value.clearValidate()
     window.addEventListener('resize', updatePosition)
     window.addEventListener('scroll', updatePosition)
   } else {
-    formItem?.validate()
+    formItem?.value.validate()
     window.removeEventListener('resize', updatePosition)
     window.removeEventListener('scroll', updatePosition)
   }
@@ -151,15 +160,17 @@ watch(
     deep: true,
   },
 )
-const stopPropagation = (event) => {
+const stopPropagation = (event: MouseEvent) => {
   if (selectDisabled.value) event.stopPropagation()
 }
 const updatePosition = () => {
+  if (!selectInputRef.value || !selectPopupRef.value) return
   const { width } = selectInputRef.value.getBoundingClientRect()
   computePosition(selectInputRef.value, selectPopupRef.value, {
     placement: 'bottom-start',
     middleware: [flip(), shift(), offset(6)],
   }).then(({ x, y }) => {
+    if (!selectPopupRef.value) return
     Object.assign(selectPopupRef.value.style, {
       width: `${width}px`,
       left: `${x}px`,
@@ -168,16 +179,20 @@ const updatePosition = () => {
   })
 }
 const setSelected = () => {
-  const option = props.options.filter((o) => o.value === model.value)[0] || {
-    text: model.value,
-  }
-  selected.value = option.value
-  selected.text = option.text
+  const option =
+    props.options.filter((o) => o.value === model.value)[0] ||
+    ({
+      text: model.value,
+    } as ISelectOption)
+  selected.value.value = option.value
+  selected.value.text = option.text
 }
 const scrollToSelect = () => {
   nextTick(() => {
-    const popupEl = selectRef.value.querySelector('.select__popup')
-    const selectEl = popupEl.querySelector('li.is-selected')
+    if (!selectRef.value) return
+    const popupEl = selectRef.value.querySelector('.select__popup') as HTMLElement
+    if (!popupEl) return
+    const selectEl = popupEl.querySelector('li.is-selected') as HTMLElement
     if (selectEl) {
       const popupHeight = popupEl.clientHeight
       const elHeight = selectEl.clientHeight
@@ -186,13 +201,13 @@ const scrollToSelect = () => {
     }
   })
 }
-const select = (option) => {
+const select = (option: ISelectOption) => {
   if (model.value === option.value) return
-  if (props.beforeChange) props.beforeChange()
-  selected.value = option.value
-  selected.text = option.text
-  model.value = selected.value
-  emit('change', selected.value)
+  if (props.beforeChange && !props.beforeChange(option.value)) return
+  selected.value.value = option.value
+  selected.value.text = option.text
+  model.value = selected.value.value
+  emit('change', selected.value.value)
   opened.value = false
 }
 const open = () => {

@@ -18,8 +18,16 @@
 </template>
 
 <script lang="ts">
-import { type ExtractPublicPropTypes, type PropType, defineComponent } from 'vue'
-import { computePosition, flip, shift, offset, arrow } from '@floating-ui/vue'
+import { useTemplateRef, type ExtractPublicPropTypes, type PropType, defineComponent } from 'vue'
+import {
+  computePosition,
+  flip,
+  shift,
+  offset,
+  arrow,
+  type ReferenceElement,
+  type FloatingElement,
+} from '@floating-ui/vue'
 
 enum Positions {
   topStart = 'top-start',
@@ -72,27 +80,36 @@ export default defineComponent({
   },
   methods: {
     positionContent() {
-      computePosition(this.$refs.triggerWrapper, this.$refs.popoverWrapper, {
-        placement: this.position,
-        middleware: [flip(), shift(), offset(6), arrow({ element: this.$refs.popoverTriangle })],
-      }).then(({ x, y, placement, middlewareData }) => {
-        Object.assign(this.$refs.popoverWrapper.style, {
-          left: `${x}px`,
-          top: `${y}px`,
-        })
-        const { x: arrowX, y: arrowY } = middlewareData.arrow
+      computePosition(
+        this.triggerWrapperRef as ReferenceElement,
+        this.popoverWrapperRef as FloatingElement,
+        {
+          placement: this.position,
+          middleware: [flip(), shift(), offset(6), arrow({ element: this.popoverTriangleRef })],
+        },
+      ).then(({ x, y, placement, middlewareData }) => {
+        if (this.popoverWrapperRef) {
+          Object.assign(this.popoverWrapperRef.style, {
+            left: `${x}px`,
+            top: `${y}px`,
+          })
+        }
+        const arrowX = middlewareData.arrow?.x
+        const arrowY = middlewareData.arrow?.y
         const staticSide = StaticSide[placement.split('-')[0] as StaticSide]
-        Object.assign(this.$refs.popoverTriangle.style, {
-          left: arrowX != null ? `${arrowX}px` : '',
-          top: arrowY != null ? `${arrowY}px` : '',
-          right: '',
-          bottom: '',
-          [staticSide]: '-4px',
-        })
+        if (this.popoverTriangleRef) {
+          Object.assign(this.popoverTriangleRef.style, {
+            left: arrowX != null ? `${arrowX}px` : '',
+            top: arrowY != null ? `${arrowY}px` : '',
+            right: '',
+            bottom: '',
+            [staticSide]: '-4px',
+          })
+        }
       })
     },
     handleClick(event: MouseEvent) {
-      if (this.$refs.triggerWrapper.contains(event.target)) {
+      if (this.triggerWrapperRef?.contains(event.target as Node)) {
         if (this.visible === true) {
           this.onClose()
         } else {
@@ -113,14 +130,14 @@ export default defineComponent({
     },
     eventHandler(e: MouseEvent) {
       if (
-        this.$refs.popover &&
-        (this.$refs.popover === e.target || this.$refs.popover.contains(e.target))
+        this.popoverRef &&
+        (this.popoverRef === e.target || this.popoverRef?.contains(e.target as Node))
       ) {
         return
       }
       if (
-        this.$refs.popoverWrapper &&
-        (this.$refs.popoverWrapper === e.target || this.$refs.popoverWrapper.contains(e.target))
+        this.popoverWrapperRef &&
+        (this.popoverWrapperRef === e.target || this.popoverWrapperRef.contains(e.target as Node))
       ) {
         return
       }
@@ -129,18 +146,30 @@ export default defineComponent({
   },
   mounted() {
     if (this.trigger === Trigger.click) {
-      this.$refs.popover.addEventListener('click', this.handleClick)
+      this.popoverRef?.addEventListener('click', this.handleClick)
     } else {
-      this.$refs.popover.addEventListener('mouseenter', this.onShow)
-      this.$refs.popover.addEventListener('mouseleave', this.onClose)
+      this.popoverRef?.addEventListener('mouseenter', this.onShow)
+      this.popoverRef?.addEventListener('mouseleave', this.onClose)
     }
   },
   beforeUnmount() {
     if (this.trigger === Trigger.click) {
-      this.$refs.popover.removeEventListener('click', this.handleClick)
+      this.popoverRef?.removeEventListener('click', this.handleClick)
     } else {
-      this.$refs.popover.removeEventListener('mouseenter', this.onShow)
-      this.$refs.popover.removeEventListener('mouseleave', this.onClose)
+      this.popoverRef?.removeEventListener('mouseenter', this.onShow)
+      this.popoverRef?.removeEventListener('mouseleave', this.onClose)
+    }
+  },
+  setup() {
+    const popoverRef = useTemplateRef<HTMLDivElement>('popover')
+    const popoverWrapperRef = useTemplateRef<HTMLDivElement>('popoverWrapper')
+    const triggerWrapperRef = useTemplateRef<HTMLDivElement>('triggerWrapper')
+    const popoverTriangleRef = useTemplateRef<HTMLDivElement>('popoverTriangle')
+    return {
+      popoverRef,
+      popoverWrapperRef,
+      triggerWrapperRef,
+      popoverTriangleRef,
     }
   },
 })

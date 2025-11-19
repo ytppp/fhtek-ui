@@ -55,7 +55,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 import { computePosition, flip, shift, offset } from '@floating-ui/vue'
 

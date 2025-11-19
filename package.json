@@ -7,19 +7,6 @@
   "main": "dist/index.umd.cjs",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "package.json",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "require": "./dist/fhtek-ui.umd.js",
-      "import": "./dist/fhtek-ui.es.js"
-    },
-    "./dist/style.css": "./dist/style.css"
-  },
   "scripts": {
     "dev": "pnpm -F playground dev",
     "lib:build": "pnpm run -C packages/components build",

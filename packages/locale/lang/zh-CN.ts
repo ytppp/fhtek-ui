@@ -5,13 +5,15 @@ export default {
     show: '显示目录',
     hide: '隐藏目录',
   },
-  descriptions: {
-    colon: '：',
-  },
+  colon: '：',
   pagination: {
     total: '{items} 项',
     pageSize: '{items} 项/每页',
     jump: '跳至',
     page: '页',
+  },
+  select: {
+    placeholder: '请选择',
+    empty: '暂无选项',
   },
 }

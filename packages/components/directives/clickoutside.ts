@@ -8,7 +8,7 @@ declare global {
 
 type ClickOutsideBinding = (event: Event) => void
 
-const vClickoutside: ObjectDirective<HTMLElement, ClickOutsideBinding> = {
+export const vClickoutside: ObjectDirective<HTMLElement, ClickOutsideBinding> = {
   mounted(el: HTMLElement, binding: DirectiveBinding<ClickOutsideBinding>) {
     function documentHandler(e: Event) {
       if (el === e.target || (e.target instanceof Node && el.contains(e.target))) return

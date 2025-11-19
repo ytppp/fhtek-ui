@@ -15,7 +15,7 @@
     <div class="table__header" v-if="showSearch">
       <div class="table__filter-group">
         <fh-input
-          v-model="inputVal"
+          v-model="filterInputVal"
           :placeholder="$t('trans0854')"
           class="table__header-search-input"
         ></fh-input>
@@ -27,69 +27,42 @@
         />
       </div>
     </div>
-    <div class="table__main" ref="tableWrap" @scroll="handleScroll">
+    <div class="table__main" ref="tableWrap" @scroll="() => handleScroll()">
       <table
         cellspacing="0"
         cellpadding="0"
         border="0"
         ref="scrollTable"
         class="table-main"
-        :class="{ 'is-border': border || maxLevel > 1 }"
+        :class="{ 'is-border': border || headerRowsMaxLevel > 1 }"
       >
         <thead class="table-main__header" v-if="showTableHeader">
           <tr class="table-main__header-row" v-for="(row, rowIndex) in headerRows" :key="rowIndex">
             <template v-for="(col, colIndex) in row" :key="`${rowIndex}-${colIndex}`">
               <th
                 class="table-main__cell"
-                :class="{
-                  'table-main__cell--fixed': isFixedLeft(col),
-                  'table-main__cell--fixed-left-last': isFixedLeftLast(colIndex),
-                }"
-                :style="{
-                  position: isFixedLeft(col) ? 'sticky' : '',
-                  left: isFixedLeft(col) ? '0' : '',
-                  ...cellStyle(col),
-                  ...getItemStyle(col),
-                }"
+                :style="cellStyle(col, colIndex)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                ref="checkboxCol"
+                :ref="(el) => (headerColRefs[colIndex] = el)"
                 v-if="col.key === 'checkbox'"
               ></th>
               <th
                 class="table-main__cell"
-                :class="{
-                  'table-main__cell--fixed': isFixedLeft(col),
-                  'table-main__cell--fixed-left-last': isFixedLeftLast(colIndex),
-                }"
-                :style="{
-                  position: isFixedLeft(col) ? 'sticky' : '',
-                  left: isFixedLeft(col) ? (isShowRowCheckbox && isShowIndex ? '50px' : '0') : '',
-                  ...cellStyle(col),
-                  ...cellStyle(col),
-                }"
+                :style="cellStyle(col, colIndex)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                ref="indexCol"
+                :ref="(el) => (headerColRefs[colIndex] = el)"
                 v-else-if="col.key === 'index'"
               >
                 {{ $t('trans0454') }}
               </th>
               <th
                 class="table-main__cell"
-                :class="{
-                  'table-main__cell--fixed': isFixedRight(col),
-                  'table-main__cell--fixed-right-last': isFixedRightLast(colIndex),
-                }"
-                :style="{
-                  position: isFixedRight(col) ? 'sticky' : '',
-                  right: isFixedRight(col) ? '0' : '',
-                  ...getItemStyle(col),
-                  ...cellStyle(col),
-                }"
+                :style="cellStyle(col, colIndex)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                ref="rowOperationCol"
+                :ref="(el) => (headerColRefs[colIndex] = el)"
                 v-else-if="col.key === 'operation'"
               >
                 {{ $t('trans0141') }}
@@ -97,13 +70,10 @@
               <th
                 class="table-main__cell"
                 :title="col.title"
-                :style="{
-                  ...getItemStyle(col),
-                  ...cellStyle(col),
-                }"
+                :style="cellStyle(col, colIndex)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                :ref="col.key"
+                :ref="(el) => (headerColRefs[colIndex] = el)"
                 v-else
               >
                 {{ col.title }}
@@ -123,62 +93,36 @@
               }"
               @click="() => clickRow(item)"
             >
-              <template v-for="(col, colIndex) in leafColumns" :key="col.key">
+              <template v-for="(col, colIndex) in columnsFlattened" :key="col.key">
                 <td
                   class="table-main__cell"
-                  :class="{
-                    'table-main__cell--fixed': isFixedLeft(col),
-                    'table-main__cell--fixed-left-last': isFixedLeftLast(colIndex),
-                  }"
-                  :style="{
-                    position: isFixedLeft(col) ? 'sticky' : '',
-                    left: isFixedLeft(col) ? '0' : '',
-                    ...cellStyle(col),
-                    ...getItemStyle(col),
-                  }"
+                  :style="cellStyle(col, colIndex)"
+                  :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-if="col.key === 'checkbox'"
                 >
                   <fh-checkbox @change="(val) => select(val, item)" />
                 </td>
                 <td
                   class="table-main__cell"
-                  :class="{
-                    'table-main__cell--fixed': isFixedLeft(col),
-                    'table-main__cell--fixed-left-last': isFixedLeftLast(colIndex),
-                  }"
-                  :style="{
-                    position: isFixedLeft(col) ? 'sticky' : '',
-                    left: isFixedLeft(col) ? (isShowRowCheckbox && isShowIndex ? '50px' : '0') : '',
-                    ...cellStyle(col),
-                    ...getItemStyle(col),
-                  }"
+                  :style="cellStyle(col, colIndex)"
+                  :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-else-if="col.key === 'index'"
                 >
                   {{ index + 1 }}
                 </td>
                 <td
                   class="table-main__cell"
-                  :class="{
-                    'table-main__cell--fixed': isFixedRight(col),
-                    'table-main__cell--fixed-right-last': isFixedRightLast(colIndex),
-                  }"
-                  :style="{
-                    position: isFixedRight(col) ? 'sticky' : '',
-                    right: isFixedRight(col) ? '0' : '',
-                    ...getItemStyle(col),
-                    ...cellStyle(col),
-                  }"
+                  :style="cellStyle(col, colIndex)"
+                  :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-else-if="col.key === 'operation'"
                 >
                   <slot name="operation" :row="item"></slot>
                 </td>
                 <td
                   class="table-main__cell"
-                  :style="{
-                    ...getItemStyle(col),
-                    ...cellStyle(col),
-                  }"
                   :title="item[col.key]"
+                  :style="cellStyle(col, colIndex)"
+                  :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-else
                 >
                   <slot :name="col.key" :row="item">
@@ -189,7 +133,7 @@
             </tr>
           </template>
           <tr class="table-main__content-row empty-row" v-else>
-            <td class="empty-row__cell" :colspan="leafColumns.length">
+            <td class="empty-row__cell" :colspan="columnsFlattened.length">
               {{ $t('trans0142') }}
             </td>
           </tr>
@@ -211,17 +155,18 @@
   </div>
 </template>
 
-<script>
-import { useDataClean } from '@/hooks/data-clean'
-import { findObjectsWithValue } from '@/util/tool'
-import { extractDimension, flatten } from './table-util'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { extractDimension, flatten, findObjectsWithValue } from './table-util'
 
-const { defaultVal } = useDataClean()
+const defaultVal = '-'
+
 const Fixed = {
   left: 'left',
   right: 'right',
+  none: '',
 }
-export default {
+export default defineComponent({
   name: 'FhTable',
   props: {
     columns: {
@@ -270,10 +215,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    fixed: {
-      type: Boolean,
-      default: true,
-    }, // 是否固定列，
     align: {
       type: String,
       default: 'center',
@@ -285,30 +226,31 @@ export default {
   data() {
     return {
       listSelected: [],
+      headerColRefs: [],
       isScrollLeft: false,
       isScrollRight: false,
-      isShowScroll: false,
+      lastScrollLeft: 0,
       pagination: {
         current: 1,
         pageSize: 20,
       },
-      inputVal: '',
+      filterInputVal: '',
       filterVal: '',
     }
   },
   computed: {
     dataSourceDisplay() {
-      if (!this.showPagination) {
-        return this.dataSource
+      let data = this.dataSource
+      if (this.showSearch) {
+        data = findObjectsWithValue(this.dataSource, this.filterVal)
       }
-      if (!this.showSearch) {
-        return this.dataSource
+      if (this.showPagination) {
+        const { current, pageSize } = this.pagination
+        const start = (current - 1) * pageSize
+        const end = current * pageSize
+        data = data.slice(start, end)
       }
-      const data = findObjectsWithValue(this.dataSource, this.filterVal)
-      const { current, pageSize } = this.pagination
-      const start = (current - 1) * pageSize
-      const end = current * pageSize
-      return data.slice(start, end)
+      return data
     },
     isShowOperation() {
       return this.$slots.operation
@@ -326,8 +268,7 @@ export default {
           key: 'checkbox',
           title: '',
           fixed: Fixed.left,
-          width: '50',
-          minWidth: '50',
+          width: '60',
         })
       }
       if (this.isShowIndex) {
@@ -335,11 +276,18 @@ export default {
           key: 'index',
           title: '',
           fixed: Fixed.left,
-          width: '50',
-          minWidth: '50',
+          width: '60',
         })
       }
-      list = [...list, ...this.columns]
+      list = [
+        ...list,
+        ...this.columns.map((col) => {
+          return {
+            ...col,
+            fixed: col.fixed ? col.fixed : Fixed.none,
+          }
+        }),
+      ]
       if (this.isShowOperation) {
         list.push({
           key: 'operation',
@@ -350,7 +298,7 @@ export default {
       }
       return list
     },
-    maxLevel() {
+    headerRowsMaxLevel() {
       // 计算表头的最大深度
       const calculateMaxLevel = (columns, currentLevel = 1) => {
         return columns.reduce((max, col) => {
@@ -362,15 +310,15 @@ export default {
       }
       return calculateMaxLevel(this.columnsNew)
     },
-    leafColumns() {
-      // 扁平化的叶子列（最底层列，用于数据渲染）
+    columnsFlattened() {
+      // 扁平化的叶子列（用于数据渲染）
       return flatten(this.columnsNew)
     },
     headerRows() {
       // 生成表头行数据
-      if (this.maxLevel <= 1) return [this.leafColumns]
+      if (this.headerRowsMaxLevel <= 1) return [this.columnsFlattened]
       const rows = []
-      for (let level = 0; level < this.maxLevel; level++) {
+      for (let level = 0; level < this.headerRowsMaxLevel; level++) {
         let item = extractDimension(this.columnsNew, level)
         item = item.map((col) => {
           const hasChildren = Array.isArray(col.children) && col.children.length > 0
@@ -383,7 +331,7 @@ export default {
           } else {
             return {
               colspan: 1,
-              rowspan: this.maxLevel - level,
+              rowspan: this.headerRowsMaxLevel - level,
               ...col,
             }
           }
@@ -396,87 +344,18 @@ export default {
   watch: {
     dataSource(val, oldVal) {
       if (val.length !== oldVal.length) {
-        this.checkScrollLeft()
+        this.handleScroll(true)
       }
     },
   },
   emits: ['select', 'click-row'],
   methods: {
     search() {
-      this.filterVal = this.inputVal
+      this.filterVal = this.filterInputVal
     },
     changePagination(current, currentPageSize) {
       this.pagination.current = current
       this.pagination.pageSize = currentPageSize
-    },
-    cellContent(item, key) {
-      if (Array.isArray(item[key]) && !item[key].length) {
-        return defaultVal
-      }
-      return item[key] ? item[key] : defaultVal
-    },
-    isFixedLeft(col) {
-      return col.fixed === Fixed.left && this.isShowScroll && this.isScrollRight
-    },
-    isFixedLeftLast(index) {
-      return this.leafColumns[index + 1]?.fixed !== Fixed.left
-    },
-    isFixedRight(col) {
-      return (
-        this.$slots.operation && col.fixed === Fixed.right && this.isShowScroll && this.isScrollLeft
-      )
-    },
-    isFixedRightLast(index) {
-      return this.leafColumns[index - 1]?.fixed !== Fixed.right
-    },
-    cellStyle(col) {
-      return {
-        textAlign: col.textAlign ? col.textAlign : this.align,
-        height: '100%',
-      }
-    },
-    getItemStyle(col) {
-      return this.dataSourceDisplay.length
-        ? {
-            width: col.width && `${col.width}px`,
-            minWidth: col.minWidth ? `${col.minWidth}px` : col.width ? `${col.width}px` : 'auto',
-            maxWidth: col.maxWidth ? `${col.maxWidth}px` : col.width ? `${col.width}px` : 'auto',
-          }
-        : {}
-    },
-    handleScroll() {
-      // todo 优化滚动
-      if (!this.isShowScroll) {
-        return
-      }
-      const offset = 20
-      let offsetRight = 0
-      let fixedElClientWidth = 0
-      if (this.$refs.checkboxCol) {
-        fixedElClientWidth += this.$refs.checkboxCol[0].clientWidth
-      }
-      if (this.$refs.indexCol) {
-        fixedElClientWidth += this.$refs.indexCol[0].clientWidth
-      }
-      const offsetLeft = Math.min(fixedElClientWidth, offset)
-      if (this.$refs.headerOperationCol) {
-        const operationColClientWidth = this.$refs.headerOperationCol[0].clientWidth
-        offsetRight = Math.min(operationColClientWidth, offset)
-      }
-      const clientWidth = this.$refs.tableWrap.clientWidth
-      const scrollLeft = this.$refs.tableWrap.scrollLeft
-      const scrollWidth = this.$refs.tableWrap.scrollWidth
-      const offsetWidth = scrollWidth - clientWidth - offsetRight
-      if (scrollLeft > offsetLeft) {
-        this.isScrollRight = true
-      } else {
-        this.isScrollRight = false
-      }
-      if (scrollLeft < offsetWidth) {
-        this.isScrollLeft = true
-      } else {
-        this.isScrollLeft = false
-      }
     },
     select(val, row) {
       if (val && !this.listSelected.includes(row)) {
@@ -489,19 +368,101 @@ export default {
     clickRow(item) {
       this.$emit('click-row', item)
     },
-    checkScrollLeft() {
-      this.$nextTick(() => {
-        this.isShowScroll = this.$refs.scrollTable.scrollWidth > this.$refs.tableWrap.clientWidth
-        if (this.isShowScroll) {
-          this.isScrollLeft = true
+    cellContent(item, key) {
+      if (Array.isArray(item[key]) && !item[key].length) {
+        return defaultVal
+      }
+      return item[key] ? item[key] : defaultVal
+    },
+    cellStyle(col) {
+      const basicStyle = {
+        textAlign: col.textAlign ? col.textAlign : this.align,
+        height: '100%',
+      }
+      const widthStyle = this.dataSourceDisplay.length
+        ? {
+            width: col.width && `${col.width}px`,
+            minWidth: col.minWidth ? `${col.minWidth}px` : col.width ? `${col.width}px` : 'auto',
+            maxWidth: col.maxWidth ? `${col.maxWidth}px` : col.width ? `${col.width}px` : 'auto',
+          }
+        : {}
+      return {
+        ...basicStyle,
+        ...widthStyle,
+      }
+    },
+    getStickyLeftOffset(colIndex) {
+      let offset = 0
+      // 遍历当前列之前的所有列
+      for (let i = 0; i < colIndex; i++) {
+        const col = this.columnsFlattened[i]
+        if (col.fixed === Fixed.left) {
+          const { width } = this.headerColRefs[i].getBoundingClientRect()
+          offset += width || 150
+        }
+      }
+      return offset
+    },
+    getStickyRightOffset(colIndex) {
+      let offset = 0
+      // 遍历当前列后面的所有列
+      for (let i = this.columnsFlattened.length - 1; i > colIndex; i--) {
+        const col = this.columnsFlattened[i]
+        if (col.fixed === Fixed.right) {
+          const { width } = this.headerColRefs[i].getBoundingClientRect()
+          offset += width
+        }
+      }
+      return offset
+    },
+    handleScroll(isInit = false) {
+      const currentScrollLeft = this.$refs.tableWrap.scrollLeft
+      if (isInit) {
+        this.isScrollLeft = this.$refs.scrollTable.scrollWidth > this.$refs.tableWrap.clientWidth
+      } else {
+        this.isScrollRight = currentScrollLeft > this.lastScrollLeft
+        this.isScrollLeft = currentScrollLeft < this.lastScrollLeft
+      }
+      const parentRect = this.$refs.tableWrap.getBoundingClientRect()
+      this.headerColRefs.forEach((col, index) => {
+        if (!col) return
+        const childRect = col.getBoundingClientRect()
+        const column = this.columnsFlattened[index]
+        if (this.isScrollRight && column.fixed === Fixed.left) {
+          if (col.style.position === 'sticky') return
+          if (childRect.left < parentRect.left) {
+            const leftOffset = this.getStickyLeftOffset(index)
+            this.setStickyStyle(col, index, 'left', leftOffset)
+          }
+        } else if (this.isScrollLeft && column.fixed === Fixed.right) {
+          if (col.style.position === 'sticky') return
+          if (childRect.right > parentRect.right) {
+            const rightOffset = this.getStickyRightOffset(index)
+            this.setStickyStyle(col, index, 'right', rightOffset)
+          }
+        }
+      })
+      this.lastScrollLeft = currentScrollLeft
+    },
+    setStickyStyle(col, index, direction, offset) {
+      col.style.position = 'sticky'
+      col.style[direction] = `${offset}px`
+      col.classList.add('table-main__cell--fixed')
+
+      this.dataSourceDisplay.forEach((item, rowIndex) => {
+        const cell = this.$refs[`content_cell_${rowIndex}_${index}_ref`]?.[0]
+        if (cell) {
+          cell.style.position = 'sticky'
+          cell.style[direction] = `${offset}px`
+          cell.classList.add('table-main__cell--fixed')
         }
       })
     },
   },
   mounted() {
-    this.checkScrollLeft()
+    this.handleScroll(true)
   },
-}
+})
 </script>
 
 <style lang="less">
@@ -546,12 +507,6 @@ export default {
   .table__footer,
   .table__pagination {
     padding: 10px 0;
-  }
-  .table__header-search-input {
-    margin-right: 5px;
-    .input__inner {
-      height: 28px;
-    }
   }
   .table__pagination {
     display: flex;
@@ -639,7 +594,7 @@ export default {
       &.table-main__cell--fixed {
         z-index: 2;
         &.table-main__cell--fixed-left-last,
-        &.table-main__cell--fixed-right-last {
+        &.table-main__cell--fixed-right-first {
           &::after {
             position: absolute;
             top: 0;
@@ -657,7 +612,7 @@ export default {
             box-shadow: inset 10px 0 8px -8px #ccc;
           }
         }
-        &.table-main__cell--fixed-right-last {
+        &.table-main__cell--fixed-right-first {
           &::after {
             left: 0;
             transform: translate(-100%);

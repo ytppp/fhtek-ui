@@ -5,7 +5,7 @@
  * @param {string} childrenKey - 包含子数组的属性名（默认为'children'）
  * @returns {Array} 包含指定维度所有元素的数组（不包含子维度）
  */
-export function extractDimension(array, targetDepth, childrenKey = 'children') {
+export function extractDimension(array: any[], targetDepth: number, childrenKey = 'children') {
   // 参数验证
   if (!Array.isArray(array)) {
     throw new TypeError('第一个参数必须是数组')
@@ -19,14 +19,14 @@ export function extractDimension(array, targetDepth, childrenKey = 'children') {
     throw new TypeError('子维度键名必须是字符串')
   }
 
-  const result = []
+  const result: any[] = []
 
   /**
    * 递归遍历多维数组
    * @param {Array} currentArray - 当前处理的数组
    * @param {number} currentDepth - 当前深度
    */
-  function traverse(currentArray, currentDepth) {
+  function traverse(currentArray: any[], currentDepth: number) {
     for (const item of currentArray) {
       // 检查是否是对象（处理对象数组）
       const isObject = item !== null && typeof item === 'object' && !Array.isArray(item)
@@ -57,11 +57,41 @@ export function extractDimension(array, targetDepth, childrenKey = 'children') {
  * @param {Array} columns - 包含嵌套列对象的数组，每个列对象可能包含 `children` 属性，该属性是一个子列数组。
  * @returns {Array} - 扁平化后的一维列数组。
  */
-export function flatten(columns) {
-  return columns.reduce((acc, col) => {
+export function flatten(columns: any[]): Array<any> {
+  return columns.reduce((acc: any[], col: any) => {
     if (Array.isArray(col.children) && col.children.length > 0) {
       return [...acc, ...flatten(col.children)]
     }
     return [...acc, col]
   }, [])
+}
+
+/**
+ * 查找对象数组中包含特定值的所有对象
+ * @param {Array} database - 要搜索的对象数组
+ * @param {*} searchVal - 要查找的值
+ * @returns {Array} 包含该值的所有对象组成的数组
+ */
+export const findObjectsWithValue = (database: any[], searchVal: any) => {
+  if (!Array.isArray(database)) {
+    return []
+  }
+
+  if (searchVal === undefined || searchVal === null || !searchVal) {
+    return database
+  }
+
+  return database.filter((obj) => {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (obj[key] === null || obj[key] === undefined) {
+          continue
+        }
+        if (obj[key].toString().toLowerCase().includes(searchVal.toString().toLowerCase())) {
+          return true
+        }
+      }
+    }
+    return false
+  })
 }

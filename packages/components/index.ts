@@ -14,6 +14,11 @@ import { default as FhIcon } from '@fhtek-ui/components/icon'
 import { default as FhMenu } from '@fhtek-ui/components/menu'
 import { default as FhModal } from '@fhtek-ui/components/modal'
 import { default as FhPagination } from '@fhtek-ui/components/pagination'
+import { default as FhPopover } from '@fhtek-ui/components/popover'
+import { default as FhRadio, FhRadioGroup } from '@fhtek-ui/components/radio'
+import { default as FhSelect } from '@fhtek-ui/components/select'
+import { default as FhStep } from '@fhtek-ui/components/step'
+import { default as FhSwitch } from '@fhtek-ui/components/switch'
 
 // plugins
 import { registerDialog } from '@fhtek-ui/components/dialog'
@@ -21,6 +26,7 @@ import { registerLoading } from '@fhtek-ui/components/loading'
 
 // directives
 import { registerVLoading } from '@fhtek-ui/components/directives/loading'
+import { registerVClickoutside } from '@fhtek-ui/components/directives/clickoutside'
 
 import '@fhtek-ui/components/style/base.less'
 
@@ -39,6 +45,12 @@ const components = [
   FhMenu,
   FhModal,
   FhPagination,
+  FhPopover,
+  FhRadio,
+  FhRadioGroup,
+  FhSelect,
+  FhStep,
+  FhSwitch,
 ]
 
 const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
@@ -51,6 +63,7 @@ const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
   registerDialog(app)
   registerLoading(app)
   registerVLoading(app)
+  registerVClickoutside(app)
 }
 
 export default {
@@ -72,6 +85,12 @@ export {
   FhMenu,
   FhModal,
   FhPagination,
+  FhPopover,
+  FhRadio,
+  FhRadioGroup,
+  FhSelect,
+  FhStep,
+  FhSwitch,
 }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
@@ -91,5 +110,9 @@ export type {
   IFormItemContext,
 } from '@fhtek-ui/components/form'
 export type { IMenuProps } from '@fhtek-ui/components/menu'
-
 export { FormContextKey, FormItemContextKey } from '@fhtek-ui/components/form'
+export type { IPopoverProps } from '@fhtek-ui/components/popover'
+export type { IRadioProps, IRadioGroupProps } from '@fhtek-ui/components/radio'
+export type { ISelectProps } from '@fhtek-ui/components/select'
+export type { IStepProps } from '@fhtek-ui/components/step'
+export type { ISwitchProps, ISwitchEmits } from '@fhtek-ui/components/switch'

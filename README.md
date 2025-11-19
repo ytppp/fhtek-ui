@@ -16,10 +16,10 @@
 - [x] menu
 - [x] modal
 - [x] pagination
-- popover
-- radio
-- radio-group
-- select
+- [x] popover
+- [x] radio
+- [x] radio-group
+- [x] select
 - step
 - switch
 - table
@@ -27,3 +27,19 @@
 - toast
 - upgrade
 - upload
+
+```
+// "files": [
+//   "dist",
+//   "package.json",
+//   "README.md"
+// ],
+// "exports": {
+//   ".": {
+//     "types": "./dist/types/index.d.ts",
+//     "require": "./dist/fhtek-ui.umd.js",
+//     "import": "./dist/fhtek-ui.es.js"
+//   },
+//   "./dist/style.css": "./dist/style.css"
+// },
+```

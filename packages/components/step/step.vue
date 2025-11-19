@@ -4,15 +4,15 @@
       <div
         class="step"
         :class="{
-          'is-fail': !step.success && index <= option.current,
-          'is-success': step.success && index <= option.current,
+          'is-fail': !step.success && index <= current,
+          'is-success': step.success && index <= current,
         }"
-        v-for="(step, index) in option.steps"
+        v-for="(step, index) in steps"
         :key="index"
       >
         <div class="step__main">
           <div class="step__number">
-            <span v-show="(index === option.current && step.success) || index !== option.current">
+            <span v-show="(index === current && step.success) || index !== current">
               {{ index + 1 }}
             </span>
           </div>
@@ -26,31 +26,47 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'FhStep',
-  props: {
-    option: {
-      type: Object,
-    },
+<script lang="ts">
+import { defineComponent, type ExtractPublicPropTypes, type PropType } from 'vue'
+
+interface StepItem {
+  text: string
+  success?: boolean
+}
+
+const stepProps = {
+  steps: {
+    type: Array as PropType<StepItem[]>,
+    default: () => [],
   },
+  current: {
+    type: Number,
+    default: 0,
+  },
+}
+
+export type IStepProps = ExtractPublicPropTypes<typeof stepProps>
+
+export default defineComponent({
+  name: 'FhStep',
+  props: stepProps,
   data() {
     return {
-      preLength: this.option.steps.length,
+      preLength: this.steps.length,
     }
   },
   computed: {
     width() {
-      return `${(this.option.current * 100) / (this.length - 1)}%`
+      return `${(this.current * 100) / (this.length - 1)}%`
     },
     length() {
-      return this.option.steps.length
+      return this.steps.length
     },
   },
   watch: {
-    option: {
-      handler(nv) {
-        if (nv.steps.length !== this.preLength) {
+    steps: {
+      handler(newSteps) {
+        if (newSteps.length !== this.preLength) {
           this.layout()
         }
       },
@@ -63,13 +79,13 @@ export default {
         const width = this.$el.clientWidth
         const stepItems = this.$el.querySelectorAll('.step')
         const stepItemArr = Array.from(stepItems)
-        const stepItemWidth = stepItemArr.reduce((sum, current) => {
-          sum += current.clientWidth
+        const stepItemWidth = stepItemArr.reduce<number>((sum, current) => {
+          sum += (current as HTMLElement).clientWidth
           return sum
         }, 0)
         const perOffset = ((width - stepItemWidth) / (this.length - 1) / width) * 100
         stepItemArr.forEach((step, index) => {
-          step.style.left = `${(perOffset * index).toFixed(2)}%`
+          ;(step as HTMLElement).style.left = `${(perOffset * index).toFixed(2)}%`
         })
         this.preLength = this.length
       })
@@ -82,7 +98,7 @@ export default {
   beforeDestory() {
     window.removeEventListener('resize', this.layout)
   },
-}
+})
 </script>
 
 <style lang="less">

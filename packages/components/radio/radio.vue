@@ -2,14 +2,14 @@
   <label
     class="radio"
     :class="{
-      'is-selected': model === label,
+      'is-selected': isChecked,
       'is-disabled': isDisabled,
     }"
   >
     <span
       class="radio__input"
       :class="{
-        'is-selected': model === label,
+        'is-selected': isChecked,
         'is-disabled': isDisabled,
       }"
     >
@@ -17,9 +17,9 @@
       <input
         ref="radio"
         class="radio__original"
-        :value="label"
+        :value="value"
+        :checked="isChecked"
         type="radio"
-        v-model="model"
         @change="handleChange"
         :name="name"
         :disabled="isDisabled"
@@ -34,73 +34,64 @@
   </label>
 </template>
 
-<script>
-export default {
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import {
+  RadioGroupContextKey,
+  type IRadioEmits,
+  type IRadioGroupContext,
+  type IRadioProps,
+} from './interface'
+import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
+
+defineOptions({
   name: 'FhRadio',
-  inject: {
-    form: {
-      default: '',
-    },
-    formItem: {
-      default: '',
-    },
-    radioGroup: {
-      default: '',
-    },
+})
+
+const props = withDefaults(defineProps<IRadioProps>(), {
+  modelValue: false,
+  value: false,
+  label: '',
+  name: '',
+})
+const emit = defineEmits<IRadioEmits>()
+const radioGroup = inject<IRadioGroupContext | null>(RadioGroupContextKey, null)
+const disabledContext = useInjectDisabled()
+
+const isChecked = computed({
+  get: () => {
+    if (radioGroup) {
+      return radioGroup.modelValue.value === props.value
+    }
+    return props.modelValue === props.value
   },
-  props: {
-    value: {},
-    label: {},
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    name: String,
+  set: (value) => {
+    if (radioGroup) {
+      radioGroup.updateModel(value)
+    } else {
+      emit('update:modelValue', value)
+    }
   },
-  computed: {
-    isDisabled() {
-      return this.isGroup
-        ? this.radioGroup.disabled.value || this.disabled || this.form?.disabled.value
-        : this.disabled || this.form?.disabled.value
-    },
-    isGroup() {
-      let parent = this.$parent
-      while (parent) {
-        if (parent.$options.componentName !== 'FhRadioGroup') {
-          parent = parent.$parent
-        } else {
-          return true
-        }
-      }
-      return false
-    },
-    model: {
-      get() {
-        return this.isGroup ? this.radioGroup.model.value : this.value
-      },
-      set(val) {
-        if (this.isGroup) {
-          this.radioGroup.handleInput(val)
-        } else {
-          this.$emit('input', val)
-        }
-        this.$refs.radio && (this.$refs.radio.checked = this.model === this.label)
-      },
-    },
-  },
-  emits: ['change', 'input'],
-  methods: {
-    handleChange() {
-      this.$nextTick(() => {
-        const value = this.label
-        if (this.isGroup) {
-          this.radioGroup.updateModel(value)
-        } else {
-          this.$emit('change', value)
-        }
-      })
-    },
-  },
+})
+const isDisabled = computed(() => {
+  if (radioGroup) {
+    return radioGroup.disabled || props.disabled || disabledContext.value
+  }
+  return props.disabled || disabledContext.value
+})
+
+const handleChange = (e: Event) => {
+  if (isDisabled.value) return
+
+  const target = e.target as HTMLInputElement
+  const checked = target.checked
+  const emitValue = props.value ?? checked
+  if (radioGroup) {
+    radioGroup.updateModel(emitValue)
+  } else {
+    emit('update:modelValue', emitValue)
+    emit('change', emitValue, e)
+  }
 }
 </script>
 

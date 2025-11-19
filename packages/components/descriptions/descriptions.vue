@@ -47,7 +47,7 @@ const hasColon = computed(() => {
   return colon
 })
 const colonText = computed(() => {
-  return hasColon.value ? t('descriptions.colon') : ''
+  return hasColon.value && t('colon')
 })
 const hasStripe = computed(() => {
   return border && stripe

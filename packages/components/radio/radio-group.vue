@@ -4,47 +4,42 @@
   </div>
 </template>
 
-<script setup>
-import { provide, computed } from 'vue'
+<script setup lang="ts">
+import { provide, ref, withDefaults, type Ref } from 'vue'
+import {
+  type RadioValuaType,
+  type IRadioGroupProps,
+  type IRadioGroupEmits,
+  RadioGroupContextKey,
+  type IRadioGroupContext,
+} from './interface'
 
 defineOptions({
   name: 'FhRadioGroup',
-  componentName: 'FhRadioGroup',
 })
 
-const props = defineProps({
-  direction: {
-    type: String,
-    default: 'horizontal',
-  },
-  disabled: Boolean,
+const props = withDefaults(defineProps<IRadioGroupProps>(), {
+  modelValue: '',
+  direction: 'horizontal',
+  disabled: false,
 })
 
-const model = defineModel({
-  type: [String, Number, Boolean],
-  default: '',
-})
-const emit = defineEmits(['change', 'input'])
-
-const handleChange = (val) => {
-  emit('change', val)
-}
-const handleInput = (val) => {
-  emit('input', val)
-}
-const updateModel = (value) => {
-  model.value = value
-  handleChange(model.value)
+const emit = defineEmits<IRadioGroupEmits>()
+const radioValue: Ref<boolean | string | number> = ref(props.modelValue)
+const updateModel = (value: RadioValuaType) => {
+  radioValue.value = value
+  emit('update:modelValue', radioValue.value)
+  emit('change', radioValue.value)
 }
 
-provide('radioGroup', {
-  model,
-  direction: computed(() => props.direction),
-  disabled: computed(() => props.disabled),
-  handleInput,
-  handleChange,
+const radioGroupContext: IRadioGroupContext = {
+  modelValue: radioValue,
+  direction: props.direction,
+  disabled: props.disabled,
   updateModel,
-})
+}
+
+provide(RadioGroupContextKey, radioGroupContext)
 </script>
 
 <style lang="less">

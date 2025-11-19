@@ -63,7 +63,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<ICheckboxProps>(), {
   modelValue: false,
-  value: false, // value of the Checkbox when used inside a checkbox-group component
+  value: false, // value of the Checkbox is used inside a checkbox-group component
   circle: false,
   label: '',
   disabled: false,
@@ -75,7 +75,6 @@ const props = withDefaults(defineProps<ICheckboxProps>(), {
 })
 
 const emit = defineEmits<ICheckboxEmits>()
-
 const isFocused = ref(false)
 const checkboxGroup = inject<ICheckboxGroupContext | null>(CheckboxGroupContextKey, null)
 const disabledContext = useInjectDisabled()
@@ -120,9 +119,9 @@ const handleChange = (e: Event) => {
   } else {
     value = props.falseValue === undefined ? false : props.falseValue
   }
-  const emitValue = props.value ?? value
 
   if (checkboxGroup) {
+    const emitValue = props.value ?? value
     checkboxGroup.handleChange(emitValue)
   } else {
     emit('update:modelValue', value)

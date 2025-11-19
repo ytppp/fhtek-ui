@@ -8,37 +8,47 @@
       :disabled="false"
       :rules="rules"
     >
-      <!-- <fh-radio-group v-model="form.onlineWay" @change="changeOnlineWay">
-        <fh-radio name="Mode" v-for="mode in onlineWays" :key="mode.value" :label="mode.value">
-          {{ mode.text }}
-        </fh-radio>
-      </fh-radio-group> -->
-      <fh-form-item label="端口" prop="port">
-        <fh-input name="port" v-model="form.port" placeholder="端口范围：1-65535"></fh-input>
-        <template #extra> 端口范围：1-65535 </template>
+      <fh-form-item label="启用">
+        <fh-switch v-model="form.enabled" />
       </fh-form-item>
-      <fh-form-item label="工作时间">
-        <div>
+      <template v-if="form.enabled">
+        <fh-form-item label="上网方式" prop="onlineWay">
+          <fh-radio-group v-model="form.onlineWay" @change="changeOnlineWay">
+            <fh-radio name="Mode" v-for="mode in onlineWays" :key="mode.value" :value="mode.value">
+              {{ mode.text }}
+            </fh-radio>
+          </fh-radio-group>
+        </fh-form-item>
+        <fh-form-item label="协议" prop="protocol">
+          <fh-select v-model="form.protocol" :options="protocolList"> </fh-select>
+        </fh-form-item>
+        <fh-form-item label="端口" prop="port">
+          <fh-input name="port" v-model="form.port" placeholder="端口范围：1-65535"></fh-input>
+          <template #extra> 端口范围：1-65535 </template>
+        </fh-form-item>
+        <fh-form-item label="工作时间">
           <div>
-            <fh-checkbox style="width: 70px" v-model="checkAll" @change="selectAll">
-              全选
-            </fh-checkbox>
+            <div>
+              <fh-checkbox style="width: 70px" v-model="checkAll" @change="selectAll">
+                全选
+              </fh-checkbox>
+            </div>
+            <fh-checkbox-group v-model="form.weekdays">
+              <fh-checkbox
+                style="width: 70px"
+                v-for="schedule in schedulesList"
+                :key="schedule.value"
+                :value="schedule.value"
+              >
+                {{ schedule.label }}
+              </fh-checkbox>
+            </fh-checkbox-group>
           </div>
-          <fh-checkbox-group v-model="form.weekdays">
-            <fh-checkbox
-              style="width: 70px"
-              v-for="schedule in schedulesList"
-              :key="schedule.value"
-              :value="schedule.value"
-            >
-              {{ schedule.label }}
-            </fh-checkbox>
-          </fh-checkbox-group>
-        </div>
-      </fh-form-item>
-      <!-- <fh-form-item label="时间选择">
+        </fh-form-item>
+        <!-- <fh-form-item label="时间选择">
         <fh-time-picker v-model="form.time_begin" />
-      </fh-form-item> -->
+        </fh-form-item> -->
+      </template>
       <fh-form-item @click="save">
         <fh-button>保存</fh-button>
       </fh-form-item>
@@ -101,12 +111,38 @@ const schedulesList = [
     label: '周六',
   },
 ]
+const onlineWays = [
+  {
+    value: OnlineWay.pppoe,
+    text: 'PPPoE',
+  },
+  {
+    value: OnlineWay.dhcp,
+    text: 'DHCP',
+  },
+  {
+    value: OnlineWay.static,
+    text: '静态IP',
+  },
+]
 const form = ref({
+  enabled: false,
   port: -10,
   weekdays: [],
+  protocol: 'tcp',
   onlineWay: OnlineWay.dhcp,
   time_begin: '00:00',
 })
+const protocolList = [
+  {
+    value: 'tcp',
+    text: 'TCP',
+  },
+  {
+    value: 'udp',
+    text: 'UDP',
+  },
+]
 const rules = ref({
   port: [
     { rule: (value) => value, message: '必填' },
@@ -132,5 +168,8 @@ const selectAll = (val) => {
 const save = () => {
   if (!formRef.value.validate()) return
   console.log('form is valid')
+}
+const changeOnlineWay = (val) => {
+  console.log(val)
 }
 </script>

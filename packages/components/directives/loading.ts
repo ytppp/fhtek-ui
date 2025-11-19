@@ -19,7 +19,7 @@ function removeNode(el: HTMLElement) {
   el.style.position = position
 }
 
-const vloading: Directive = {
+export const vloading: Directive = {
   created(el: HTMLElement, bing: { value: boolean }) {
     const tip = el.getAttribute('loading-tip')
     const title = el.getAttribute('loading-title')
