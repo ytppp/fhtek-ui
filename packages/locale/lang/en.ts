@@ -15,5 +15,7 @@ export default {
   select: {
     placeholder: 'Please select',
     empty: 'No options',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
   },
 }

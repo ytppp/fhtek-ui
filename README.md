@@ -20,12 +20,12 @@
 - [x] radio
 - [x] radio-group
 - [x] select
-- step
-- switch
+- [x] step
+- [x] switch
 - table
-- time-picker
-- toast
-- upgrade
+- [x] time-picker
+- [x] toast
+- ~~upgrade~~
 - upload
 
 ```

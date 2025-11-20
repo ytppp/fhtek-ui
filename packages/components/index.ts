@@ -19,16 +19,18 @@ import { default as FhRadio, FhRadioGroup } from '@fhtek-ui/components/radio'
 import { default as FhSelect } from '@fhtek-ui/components/select'
 import { default as FhStep } from '@fhtek-ui/components/step'
 import { default as FhSwitch } from '@fhtek-ui/components/switch'
+import { default as FhTimePicker } from '@fhtek-ui/components/time-picker'
 
 // plugins
 import { registerDialog } from '@fhtek-ui/components/dialog'
 import { registerLoading } from '@fhtek-ui/components/loading'
+import { registerToast } from '@fhtek-ui/components/toast'
 
 // directives
 import { registerVLoading } from '@fhtek-ui/components/directives/loading'
 import { registerVClickoutside } from '@fhtek-ui/components/directives/clickoutside'
 
-import '@fhtek-ui/components/style/base.less'
+import '@fhtek-ui/components/assets/style/base.less'
 
 const components = [
   FhAlert,
@@ -51,6 +53,7 @@ const components = [
   FhSelect,
   FhStep,
   FhSwitch,
+  FhTimePicker,
 ]
 
 const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
@@ -62,6 +65,8 @@ const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
 
   registerDialog(app)
   registerLoading(app)
+  registerToast(app)
+
   registerVLoading(app)
   registerVClickoutside(app)
 }
@@ -91,6 +96,7 @@ export {
   FhSelect,
   FhStep,
   FhSwitch,
+  FhTimePicker,
 }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
@@ -116,3 +122,4 @@ export type { IRadioProps, IRadioGroupProps } from '@fhtek-ui/components/radio'
 export type { ISelectProps } from '@fhtek-ui/components/select'
 export type { IStepProps } from '@fhtek-ui/components/step'
 export type { ISwitchProps, ISwitchEmits } from '@fhtek-ui/components/switch'
+export type { ITimePickerProps, ITimePickerEmits } from '@fhtek-ui/components/time-picker'

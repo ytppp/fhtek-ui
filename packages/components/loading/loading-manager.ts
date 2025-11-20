@@ -4,12 +4,18 @@ import { shallowMergeOptions } from '@fhtek-ui/utils/tool'
 import { usePopup } from '@fhtek-ui/hooks/popup'
 import FhPopup from '@fhtek-ui/components/popup'
 
+export interface ILoadingManager {
+  open(options: ILoadingProps): void
+  close(): void
+}
+
 const defaultOptions: ILoadingProps = {
   tip: '',
   title: '',
 }
 let instance: ReturnType<typeof usePopup> | null = null
-export const loadingManager = {
+
+export const loadingManager: ILoadingManager = {
   open(options: ILoadingProps) {
     const opt = shallowMergeOptions(defaultOptions, options)
     if (!instance) {

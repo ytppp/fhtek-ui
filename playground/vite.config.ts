@@ -18,7 +18,7 @@ export default defineConfig({
       less: {
         math: 'always',
         javascriptEnabled: true,
-        additionalData: `@import "${path.resolve(__dirname, '../packages/components/style/variables.less')}";`,
+        additionalData: `@import "${path.resolve(__dirname, '../packages/components/assets/style/variables.less')}";`,
       },
     },
   },

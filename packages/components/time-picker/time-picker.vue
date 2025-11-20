@@ -1,12 +1,12 @@
 <template>
-  <div class="time-picker" @click="open" v-clickoutside="closeStatusOpened">
+  <div class="time-picker" @click="open" v-clickoutside="close">
     <div class="time-picker__input" ref="timePickerInputRef">
       <fh-input
         readonly
         :disabled="selectDisabled"
         :placeholder="selectPlaceholder"
         :label="currentLabel"
-        v-model="value"
+        v-model="model"
         :name="name"
       >
         <template v-slot:prefix v-if="$slots.prefix">
@@ -14,7 +14,7 @@
         </template>
         <template v-slot:suffix>
           <fh-icon
-            :class="['time-picker__caret', 'input__icon', this.opened ? 'is-reverse' : '']"
+            :class="['time-picker__caret', 'input__icon', opened ? 'is-reverse' : '']"
             name="icon-down"
           ></fh-icon>
         </template>
@@ -28,7 +28,7 @@
               class="time-picker__popup-item"
               v-for="(v, i) in hs"
               :key="i"
-              @click.stop="(e) => select('h', v, e)"
+              @click.stop="() => select('h', v)"
               :class="{ selected: time.h === v }"
             >
               {{ v }}
@@ -39,7 +39,7 @@
               class="time-picker__popup-item"
               v-for="(v, i) in ms"
               :key="i"
-              @click.stop="(e) => select('m', v, e)"
+              @click.stop="() => select('m', v)"
               :class="{ selected: time.m === v }"
             >
               {{ v }}
@@ -47,167 +47,136 @@
           </ul>
         </div>
         <div class="time-picker__button-wrap">
-          <fh-button type="text" @click.stop="close">{{ $t('trans0020') }}</fh-button>
-          <fh-button type="text" @click.stop="ok">{{ $t('trans0019') }}</fh-button>
+          <fh-button type="text" @click.stop="close">{{ t('select.cancel') }}</fh-button>
+          <fh-button type="text" @click.stop="ok">{{ t('select.confirm') }}</fh-button>
         </div>
       </div>
     </transition>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { computed, useTemplateRef, inject, ref, withDefaults, nextTick } from 'vue'
 import { computePosition, flip, shift, offset } from '@floating-ui/vue'
+import { useI18n } from '@fhtek-ui/locale'
+import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
+import { FormItemContextKey, type IFormItemContext } from '@fhtek-ui/components/form'
+import { scrollTo } from '@fhtek-ui/utils/tool'
 
-export default defineComponent({
+defineOptions({
   name: 'FhTimePicker',
-  inject: {
-    form: {
-      default: '',
-    },
-    formItem: {
-      default: '',
-    },
-  },
-  props: {
-    modelValue: {
-      type: String,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    name: String,
-    placeholder: String,
-    label: String,
-  },
-  data() {
-    return {
-      opened: false,
-      hs: Array.from(new Array(24)).map((__, v) => this.formatCount(v)),
-      ms: Array.from(new Array(60)).map((__, v) => this.formatCount(v)),
-      time: {
-        h: '',
-        m: '',
-      },
-      distance: 0,
-      animationTime: 200,
-      animationEl: null,
-      oldValue: '',
-    }
-  },
-  computed: {
-    value: {
-      get() {
-        return this.modelValue
-      },
-      set(v) {
-        this.$emit('update:modelValue', v)
-      },
-    },
-    iconClass() {
-      return this.opened ? 'is-reverse' : ''
-    },
-    currentLabel() {
-      return this.label || this.$parent.label || ''
-    },
-    selectPlaceholder() {
-      return typeof this.placeholder !== 'undefined' ? this.placeholder : this.$t('trans0001')
-    },
-    selectDisabled() {
-      return this.disabled || this.form?.disabled.value
-    },
-  },
-  emits: ['input', 'update:modelValue'],
-  methods: {
-    updatePosition() {
-      computePosition(this.$refs.timePickerInputRef, this.$refs.combo, {
-        placement: 'bottom-start',
-        middleware: [flip(), shift(), offset(6)],
-      }).then(({ x, y }) => {
-        Object.assign(this.$refs.combo.style, {
-          left: `${x}px`,
-          top: `${y}px`,
-        })
-      })
-    },
-    formatCount(v) {
-      return `0${v}`.slice(-2)
-    },
-    scrollTo(el, x, y) {
-      if (el.scrollTo) {
-        el.scrollTo(x, y)
-      } else {
-        el.scrollTop = y
-      }
-    },
-    ok() {
-      if (this.time.h && this.time.m) {
-        this.$emit('input', this.value)
-      }
-      this.opened = false
-    },
-    open() {
-      if (!this.opened) {
-        this.opened = true
-        this.oldValue = this.value
-        this.time = {
-          h: this.value ? this.value.split(':')[0] : '',
-          m: this.value ? this.value.split(':')[1] : '',
-        }
-        this.$nextTick(() => {
-          this.updatePosition()
-          const hEl = this.$refs.h
-          const mEl = this.$refs.m
-          this.initScroll(hEl)
-          this.initScroll(mEl)
-        })
-      }
-    },
-    closeStatusOpened() {
-      this.opened = false
-    },
-    close() {
-      if (!this.opened) {
-        return
-      }
-      this.value = this.oldValue
-      this.opened = false
-    },
-    initScroll(el) {
-      const sEl = el.querySelector('.selected')
-      if (sEl) {
-        const cTop = sEl.offsetTop
-        this.scrollTo(el, 0, cTop)
-      }
-    },
-    animateScroll() {
-      if (this.animationEl.scrollTop >= this.distance) {
-        cancelAnimationFrame(this.animationId)
-        return
-      }
-      let scroll = this.animationEl.scrollTop + 5
-      scroll = scroll > this.distance ? this.distance : scroll
-      this.scrollTo(this.animationEl, 0, scroll)
-      this.animationId = requestAnimationFrame(this.animateScroll)
-    },
-    selectScroll(e, p) {
-      const pEl = this.$refs[p]
-      const sEl = e.currentTarget
-      this.distance = sEl.offsetTop
-      this.animationEl = pEl
-      this.animateScroll()
-    },
-    select(type, v, e) {
-      this.time[type] = v
-      this.value = `${this.time.h}:${this.time.m}`
-      if (this.time.h && this.time.m) {
-        this.$emit('input', this.value)
-      }
-    },
-  },
 })
+
+export interface ITimePickerProps {
+  modelValue: string
+  disabled?: boolean
+  name?: string
+  placeholder?: string
+  label?: string
+}
+interface ITime {
+  h: string
+  m: string
+}
+export interface ITimePickerEmits {
+  (e: 'change', value: string): void
+}
+
+const formatCount = (v: number) => {
+  return `0${v}`.slice(-2)
+}
+
+const props = withDefaults(defineProps<ITimePickerProps>(), {
+  modelValue: '',
+  disabled: false,
+  name: '',
+  placeholder: '',
+  label: '',
+})
+const { t } = useI18n()
+const disabledContext = useInjectDisabled()
+const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
+const timePickerInputRef = useTemplateRef<HTMLDivElement>('timePickerInputRef')
+const combo = useTemplateRef<HTMLDivElement>('combo')
+const emit = defineEmits<ITimePickerEmits>()
+const model = defineModel<string>({
+  required: true,
+})
+const opened = ref(false)
+const hs = Array.from(new Array(24)).map((__, v) => formatCount(v))
+const ms = Array.from(new Array(60)).map((__, v) => formatCount(v))
+const time = ref<ITime>({
+  h: '',
+  m: '',
+})
+const oldValue = ref('')
+
+const currentLabel = computed(() => {
+  return props.label || formItem?.value.label || ''
+})
+const selectPlaceholder = computed(() => {
+  return typeof props.placeholder !== 'undefined' ? props.placeholder : t('select.placeholder')
+})
+const selectDisabled = computed(() => {
+  return props.disabled || disabledContext.value
+})
+
+const updatePosition = () => {
+  if (!timePickerInputRef.value || !combo.value) return
+  computePosition(timePickerInputRef.value, combo.value, {
+    placement: 'bottom-start',
+    middleware: [flip(), shift(), offset(6)],
+  }).then(({ x, y }) => {
+    Object.assign((combo.value as HTMLDivElement).style, {
+      left: `${x}px`,
+      top: `${y}px`,
+    })
+  })
+}
+const ok = () => {
+  if (time.value.h && time.value.m) {
+    emit('change', `${time.value.h}:${time.value.m}`)
+  }
+  opened.value = false
+}
+const open = () => {
+  if (opened.value) return
+  opened.value = true
+  oldValue.value = model.value
+  const timeArr = model.value.split(':')
+  time.value.h = timeArr[0] ?? ''
+  time.value.m = timeArr[1] ?? ''
+  nextTick(() => {
+    updatePosition()
+    const hEl = combo.value?.querySelector(
+      '.time-picker__popup-list:nth-child(1)',
+    ) as HTMLUListElement
+    const mEl = combo.value?.querySelector(
+      '.time-picker__popup-list:nth-child(2)',
+    ) as HTMLUListElement
+    initScroll(hEl)
+    initScroll(mEl)
+  })
+}
+const close = () => {
+  if (!opened.value) return
+  model.value = oldValue.value
+  opened.value = false
+}
+const initScroll = (el: HTMLUListElement) => {
+  const sEl = el.querySelector('.selected')
+  if (sEl) {
+    const cTop = (sEl as HTMLElement).offsetTop
+    scrollTo(el, 0, cTop)
+  }
+}
+const select = (type: keyof typeof time.value, v: string) => {
+  time.value[type] = v
+  model.value = `${time.value.h}:${time.value.m}`
+  if (time.value.h && time.value.m) {
+    emit('change', model.value)
+  }
+}
 </script>
 
 <style lang="less">

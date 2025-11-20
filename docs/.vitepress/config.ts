@@ -32,7 +32,7 @@ export default defineConfig({
     css: {
       preprocessorOptions: {
         less: {
-          additionalData: `@import "${path.resolve(__dirname, '../../packages/components/style/variables.less')}";`,
+          additionalData: `@import "${path.resolve(__dirname, '../../packages/components/assets/style/variables.less')}";`,
           javascriptEnabled: true,
         },
       },

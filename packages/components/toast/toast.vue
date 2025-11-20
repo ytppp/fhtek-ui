@@ -8,47 +8,38 @@
   </teleport>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { onMounted, ref, withDefaults } from 'vue'
+import type { IToastEmits, IToastProps } from './interface'
 
-export default defineComponent({
+defineOptions({
   name: 'FhToast',
-  props: {
-    duration: {
-      type: Number,
-      default: 3000,
-    },
-    text: {
-      type: String,
-      default: '',
-    },
-    type: {
-      default: String,
-      default: 'success',
-    },
-  },
-  data() {
-    return {
-      visible: false,
-    }
-  },
-  emits: ['hide'],
-  methods: {
-    startTimer() {
-      this.timer = setTimeout(() => {
-        this.visible = false
-      }, this.duration)
-    },
-    onAfterLeave() {
-      clearTimeout(this.timer)
-      this.timer = null
-      this.$emit('hide')
-    },
-  },
-  mounted() {
-    this.visible = true
-    this.startTimer()
-  },
+})
+
+const props = withDefaults(defineProps<IToastProps>(), {
+  duration: 3000,
+  text: '',
+  type: 'success',
+})
+const emit = defineEmits<IToastEmits>()
+const visible = ref(false)
+const timer = ref<NodeJS.Timeout | number | null>(null)
+
+const startTimer = () => {
+  timer.value = setTimeout(() => {
+    visible.value = false
+  }, props.duration)
+}
+const onAfterLeave = () => {
+  if (timer.value) {
+    clearTimeout(timer.value)
+    timer.value = null
+  }
+  emit('hide')
+}
+onMounted(() => {
+  visible.value = true
+  startTimer()
 })
 </script>
 
@@ -77,7 +68,7 @@ export default defineComponent({
       display: block;
       width: 14px;
       height: 14px;
-      background: url(@/assets/images/ic_default_error.png) center no-repeat;
+      background: url('@fhtek-ui/components/assets/images/ic_default_error.png') center no-repeat;
       background-size: 100%;
     }
   }
@@ -91,7 +82,7 @@ export default defineComponent({
       display: block;
       width: 14px;
       height: 14px;
-      background: url(@/assets/images/ic_default_success.png) center no-repeat;
+      background: url('@fhtek-ui/components/assets/images/ic_default_success.png') center no-repeat;
       background-size: 100%;
     }
   }

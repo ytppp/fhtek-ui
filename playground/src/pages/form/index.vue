@@ -45,9 +45,9 @@
             </fh-checkbox-group>
           </div>
         </fh-form-item>
-        <!-- <fh-form-item label="时间选择">
-        <fh-time-picker v-model="form.time_begin" />
-        </fh-form-item> -->
+        <fh-form-item label="时间选择">
+          <fh-time-picker v-model="form.time_begin" />
+        </fh-form-item>
       </template>
       <fh-form-item @click="save">
         <fh-button>保存</fh-button>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef, inject } from 'vue'
 
 defineOptions({
   name: 'FhFormDemo',
@@ -81,6 +81,7 @@ enum Weeks {
 
 const formRef = useTemplateRef<FhForm>('formRef')
 const checkAll = ref(false)
+const toast = inject('$toast')
 const schedulesList = [
   {
     value: Weeks.sun,
@@ -111,27 +112,32 @@ const schedulesList = [
     label: '周六',
   },
 ]
+const OnlineWayText = {
+  [OnlineWay.pppoe]: 'PPPoE',
+  [OnlineWay.dhcp]: 'DHCP',
+  [OnlineWay.static]: '静态IP',
+}
 const onlineWays = [
   {
     value: OnlineWay.pppoe,
-    text: 'PPPoE',
+    text: OnlineWayText[OnlineWay.pppoe],
   },
   {
     value: OnlineWay.dhcp,
-    text: 'DHCP',
+    text: OnlineWayText[OnlineWay.dhcp],
   },
   {
     value: OnlineWay.static,
-    text: '静态IP',
+    text: OnlineWayText[OnlineWay.static],
   },
 ]
 const form = ref({
-  enabled: false,
+  enabled: true,
   port: -10,
   weekdays: [],
   protocol: 'tcp',
   onlineWay: OnlineWay.dhcp,
-  time_begin: '00:00',
+  time_begin: '12:45',
 })
 const protocolList = [
   {
@@ -145,11 +151,11 @@ const protocolList = [
 ]
 const rules = ref({
   port: [
-    { rule: (value) => value, message: '必填' },
-    { rule: (value) => value >= 1 && value <= 65535, message: '端口范围：1-65535' },
+    { rule: (value: number) => value, message: '必填' },
+    { rule: (value: number) => value >= 1 && value <= 65535, message: '端口范围：1-65535' },
   ],
 })
-const selectAll = (val) => {
+const selectAll = (val: boolean) => {
   console.log(val)
   if (val) {
     form.value.weekdays = [
@@ -166,10 +172,20 @@ const selectAll = (val) => {
   }
 }
 const save = () => {
-  if (!formRef.value.validate()) return
-  console.log('form is valid')
+  if (!formRef.value.validate()) {
+    toast('form is invalid')
+    return
+  }
+  toast({
+    text: 'form is valid',
+    type: 'success',
+  })
 }
 const changeOnlineWay = (val) => {
-  console.log(val)
+  toast({
+    text: OnlineWayText[val],
+    type: 'success',
+    duration: 2000,
+  })
 }
 </script>

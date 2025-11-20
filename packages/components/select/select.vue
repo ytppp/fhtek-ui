@@ -109,14 +109,13 @@ const props = withDefaults(defineProps<ISelectProps>(), {
   notDisabled: false,
 })
 
+const { t } = useI18n()
+const slots = useSlots()
 const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
+const emit = defineEmits<ISelectEmits>()
 const model = defineModel({
   required: true,
 })
-const emit = defineEmits<ISelectEmits>()
-
-const { t } = useI18n()
-const slots = useSlots()
 const selected = ref<ISelectOption>({
   value: '',
   text: '',

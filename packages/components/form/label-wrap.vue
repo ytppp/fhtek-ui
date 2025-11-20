@@ -11,7 +11,6 @@ import {
 const LabelWrap = defineComponent({
   name: 'LabelWrap',
   inheritAttrs: false,
-  // inject: ['form', 'formItem'],
   props: {
     isAutoWidth: Boolean,
     updateAll: Boolean,

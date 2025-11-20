@@ -50,25 +50,25 @@ const formRef = useTemplateRef<typeof FhForm>('formRef')
 const rules = ref({
   interface: [
     {
-      rule: (value) => value,
+      rule: (value: string) => value,
       message: '请选择接口',
     },
   ],
   domain: [
     {
-      rule: (value) => value,
+      rule: (value: string) => value,
       message: '请输入域名',
     },
   ],
   username: [
     {
-      rule: (value) => value,
+      rule: (value: string) => value,
       message: '请输入用户名',
     },
   ],
   password: [
     {
-      rule: (value) => value,
+      rule: (value: string) => value,
       message: '请输入密码',
     },
   ],

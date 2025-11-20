@@ -15,5 +15,7 @@ export default {
   select: {
     placeholder: '请选择',
     empty: '暂无选项',
+    confirm: '确认',
+    cancel: '取消',
   },
 }
