@@ -2,29 +2,29 @@ import type { App } from 'vue'
 
 import { i18nPlugin, type I18nConfig } from '@fhtek-ui/locale'
 
-import { default as FhAlert } from '@fhtek-ui/components/alert'
-import { default as FhButton } from '@fhtek-ui/components/button'
+import FhAlert from '@fhtek-ui/components/alert'
+import FhButton from '@fhtek-ui/components/button'
 import { default as FhCheckbox, FhCheckboxGroup } from '@fhtek-ui/components/checkbox'
-import { default as FhDescriptions } from '@fhtek-ui/components/descriptions'
-import { default as FhMarkdownPreview } from '@fhtek-ui/components/markdown-preview'
-import { default as FhDrawer } from '@fhtek-ui/components/drawer'
+import FhDescriptions from '@fhtek-ui/components/descriptions'
+import FhMarkdownPreview from '@fhtek-ui/components/markdown-preview'
+import FhDrawer from '@fhtek-ui/components/drawer'
 import { default as FhForm, FhFormItem } from '@fhtek-ui/components/form'
-import { default as FhInput } from '@fhtek-ui/components/input'
-import { default as FhIcon } from '@fhtek-ui/components/icon'
-import { default as FhMenu } from '@fhtek-ui/components/menu'
-import { default as FhModal } from '@fhtek-ui/components/modal'
-import { default as FhPagination } from '@fhtek-ui/components/pagination'
-import { default as FhPopover } from '@fhtek-ui/components/popover'
+import FhInput from '@fhtek-ui/components/input'
+import FhIcon from '@fhtek-ui/components/icon'
+import FhMenu from '@fhtek-ui/components/menu'
+import FhModal from '@fhtek-ui/components/modal'
+import FhPagination from '@fhtek-ui/components/pagination'
+import FhPopover from '@fhtek-ui/components/popover'
 import { default as FhRadio, FhRadioGroup } from '@fhtek-ui/components/radio'
-import { default as FhSelect } from '@fhtek-ui/components/select'
-import { default as FhStep } from '@fhtek-ui/components/step'
-import { default as FhSwitch } from '@fhtek-ui/components/switch'
-import { default as FhTimePicker } from '@fhtek-ui/components/time-picker'
+import FhSelect from '@fhtek-ui/components/select'
+import FhStep from '@fhtek-ui/components/step'
+import FhSwitch from '@fhtek-ui/components/switch'
+import FhTimePicker from '@fhtek-ui/components/time-picker'
 
 // plugins
-import { registerDialog } from '@fhtek-ui/components/dialog'
-import { registerLoading } from '@fhtek-ui/components/loading'
-import { registerToast } from '@fhtek-ui/components/toast'
+import { registerDialog, dialogManager as dialog } from '@fhtek-ui/components/dialog'
+import { registerLoading, loadingManager as loading } from '@fhtek-ui/components/loading'
+import { registerToast, toastManager as toast } from '@fhtek-ui/components/toast'
 
 // directives
 import { registerVLoading } from '@fhtek-ui/components/directives/loading'
@@ -97,6 +97,9 @@ export {
   FhStep,
   FhSwitch,
   FhTimePicker,
+  loading,
+  dialog,
+  toast,
 }
 
 export type { IAlertProps } from '@fhtek-ui/components/alert'
@@ -114,6 +117,7 @@ export type {
   IFormItemProps,
   IFormContext,
   IFormItemContext,
+  FormInstance,
 } from '@fhtek-ui/components/form'
 export type { IMenuProps } from '@fhtek-ui/components/menu'
 export { FormContextKey, FormItemContextKey } from '@fhtek-ui/components/form'

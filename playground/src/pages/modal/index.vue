@@ -23,9 +23,7 @@
             <fh-input v-model="form.password" type="password" show-password></fh-input>
           </fh-form-item>
           <fh-form-item class="form__submit-btn">
-            <fh-button @click="save" block>
-              保存
-            </fh-button>
+            <fh-button @click="save" block> 保存 </fh-button>
           </fh-form-item>
         </fh-form>
       </template>
@@ -35,6 +33,7 @@
 
 <script lang="ts" setup>
 import { ref, useTemplateRef } from 'vue'
+import { type FormInstance } from '@fhtek-ui/components'
 
 defineOptions({
   name: 'FhModalDemo',
@@ -46,7 +45,7 @@ const form = ref({
   username: '',
   password: '',
 })
-const formRef = useTemplateRef<typeof FhForm>('formRef')
+const formRef = useTemplateRef<FormInstance>('formRef')
 const rules = ref({
   interface: [
     {
@@ -75,10 +74,10 @@ const rules = ref({
 })
 
 const handleClose = () => {
-  formRef.value?.clearValidate()
+  formRef.value && formRef.value.clearValidate()
 }
 const save = () => {
-  if (!formRef.value?.validate()) return
+  if (formRef.value && !formRef.value.validate()) return
   console.log('form is valid')
 }
 </script>

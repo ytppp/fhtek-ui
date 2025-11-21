@@ -113,7 +113,7 @@ const handleChange = (e: Event) => {
 
   const target = e.target as HTMLInputElement
   const checked = target.checked
-  let value
+  let value: boolean | string | number | undefined
   if (checked) {
     value = props.trueValue === undefined ? true : props.trueValue
   } else {

@@ -42,7 +42,10 @@ export interface IFormLabelWrap {
 export interface FormValidation {
   validate: () => boolean
   clearValidate: () => void
+  extraValidate?: (validator: () => boolean, msg: string) => void
 }
+
+export type FormExpose = FormValidation
 
 export type IFormContext = ComputedRef<{
   autoLabelWidth?: string

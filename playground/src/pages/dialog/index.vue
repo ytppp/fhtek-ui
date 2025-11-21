@@ -5,13 +5,11 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue'
+import { dialog } from '@fhtek-ui/components'
 
 defineOptions({
   name: 'FhDialogDemo',
 })
-
-const dialog = inject('$dialog')
 
 const openDialog = () => {
   dialog.info({

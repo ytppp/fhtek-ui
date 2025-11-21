@@ -156,88 +156,71 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, type ExtractPublicPropTypes, type PropType } from 'vue'
 import { extractDimension, flatten, findObjectsWithValue } from './table-util'
+import { DefaultVal, type align, Fixed, type IColumnProps } from './interface'
 
-const defaultVal = '-'
-
-const Fixed = {
-  left: 'left',
-  right: 'right',
-  none: '',
+const tableProps = {
+  columns: {
+    type: Array as PropType<IColumnProps[]>,
+    default: () => [],
+  },
+  dataSource: {
+    type: Array,
+    default: () => [],
+  },
+  title: String,
+  footer: String,
+  showRowCheckbox: {
+    type: Boolean,
+    default: false,
+  },
+  showIndex: {
+    type: Boolean,
+    default: true,
+  },
+  showPagination: {
+    type: Boolean,
+    default: false,
+  },
+  showSearch: {
+    type: Boolean,
+    default: false,
+  },
+  stripe: {
+    type: Boolean,
+    default: true,
+  },
+  border: {
+    type: Boolean,
+    default: false,
+  },
+  hover: {
+    type: Boolean,
+    default: true,
+  },
+  showTableHeader: {
+    type: Boolean,
+    default: true,
+  },
+  showHeader: {
+    type: Boolean,
+    default: false,
+  },
+  align: {
+    type: String as PropType<align>,
+    default: 'center',
+    validator: function (value: align) {
+      return ['left', 'center', 'right'].indexOf(value) !== -1
+    },
+  },
 }
+
+export type ITableProps = ExtractPublicPropTypes<typeof tableProps>
+
 export default defineComponent({
   name: 'FhTable',
-  props: {
-    columns: {
-      type: Array,
-      default: () => [],
-    },
-    dataSource: {
-      type: Array,
-      default: () => [],
-    },
-    title: String,
-    footer: String,
-    showRowCheckbox: {
-      type: Boolean,
-      default: false,
-    },
-    showIndex: {
-      type: Boolean,
-      default: true,
-    },
-    showPagination: {
-      type: Boolean,
-      default: false,
-    },
-    showSearch: {
-      type: Boolean,
-      default: false,
-    },
-    stripe: {
-      type: Boolean,
-      default: true,
-    },
-    border: {
-      type: Boolean,
-      default: false,
-    },
-    hover: {
-      type: Boolean,
-      default: true,
-    },
-    showTableHeader: {
-      type: Boolean,
-      default: true,
-    },
-    showHeader: {
-      type: Boolean,
-      default: false,
-    },
-    align: {
-      type: String,
-      default: 'center',
-      validator: function (value) {
-        return ['left', 'center', 'right'].indexOf(value) !== -1
-      },
-    },
-  },
-  data() {
-    return {
-      listSelected: [],
-      headerColRefs: [],
-      isScrollLeft: false,
-      isScrollRight: false,
-      lastScrollLeft: 0,
-      pagination: {
-        current: 1,
-        pageSize: 20,
-      },
-      filterInputVal: '',
-      filterVal: '',
-    }
-  },
+  props: tableProps,
   computed: {
     dataSourceDisplay() {
       let data = this.dataSource
@@ -262,13 +245,13 @@ export default defineComponent({
       return this.showRowCheckbox
     },
     columnsNew() {
-      let list = []
+      let list: IColumnProps[] = []
       if (this.isShowRowCheckbox) {
         list.push({
           key: 'checkbox',
           title: '',
           fixed: Fixed.left,
-          width: '60',
+          width: 60,
         })
       }
       if (this.isShowIndex) {
@@ -276,7 +259,7 @@ export default defineComponent({
           key: 'index',
           title: '',
           fixed: Fixed.left,
-          width: '60',
+          width: 60,
         })
       }
       list = [
@@ -293,14 +276,14 @@ export default defineComponent({
           key: 'operation',
           title: '',
           fixed: Fixed.right,
-          minWidth: '100',
+          minWidth: 100,
         })
       }
       return list
     },
     headerRowsMaxLevel() {
       // 计算表头的最大深度
-      const calculateMaxLevel = (columns, currentLevel = 1) => {
+      const calculateMaxLevel = (columns: IColumnProps[], currentLevel = 1): number => {
         return columns.reduce((max, col) => {
           if (Array.isArray(col.children) && col.children.length > 0) {
             return Math.max(max, calculateMaxLevel(col.children, currentLevel + 1))
@@ -353,11 +336,11 @@ export default defineComponent({
     search() {
       this.filterVal = this.filterInputVal
     },
-    changePagination(current, currentPageSize) {
+    changePagination(current: number, currentPageSize: number) {
       this.pagination.current = current
       this.pagination.pageSize = currentPageSize
     },
-    select(val, row) {
+    select(val: boolean, row: any) {
       if (val && !this.listSelected.includes(row)) {
         this.listSelected.push(row)
       } else if (!val && this.listSelected.includes(row)) {
@@ -370,9 +353,9 @@ export default defineComponent({
     },
     cellContent(item, key) {
       if (Array.isArray(item[key]) && !item[key].length) {
-        return defaultVal
+        return DefaultVal
       }
-      return item[key] ? item[key] : defaultVal
+      return item[key] ? item[key] : DefaultVal
     },
     cellStyle(col) {
       const basicStyle = {
@@ -461,6 +444,29 @@ export default defineComponent({
   },
   mounted() {
     this.handleScroll(true)
+  },
+  setup() {
+    const listSelected = ref([])
+    const headerColRefs = ref([])
+    const isScrollLeft = ref(false)
+    const isScrollRight = ref(false)
+    const lastScrollLeft = ref(0)
+    const pagination = ref({
+      current: 1,
+      pageSize: 20,
+    })
+    const filterInputVal = ref('')
+    const filterVal = ref('')
+    return {
+      listSelected,
+      headerColRefs,
+      isScrollLeft,
+      isScrollRight,
+      lastScrollLeft,
+      pagination,
+      filterInputVal,
+      filterVal,
+    }
   },
 })
 </script>

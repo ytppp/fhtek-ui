@@ -13,6 +13,7 @@ import type {
   RegisterLabelWidth,
   DeregisterLabelWidth,
   FormValidation,
+  FormExpose,
 } from './interface'
 import { FormContextKey } from './interface'
 
@@ -82,7 +83,7 @@ const formContext: IFormContext = computed(() => ({
 
 provide(FormContextKey, formContext)
 
-defineExpose<FormValidation>({
+defineExpose<FormExpose>({
   validate,
   clearValidate,
 })

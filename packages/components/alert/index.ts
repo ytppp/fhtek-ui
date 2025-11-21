@@ -4,5 +4,4 @@ import Alert from './alert.vue'
 const FhAlert = withInstall(Alert)
 
 export default FhAlert
-export { FhAlert }
 export type { IAlertProps, IAlertEmits } from './alert.vue'

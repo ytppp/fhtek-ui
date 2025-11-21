@@ -1,11 +1,25 @@
 import { h } from 'vue'
-import { shallowMergeOptions } from '@fhtek-ui/utils/tool'
+import { withInstall } from '@fhtek-ui/utils/type'
 import { usePopup } from '@fhtek-ui/hooks/popup'
 import { type DialogType, DefaultOpt, type IDialogProps } from './interface'
-import FhDialog from './dialog.vue'
+import Dialog from './dialog.vue'
 
-export const dialogManager = (options: IDialogProps, type: DialogType = 'info'): Promise<void> => {
-  const opt: IDialogProps = shallowMergeOptions<IDialogProps>(DefaultOpt[type], options)
+export type InfoDialogProps = Omit<IDialogProps, 'dialogType' | 'cancelText'>
+export type ConfirmDialogProps = Omit<IDialogProps, 'dialogType'>
+export interface IDialogManager {
+  info(options: InfoDialogProps): Promise<void>
+  confirm(options: ConfirmDialogProps): Promise<void>
+}
+
+const FhDialog = withInstall(Dialog)
+const dialogMethod = (
+  options: InfoDialogProps | ConfirmDialogProps,
+  type: DialogType = 'info',
+): Promise<void> => {
+  const opt: IDialogProps = {
+    ...DefaultOpt[type],
+    ...options,
+  }
   return new Promise((resolve, reject) => {
     const dialogInstance = usePopup(
       h(FhDialog, {
@@ -22,4 +36,13 @@ export const dialogManager = (options: IDialogProps, type: DialogType = 'info'):
     )
     dialogInstance.show()
   })
+}
+
+export const dialogManager: IDialogManager = {
+  info(options: InfoDialogProps) {
+    return dialogMethod(options)
+  },
+  confirm(options: ConfirmDialogProps) {
+    return dialogMethod(options, 'confirm')
+  },
 }

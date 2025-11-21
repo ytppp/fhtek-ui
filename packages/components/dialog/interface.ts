@@ -2,9 +2,9 @@ export type DialogType = 'info' | 'confirm'
 
 export interface IDialogProps {
   dialogType: DialogType
-  message: string
+  message?: string
   title?: string
-  okText: string
+  okText?: string
   cancelText?: string
 }
 export const DefaultOpt: {
@@ -13,13 +13,13 @@ export const DefaultOpt: {
   info: {
     dialogType: 'info',
     title: '',
-    message: 'info',
+    message: '',
     okText: 'ok',
   },
   confirm: {
     dialogType: 'confirm',
     title: '',
-    message: 'confirm',
+    message: '',
     okText: 'ok',
     cancelText: 'cancel',
   },

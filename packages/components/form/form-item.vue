@@ -39,7 +39,7 @@
 import { ref, computed, provide, inject, useSlots, useTemplateRef, useId, withDefaults } from 'vue'
 // import Schema from 'async-validator'
 import LabelWrap from './label-wrap.vue'
-import type { IFormContext, IFormItemContext, IFormItemProps, IFormItemRule } from './interface'
+import type { FormExpose, IFormContext, IFormItemContext, IFormItemProps, IFormItemRule } from './interface'
 import { FormContextKey, FormItemContextKey } from './interface'
 
 defineOptions({
@@ -170,14 +170,13 @@ const validate = () => {
 const clearValidate = () => {
   result.value = null
 }
-const extraValidate = (validator: (val?: any) => boolean, msg: string, ...arg: any[]) => {
+const extraValidate = (validator: () => boolean, msg: string) => {
   let flag = true
-  if (!validator(...(arg as [any]))) {
+  if (!validator()) {
     flag = false
     validateMessage.value = msg
   }
   result.value = flag
-  return result
 }
 
 if (props.prop) {
@@ -197,7 +196,7 @@ const formItemContext: IFormItemContext = computed(() => ({
 }))
 
 provide(FormItemContextKey, formItemContext)
-defineExpose({
+defineExpose<FormExpose>({
   extraValidate,
   clearValidate,
   validate,

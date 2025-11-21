@@ -1,15 +1,14 @@
-import type { App, InjectionKey } from 'vue'
+import type { App } from 'vue'
+import { withInstall } from '@fhtek-ui/utils/type'
 import { loadingManager, type ILoadingManager } from './loading-manager'
-import { type ILoadingProps, default as FhLoading } from './loading.vue'
+import { type ILoadingProps, default as Loading } from './loading.vue'
 
-export { type ILoadingProps }
+const FhLoading = withInstall(Loading)
 
-export const LoadingKey: InjectionKey<ILoadingManager> =
-  Symbol('$loading')
+export { type ILoadingProps, type ILoadingManager, loadingManager }
 
 export function registerLoading(app: App) {
   app.config.globalProperties.$loading = loadingManager
-  app.provide('$loading', loadingManager)
 }
 
 export default FhLoading

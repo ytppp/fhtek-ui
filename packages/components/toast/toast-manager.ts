@@ -1,8 +1,11 @@
 import { h } from 'vue'
-import FhToast from './toast.vue'
+import { withInstall } from '@fhtek-ui/utils/type'
+import Toast from './toast.vue'
 import { usePopup } from '@fhtek-ui/hooks/popup'
 import { shallowMergeOptions } from '@fhtek-ui/utils/tool'
 import type { IToastProps } from './interface'
+
+const FhToast = withInstall(Toast)
 
 const DefaultOpt: IToastProps = {
   duration: 3000,

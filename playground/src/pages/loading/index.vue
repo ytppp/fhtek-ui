@@ -9,13 +9,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
+import { loading } from '@fhtek-ui/components'
 
 defineOptions({
   name: 'FhLoadingDemo',
 })
 
-const loading = inject('$loading')
 const uploading = ref(false)
 
 const openLoading = () => {

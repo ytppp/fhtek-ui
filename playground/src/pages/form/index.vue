@@ -57,7 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef, inject } from 'vue'
+import { ref, useTemplateRef } from 'vue'
+import { toast, type FormInstance } from '@fhtek-ui/components'
 
 defineOptions({
   name: 'FhFormDemo',
@@ -79,9 +80,17 @@ enum Weeks {
   sun = '7',
 }
 
-const formRef = useTemplateRef<FhForm>('formRef')
+interface IFormProps {
+  enabled: boolean
+  port: number
+  weekdays: Weeks[]
+  protocol: string
+  onlineWay: OnlineWay
+  time_begin: string
+}
+
+const formRef = useTemplateRef<FormInstance>('formRef')
 const checkAll = ref(false)
-const toast = inject('$toast')
 const schedulesList = [
   {
     value: Weeks.sun,
@@ -112,10 +121,11 @@ const schedulesList = [
     label: '周六',
   },
 ]
-const OnlineWayText = {
+const OnlineWayText: Record<OnlineWay, string> = {
   [OnlineWay.pppoe]: 'PPPoE',
   [OnlineWay.dhcp]: 'DHCP',
   [OnlineWay.static]: '静态IP',
+  [OnlineWay.bridge]: '桥接',
 }
 const onlineWays = [
   {
@@ -131,7 +141,7 @@ const onlineWays = [
     text: OnlineWayText[OnlineWay.static],
   },
 ]
-const form = ref({
+const form = ref<IFormProps>({
   enabled: true,
   port: -10,
   weekdays: [],
@@ -172,7 +182,7 @@ const selectAll = (val: boolean) => {
   }
 }
 const save = () => {
-  if (!formRef.value.validate()) {
+  if (formRef.value && !formRef.value.validate()) {
     toast('form is invalid')
     return
   }
@@ -181,7 +191,7 @@ const save = () => {
     type: 'success',
   })
 }
-const changeOnlineWay = (val) => {
+const changeOnlineWay = (val: OnlineWay) => {
   toast({
     text: OnlineWayText[val],
     type: 'success',

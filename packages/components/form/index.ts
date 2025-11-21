@@ -8,6 +8,8 @@ const FhFormItem = withInstall(FormItem)
 export default FhForm
 export { FhForm, FhFormItem }
 
+export type FormInstance = InstanceType<typeof FhForm> & unknown // ComponentPublicInstance<IFormProps, FormExpose>
+
 export {
   type IFormProps,
   type IFormItemProps,
