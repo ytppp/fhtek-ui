@@ -16,14 +16,14 @@
       <div class="table__filter-group">
         <fh-input
           v-model="filterInputVal"
-          :placeholder="$t('trans0854')"
+          :placeholder="t('table.searchContent')"
           class="table__header-search-input"
         ></fh-input>
         <fh-icon
           class="page__header-icon"
           @click="search"
           name="icon-search"
-          :title="$t('trans0863')"
+          :title="t('table.search')"
         />
       </div>
     </div>
@@ -41,39 +41,39 @@
             <template v-for="(col, colIndex) in row" :key="`${rowIndex}-${colIndex}`">
               <th
                 class="table-main__cell"
-                :style="cellStyle(col, colIndex)"
+                :style="cellStyle(col)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                :ref="(el) => (headerColRefs[colIndex] = el)"
+                ref="headerColRefs"
                 v-if="col.key === 'checkbox'"
               ></th>
               <th
                 class="table-main__cell"
-                :style="cellStyle(col, colIndex)"
+                :style="cellStyle(col)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                :ref="(el) => (headerColRefs[colIndex] = el)"
+                ref="headerColRefs"
                 v-else-if="col.key === 'index'"
               >
-                {{ $t('trans0454') }}
+                {{ t('table.index') }}
               </th>
               <th
                 class="table-main__cell"
-                :style="cellStyle(col, colIndex)"
+                :style="cellStyle(col)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                :ref="(el) => (headerColRefs[colIndex] = el)"
+                ref="headerColRefs"
                 v-else-if="col.key === 'operation'"
               >
-                {{ $t('trans0141') }}
+                {{ t('operation') }}
               </th>
               <th
                 class="table-main__cell"
                 :title="col.title"
-                :style="cellStyle(col, colIndex)"
+                :style="cellStyle(col)"
                 :colspan="col.colspan"
                 :rowspan="col.rowspan"
-                :ref="(el) => (headerColRefs[colIndex] = el)"
+                ref="headerColRefs"
                 v-else
               >
                 {{ col.title }}
@@ -96,15 +96,15 @@
               <template v-for="(col, colIndex) in columnsFlattened" :key="col.key">
                 <td
                   class="table-main__cell"
-                  :style="cellStyle(col, colIndex)"
+                  :style="cellStyle(col)"
                   :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-if="col.key === 'checkbox'"
                 >
-                  <fh-checkbox @change="(val) => select(val, item)" />
+                  <fh-checkbox @change="(val: boolean) => select(val, item)" />
                 </td>
                 <td
                   class="table-main__cell"
-                  :style="cellStyle(col, colIndex)"
+                  :style="cellStyle(col)"
                   :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-else-if="col.key === 'index'"
                 >
@@ -112,7 +112,7 @@
                 </td>
                 <td
                   class="table-main__cell"
-                  :style="cellStyle(col, colIndex)"
+                  :style="cellStyle(col)"
                   :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-else-if="col.key === 'operation'"
                 >
@@ -121,7 +121,7 @@
                 <td
                   class="table-main__cell"
                   :title="item[col.key]"
-                  :style="cellStyle(col, colIndex)"
+                  :style="cellStyle(col)"
                   :ref="`content_cell_${index}_${colIndex}_ref`"
                   v-else
                 >
@@ -156,9 +156,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type ExtractPublicPropTypes, type PropType } from 'vue'
+import { defineComponent, ref, useTemplateRef, type ExtractPublicPropTypes, type PropType } from 'vue'
 import { extractDimension, flatten, findObjectsWithValue } from './table-util'
 import { DefaultVal, type align, Fixed, type IColumnProps } from './interface'
+import { useI18n } from '@fhtek-ui/locale'
 
 const tableProps = {
   columns: {
@@ -307,7 +308,7 @@ export default defineComponent({
           const hasChildren = Array.isArray(col.children) && col.children.length > 0
           if (hasChildren) {
             return {
-              colspan: col.children.length,
+              colspan: col.children?.length || 1,
               rowspan: 1,
               ...col,
             }
@@ -340,7 +341,7 @@ export default defineComponent({
       this.pagination.current = current
       this.pagination.pageSize = currentPageSize
     },
-    select(val: boolean, row: any) {
+    select(val: boolean, row: ITableProps) {
       if (val && !this.listSelected.includes(row)) {
         this.listSelected.push(row)
       } else if (!val && this.listSelected.includes(row)) {
@@ -348,7 +349,7 @@ export default defineComponent({
       }
       this.$emit('select', this.listSelected)
     },
-    clickRow(item) {
+    clickRow(item: ITableProps) {
       this.$emit('click-row', item)
     },
     cellContent(item, key) {
@@ -357,7 +358,7 @@ export default defineComponent({
       }
       return item[key] ? item[key] : DefaultVal
     },
-    cellStyle(col) {
+    cellStyle(col: IColumnProps) {
       const basicStyle = {
         textAlign: col.textAlign ? col.textAlign : this.align,
         height: '100%',
@@ -374,25 +375,25 @@ export default defineComponent({
         ...widthStyle,
       }
     },
-    getStickyLeftOffset(colIndex) {
+    getStickyLeftOffset(colIndex: number) {
       let offset = 0
       // 遍历当前列之前的所有列
       for (let i = 0; i < colIndex; i++) {
         const col = this.columnsFlattened[i]
-        if (col.fixed === Fixed.left) {
-          const { width } = this.headerColRefs[i].getBoundingClientRect()
+        if (col?.fixed === Fixed.left) {
+          const { width } = this.headerColRefs[i]?.getBoundingClientRect() || { width: 150 }
           offset += width || 150
         }
       }
       return offset
     },
-    getStickyRightOffset(colIndex) {
+    getStickyRightOffset(colIndex: number) {
       let offset = 0
       // 遍历当前列后面的所有列
       for (let i = this.columnsFlattened.length - 1; i > colIndex; i--) {
         const col = this.columnsFlattened[i]
-        if (col.fixed === Fixed.right) {
-          const { width } = this.headerColRefs[i].getBoundingClientRect()
+        if (col?.fixed === Fixed.right) {
+          const { width } = this.headerColRefs[i]?.getBoundingClientRect() || { width: 150 }
           offset += width
         }
       }
@@ -427,7 +428,7 @@ export default defineComponent({
       })
       this.lastScrollLeft = currentScrollLeft
     },
-    setStickyStyle(col, index, direction, offset) {
+    setStickyStyle(col: never: never, index: number: number, direction: string: string, offset: number: number) {
       col.style.position = 'sticky'
       col.style[direction] = `${offset}px`
       col.classList.add('table-main__cell--fixed')
@@ -446,8 +447,9 @@ export default defineComponent({
     this.handleScroll(true)
   },
   setup() {
-    const listSelected = ref([])
-    const headerColRefs = ref([])
+    const { t } = useI18n()
+    const listSelected = ref<ITableProps[]>([])
+    const headerColRefs = ref<HTMLTableCellElement[]>([])
     const isScrollLeft = ref(false)
     const isScrollRight = ref(false)
     const lastScrollLeft = ref(0)
@@ -466,6 +468,7 @@ export default defineComponent({
       pagination,
       filterInputVal,
       filterVal,
+      t,
     }
   },
 })

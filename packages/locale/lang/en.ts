@@ -6,6 +6,7 @@ export default {
     hide: 'Hide Directory',
   },
   colon: ':',
+  operation: 'Operation',
   pagination: {
     total: '{items} items',
     pageSize: '{items} items per page',
@@ -18,4 +19,9 @@ export default {
     confirm: 'Confirm',
     cancel: 'Cancel',
   },
+  table: {
+    searchContent: 'Search content',
+    search: 'Search',
+    index: 'Index',
+  }
 }

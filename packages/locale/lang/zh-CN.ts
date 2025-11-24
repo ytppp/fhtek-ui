@@ -6,6 +6,7 @@ export default {
     hide: '隐藏目录',
   },
   colon: '：',
+  operation: '操作',
   pagination: {
     total: '{items} 项',
     pageSize: '{items} 项/每页',
@@ -18,4 +19,9 @@ export default {
     confirm: '确认',
     cancel: '取消',
   },
+  table: {
+    searchContent: '搜索内容',
+    search: '搜索',
+    index: '序号',
+  }
 }

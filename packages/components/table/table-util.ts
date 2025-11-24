@@ -1,3 +1,5 @@
+import { type IColumnProps } from './interface'
+
 /**
  * 从多维对象数组中提取指定维度的数据
  * @param {Array} array - 多维对象数组
@@ -5,7 +7,11 @@
  * @param {string} childrenKey - 包含子数组的属性名（默认为'children'）
  * @returns {Array} 包含指定维度所有元素的数组（不包含子维度）
  */
-export function extractDimension(array: any[], targetDepth: number, childrenKey = 'children') {
+export function extractDimension(
+  array: IColumnProps[],
+  targetDepth: number,
+  childrenKey = 'children',
+): IColumnProps[] {
   // 参数验证
   if (!Array.isArray(array)) {
     throw new TypeError('第一个参数必须是数组')
@@ -19,14 +25,14 @@ export function extractDimension(array: any[], targetDepth: number, childrenKey 
     throw new TypeError('子维度键名必须是字符串')
   }
 
-  const result: any[] = []
+  const result: IColumnProps[] = []
 
   /**
    * 递归遍历多维数组
    * @param {Array} currentArray - 当前处理的数组
    * @param {number} currentDepth - 当前深度
    */
-  function traverse(currentArray: any[], currentDepth: number) {
+  const traverse = (currentArray: IColumnProps[], currentDepth: number) => {
     for (const item of currentArray) {
       // 检查是否是对象（处理对象数组）
       const isObject = item !== null && typeof item === 'object' && !Array.isArray(item)
@@ -42,9 +48,13 @@ export function extractDimension(array: any[], targetDepth: number, childrenKey 
           // 非对象元素直接添加
           result.push(item)
         }
-      } else if (isObject && item[childrenKey] && Array.isArray(item[childrenKey])) {
+      } else if (
+        isObject &&
+        (item as any)[childrenKey] &&
+        Array.isArray((item as any)[childrenKey])
+      ) {
         // 继续遍历子维度
-        traverse(item[childrenKey], currentDepth + 1)
+        traverse((item as any)[childrenKey], currentDepth + 1)
       }
     }
   }
@@ -57,8 +67,8 @@ export function extractDimension(array: any[], targetDepth: number, childrenKey 
  * @param {Array} columns - 包含嵌套列对象的数组，每个列对象可能包含 `children` 属性，该属性是一个子列数组。
  * @returns {Array} - 扁平化后的一维列数组。
  */
-export function flatten(columns: any[]): Array<any> {
-  return columns.reduce((acc: any[], col: any) => {
+export function flatten(columns: IColumnProps[]): Array<IColumnProps> {
+  return columns.reduce((acc: IColumnProps[], col: IColumnProps) => {
     if (Array.isArray(col.children) && col.children.length > 0) {
       return [...acc, ...flatten(col.children)]
     }
