@@ -135,7 +135,7 @@ const handleChange = (e: Event) => {
 watch(
   () => props.checked,
   (val) => {
-    isChecked.value = val
+    isChecked.value = true
   },
 )
 </script>
