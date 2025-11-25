@@ -37,9 +37,13 @@
       v-if="showSizeChanger"
     ></fh-select>
     <div class="pagination__jump" v-if="showQuickJumper">
-      <span class="pagination__jump-text pagination__jump-text--left">{{ t('pagination.jump') }}</span>
+      <span class="pagination__jump-text pagination__jump-text--left">{{
+        t('pagination.jump')
+      }}</span>
       <fh-input @change="changePageJump" class="pagination__input" v-model="pageJump"></fh-input>
-      <span class="pagination__jump-text pagination__jump-text--right">{{ t('pagination.page') }}</span>
+      <span class="pagination__jump-text pagination__jump-text--right">{{
+        t('pagination.page')
+      }}</span>
     </div>
   </div>
 </template>

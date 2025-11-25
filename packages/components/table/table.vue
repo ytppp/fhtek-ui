@@ -1,14 +1,14 @@
 <template>
   <div class="table">
     <div class="table__header" v-if="showHeader">
-      <div class="table__filter-group" v-if="$slots.filtergroup">
+      <div class="table__filter-group" v-if="slots.filtergroup">
         <slot name="filtergroup"></slot>
       </div>
-      <div class="table__title" v-if="title || $slots.title">
+      <div class="table__title" v-if="isShowTitle">
         <template v-if="title"> {{ title }} </template>
         <slot name="title" v-else></slot>
       </div>
-      <div class="table__operation-group" v-if="$slots.operationgroup">
+      <div class="table__operation-group" v-if="slots.operationgroup">
         <slot name="operationgroup"></slot>
       </div>
     </div>
@@ -34,7 +34,7 @@
         border="0"
         ref="scrollTable"
         class="table-main"
-        :class="{ 'is-border': border || headerRowsMaxLevel > 1 }"
+        :class="{ 'is-border': bordered || headerRowsMaxLevel > 1 }"
       >
         <thead class="table-main__header" v-if="showTableHeader">
           <tr class="table-main__header-row" v-for="(row, rowIndex) in headerRows" :key="rowIndex">
@@ -82,9 +82,9 @@
           </tr>
         </thead>
         <tbody class="table-main__content">
-          <template v-if="dataSourceDisplay.length">
+          <template v-if="displayDataSource.length">
             <tr
-              v-for="(item, index) in dataSourceDisplay"
+              v-for="(item, index) in displayDataSource"
               :key="index"
               class="table-main__content-row"
               :class="{
@@ -97,15 +97,19 @@
                 <td
                   class="table-main__cell"
                   :style="cellStyle(col)"
-                  :ref="`content_cell_${index}_${colIndex}_ref`"
+                  :id="`content_cell_${index}_${colIndex}_ref`"
                   v-if="col.key === 'checkbox'"
                 >
-                  <fh-checkbox @change="(val: boolean) => select(val, item)" />
+                  <fh-checkbox
+                    name="table-checkbox"
+                    :checked="selectedRow.includes(item)"
+                    @change="(val: boolean) => select(val, item)"
+                  />
                 </td>
                 <td
                   class="table-main__cell"
                   :style="cellStyle(col)"
-                  :ref="`content_cell_${index}_${colIndex}_ref`"
+                  :id="`content_cell_${index}_${colIndex}_ref`"
                   v-else-if="col.key === 'index'"
                 >
                   {{ index + 1 }}
@@ -113,7 +117,7 @@
                 <td
                   class="table-main__cell"
                   :style="cellStyle(col)"
-                  :ref="`content_cell_${index}_${colIndex}_ref`"
+                  :id="`content_cell_${index}_${colIndex}_ref`"
                   v-else-if="col.key === 'operation'"
                 >
                   <slot name="operation" :row="item"></slot>
@@ -122,7 +126,7 @@
                   class="table-main__cell"
                   :title="item[col.key]"
                   :style="cellStyle(col)"
-                  :ref="`content_cell_${index}_${colIndex}_ref`"
+                  :id="`content_cell_${index}_${colIndex}_ref`"
                   v-else
                 >
                   <slot :name="col.key" :row="item">
@@ -134,7 +138,7 @@
           </template>
           <tr class="table-main__content-row empty-row" v-else>
             <td class="empty-row__cell" :colspan="columnsFlattened.length">
-              {{ $t('trans0142') }}
+              {{ t('noData') }}
             </td>
           </tr>
         </tbody>
@@ -148,329 +152,300 @@
         @change="changePagination"
       ></fh-pagination>
     </div>
-    <div class="table__footer" v-if="footer || $slots.footer">
+    <div class="table__footer" v-if="footer || slots.footer">
       <template v-if="footer"> {{ footer }} </template>
       <slot name="footer" v-else></slot>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, useTemplateRef, type ExtractPublicPropTypes, type PropType } from 'vue'
+<script lang="ts" setup>
+import { computed, ref, withDefaults, useSlots, watch, onMounted, useTemplateRef } from 'vue'
 import { extractDimension, flatten, findObjectsWithValue } from './table-util'
-import { DefaultVal, type align, Fixed, type IColumnProps } from './interface'
+import {
+  DefaultVal,
+  Fixed,
+  type TableColumn,
+  type DataTableProps,
+  type TableEmits,
+  type align,
+} from './interface'
 import { useI18n } from '@fhtek-ui/locale'
 
-const tableProps = {
-  columns: {
-    type: Array as PropType<IColumnProps[]>,
-    default: () => [],
-  },
-  dataSource: {
-    type: Array,
-    default: () => [],
-  },
-  title: String,
-  footer: String,
-  showRowCheckbox: {
-    type: Boolean,
-    default: false,
-  },
-  showIndex: {
-    type: Boolean,
-    default: true,
-  },
-  showPagination: {
-    type: Boolean,
-    default: false,
-  },
-  showSearch: {
-    type: Boolean,
-    default: false,
-  },
-  stripe: {
-    type: Boolean,
-    default: true,
-  },
-  border: {
-    type: Boolean,
-    default: false,
-  },
-  hover: {
-    type: Boolean,
-    default: true,
-  },
-  showTableHeader: {
-    type: Boolean,
-    default: true,
-  },
-  showHeader: {
-    type: Boolean,
-    default: false,
-  },
-  align: {
-    type: String as PropType<align>,
-    default: 'center',
-    validator: function (value: align) {
-      return ['left', 'center', 'right'].indexOf(value) !== -1
-    },
-  },
+defineOptions({
+  name: 'FhTable',
+})
+
+const props = withDefaults(defineProps<DataTableProps>(), {
+  title: '',
+  footer: '',
+  showRowCheckbox: false,
+  showIndex: false,
+  showPagination: false,
+  showSearch: false,
+  stripe: true,
+  bordered: false,
+  hover: true,
+  showTableHeader: true,
+  align: 'center',
+  // pagination: () => ({
+  //   current: 1,
+  //   pageSize: 20,
+  // }),
+})
+const { t } = useI18n()
+const slots = useSlots()
+const selectedRow = ref<any[]>([])
+const headerColRefs = ref<HTMLTableCellElement[]>([])
+const tableWrap = useTemplateRef('tableWrap')
+const isScrollLeft = ref(false)
+const isScrollRight = ref(false)
+const lastScrollLeft = ref(0)
+const filterInputVal = ref('')
+const filterVal = ref('')
+const pagination = ref({
+  current: 1,
+  pageSize: 20,
+})
+
+const displayDataSource = computed(() => {
+  let data = props.dataSource
+  if (props.showSearch) {
+    data = findObjectsWithValue(props.dataSource, filterVal.value)
+  }
+  if (props.showPagination) {
+    const { current = 1, pageSize = 20 } = pagination.value
+    const start = (current - 1) * pageSize
+    const end = current * pageSize
+    data = data.slice(start, end)
+  }
+  return data
+})
+
+const isShowOperation = computed(() => {
+  return slots.operation
+})
+const isShowIndex = computed(() => {
+  return props.showIndex
+})
+const isShowRowCheckbox = computed(() => {
+  return props.showRowCheckbox
+})
+const isShowTitle = computed(() => {
+  return props.title || slots.title
+})
+const showHeader = computed(() => {
+  return slots.filtergroup || isShowTitle.value || slots.operationgroup
+})
+const columnsList = computed(() => {
+  let list: TableColumn[] = []
+  if (isShowRowCheckbox.value) {
+    list.push({
+      key: 'checkbox',
+      title: '',
+      fixed: Fixed.left,
+      width: 60,
+    })
+  }
+  if (isShowIndex.value) {
+    list.push({
+      key: 'index',
+      title: '',
+      fixed: Fixed.left,
+      width: 60,
+    })
+  }
+  list = [
+    ...list,
+    ...props.columns.map((col) => {
+      return {
+        ...col,
+        fixed: col.fixed ? col.fixed : Fixed.none,
+      }
+    }),
+  ]
+  if (isShowOperation.value) {
+    list.push({
+      key: 'operation',
+      title: '',
+      fixed: Fixed.right,
+      minWidth: 100,
+    })
+  }
+  return list
+})
+const headerRowsMaxLevel = computed(() => {
+  const calculateMaxLevel = (columns: TableColumn[], currentLevel = 1): number => {
+    return columns.reduce((max, col) => {
+      if (Array.isArray(col.children) && col.children.length > 0) {
+        return Math.max(max, calculateMaxLevel(col.children, currentLevel + 1))
+      }
+      return max
+    }, currentLevel)
+  }
+  return calculateMaxLevel(columnsList.value)
+})
+const columnsFlattened = computed(() => {
+  return flatten(columnsList.value)
+})
+const headerRows = computed(() => {
+  // 生成表头行数据
+  if (headerRowsMaxLevel.value <= 1) return [columnsFlattened.value]
+  const rows = []
+  for (let level = 0; level < headerRowsMaxLevel.value; level++) {
+    let item = extractDimension(columnsList.value, level)
+    item = item.map((col) => {
+      const hasChildren = Array.isArray(col.children) && col.children.length > 0
+      if (hasChildren) {
+        return {
+          colspan: col.children?.length || 1,
+          rowspan: 1,
+          ...col,
+        }
+      } else {
+        return {
+          colspan: 1,
+          rowspan: headerRowsMaxLevel.value - level,
+          ...col,
+        }
+      }
+    })
+    rows.push(item)
+  }
+  return rows
+})
+
+const emit = defineEmits<TableEmits>()
+
+const search = () => {
+  filterVal.value = filterInputVal.value
+}
+const changePagination = (current: number, currentPageSize: number) => {
+  pagination.value.current = current
+  pagination.value.pageSize = currentPageSize
+}
+const select = (val: boolean, row: any) => {
+  if (val && !selectedRow.value.includes(row)) {
+    selectedRow.value.push(row)
+  } else if (!val && selectedRow.value.includes(row)) {
+    selectedRow.value.splice(selectedRow.value.indexOf(row), 1)
+  }
+  emit('select', selectedRow.value)
+}
+const clickRow = (row: any) => {
+  emit('click-row', row)
+}
+const cellStyle = (col: TableColumn) => {
+  const basicStyle: {
+    textAlign: align
+    height: string
+  } = {
+    textAlign: col.textAlign ? col.textAlign : props.align ? props.align : 'center',
+    height: '100%',
+  }
+  const widthStyle = displayDataSource.value.length
+    ? {
+        width: col.width && `${col.width}px`,
+        minWidth: col.minWidth ? `${col.minWidth}px` : col.width ? `${col.width}px` : 'auto',
+        maxWidth: col.maxWidth ? `${col.maxWidth}px` : col.width ? `${col.width}px` : 'auto',
+      }
+    : {}
+  return {
+    ...basicStyle,
+    ...widthStyle,
+  }
+}
+const cellContent = (row: any, key: string) => {
+  if (Array.isArray(row[key]) && !row[key].length) {
+    return DefaultVal
+  }
+  return row[key] ? row[key] : DefaultVal
+}
+const getStickyLeftOffset = (colIndex: number) => {
+  let offset = 0
+  // 遍历当前列之前的所有列
+  for (let i = 0; i < colIndex; i++) {
+    const col = columnsFlattened.value[i]
+    if (col?.fixed === Fixed.left) {
+      const { width } = headerColRefs.value[i]?.getBoundingClientRect() || { width: 150 }
+      offset += width || 150
+    }
+  }
+  return offset
+}
+const getStickyRightOffset = (colIndex: number) => {
+  let offset = 0
+  // 遍历当前列后面的所有列
+  for (let i = columnsFlattened.value.length - 1; i > colIndex; i--) {
+    const col = columnsFlattened.value[i]
+    if (col?.fixed === Fixed.right) {
+      const { width } = headerColRefs.value[i]?.getBoundingClientRect() || { width: 150 }
+      offset += width || 150
+    }
+  }
+  return offset
+}
+const handleScroll = (isInit = false) => {
+  if (!tableWrap.value) return
+  const currentScrollLeft = tableWrap.value.scrollLeft
+  if (isInit) {
+    isScrollLeft.value = tableWrap.value.scrollWidth > tableWrap.value.clientWidth
+  } else {
+    isScrollRight.value = currentScrollLeft > lastScrollLeft.value
+    isScrollLeft.value = currentScrollLeft < lastScrollLeft.value
+  }
+  const parentRect = tableWrap.value.getBoundingClientRect()
+  headerColRefs.value.forEach((col, index) => {
+    if (!col) return
+    const childRect = col.getBoundingClientRect()
+    const column = columnsFlattened.value[index]
+    if (isScrollRight.value && column?.fixed === Fixed.left) {
+      if (col.style.position === 'sticky') return
+      if (childRect.left < parentRect.left) {
+        const leftOffset = getStickyLeftOffset(index)
+        setStickyStyle(col, index, 'left', leftOffset)
+      }
+    } else if (isScrollLeft.value && column?.fixed === Fixed.right) {
+      if (col.style.position === 'sticky') return
+      if (childRect.right > parentRect.right) {
+        const rightOffset = getStickyRightOffset(index)
+        setStickyStyle(col, index, 'right', rightOffset)
+      }
+    }
+  })
+  lastScrollLeft.value = currentScrollLeft
+}
+const setStickyStyle = (
+  el: HTMLTableCellElement,
+  index: number,
+  direction: 'left' | 'right',
+  offset: number,
+) => {
+  el.style.position = 'sticky'
+  el.style[direction] = `${offset}px`
+  el.classList.add('table-main__cell--fixed')
+
+  displayDataSource.value.forEach((item, rowIndex) => {
+    const cell = document.getElementById(`content_cell_${rowIndex}_${index}_ref`)
+    if (cell) {
+      cell.style.position = 'sticky'
+      cell.style[direction] = `${offset}px`
+      cell.classList.add('table-main__cell--fixed')
+    }
+  })
 }
 
-export type ITableProps = ExtractPublicPropTypes<typeof tableProps>
-
-export default defineComponent({
-  name: 'FhTable',
-  props: tableProps,
-  computed: {
-    dataSourceDisplay() {
-      let data = this.dataSource
-      if (this.showSearch) {
-        data = findObjectsWithValue(this.dataSource, this.filterVal)
-      }
-      if (this.showPagination) {
-        const { current, pageSize } = this.pagination
-        const start = (current - 1) * pageSize
-        const end = current * pageSize
-        data = data.slice(start, end)
-      }
-      return data
-    },
-    isShowOperation() {
-      return this.$slots.operation
-    },
-    isShowIndex() {
-      return this.showIndex
-    },
-    isShowRowCheckbox() {
-      return this.showRowCheckbox
-    },
-    columnsNew() {
-      let list: IColumnProps[] = []
-      if (this.isShowRowCheckbox) {
-        list.push({
-          key: 'checkbox',
-          title: '',
-          fixed: Fixed.left,
-          width: 60,
-        })
-      }
-      if (this.isShowIndex) {
-        list.push({
-          key: 'index',
-          title: '',
-          fixed: Fixed.left,
-          width: 60,
-        })
-      }
-      list = [
-        ...list,
-        ...this.columns.map((col) => {
-          return {
-            ...col,
-            fixed: col.fixed ? col.fixed : Fixed.none,
-          }
-        }),
-      ]
-      if (this.isShowOperation) {
-        list.push({
-          key: 'operation',
-          title: '',
-          fixed: Fixed.right,
-          minWidth: 100,
-        })
-      }
-      return list
-    },
-    headerRowsMaxLevel() {
-      // 计算表头的最大深度
-      const calculateMaxLevel = (columns: IColumnProps[], currentLevel = 1): number => {
-        return columns.reduce((max, col) => {
-          if (Array.isArray(col.children) && col.children.length > 0) {
-            return Math.max(max, calculateMaxLevel(col.children, currentLevel + 1))
-          }
-          return max
-        }, currentLevel)
-      }
-      return calculateMaxLevel(this.columnsNew)
-    },
-    columnsFlattened() {
-      // 扁平化的叶子列（用于数据渲染）
-      return flatten(this.columnsNew)
-    },
-    headerRows() {
-      // 生成表头行数据
-      if (this.headerRowsMaxLevel <= 1) return [this.columnsFlattened]
-      const rows = []
-      for (let level = 0; level < this.headerRowsMaxLevel; level++) {
-        let item = extractDimension(this.columnsNew, level)
-        item = item.map((col) => {
-          const hasChildren = Array.isArray(col.children) && col.children.length > 0
-          if (hasChildren) {
-            return {
-              colspan: col.children?.length || 1,
-              rowspan: 1,
-              ...col,
-            }
-          } else {
-            return {
-              colspan: 1,
-              rowspan: this.headerRowsMaxLevel - level,
-              ...col,
-            }
-          }
-        })
-        rows.push(item)
-      }
-      return rows
-    },
-  },
-  watch: {
-    dataSource(val, oldVal) {
-      if (val.length !== oldVal.length) {
-        this.handleScroll(true)
-      }
-    },
-  },
-  emits: ['select', 'click-row'],
-  methods: {
-    search() {
-      this.filterVal = this.filterInputVal
-    },
-    changePagination(current: number, currentPageSize: number) {
-      this.pagination.current = current
-      this.pagination.pageSize = currentPageSize
-    },
-    select(val: boolean, row: ITableProps) {
-      if (val && !this.listSelected.includes(row)) {
-        this.listSelected.push(row)
-      } else if (!val && this.listSelected.includes(row)) {
-        this.listSelected.splice(this.listSelected.indexOf(row), 1)
-      }
-      this.$emit('select', this.listSelected)
-    },
-    clickRow(item: ITableProps) {
-      this.$emit('click-row', item)
-    },
-    cellContent(item, key) {
-      if (Array.isArray(item[key]) && !item[key].length) {
-        return DefaultVal
-      }
-      return item[key] ? item[key] : DefaultVal
-    },
-    cellStyle(col: IColumnProps) {
-      const basicStyle = {
-        textAlign: col.textAlign ? col.textAlign : this.align,
-        height: '100%',
-      }
-      const widthStyle = this.dataSourceDisplay.length
-        ? {
-            width: col.width && `${col.width}px`,
-            minWidth: col.minWidth ? `${col.minWidth}px` : col.width ? `${col.width}px` : 'auto',
-            maxWidth: col.maxWidth ? `${col.maxWidth}px` : col.width ? `${col.width}px` : 'auto',
-          }
-        : {}
-      return {
-        ...basicStyle,
-        ...widthStyle,
-      }
-    },
-    getStickyLeftOffset(colIndex: number) {
-      let offset = 0
-      // 遍历当前列之前的所有列
-      for (let i = 0; i < colIndex; i++) {
-        const col = this.columnsFlattened[i]
-        if (col?.fixed === Fixed.left) {
-          const { width } = this.headerColRefs[i]?.getBoundingClientRect() || { width: 150 }
-          offset += width || 150
-        }
-      }
-      return offset
-    },
-    getStickyRightOffset(colIndex: number) {
-      let offset = 0
-      // 遍历当前列后面的所有列
-      for (let i = this.columnsFlattened.length - 1; i > colIndex; i--) {
-        const col = this.columnsFlattened[i]
-        if (col?.fixed === Fixed.right) {
-          const { width } = this.headerColRefs[i]?.getBoundingClientRect() || { width: 150 }
-          offset += width
-        }
-      }
-      return offset
-    },
-    handleScroll(isInit = false) {
-      const currentScrollLeft = this.$refs.tableWrap.scrollLeft
-      if (isInit) {
-        this.isScrollLeft = this.$refs.scrollTable.scrollWidth > this.$refs.tableWrap.clientWidth
-      } else {
-        this.isScrollRight = currentScrollLeft > this.lastScrollLeft
-        this.isScrollLeft = currentScrollLeft < this.lastScrollLeft
-      }
-      const parentRect = this.$refs.tableWrap.getBoundingClientRect()
-      this.headerColRefs.forEach((col, index) => {
-        if (!col) return
-        const childRect = col.getBoundingClientRect()
-        const column = this.columnsFlattened[index]
-        if (this.isScrollRight && column.fixed === Fixed.left) {
-          if (col.style.position === 'sticky') return
-          if (childRect.left < parentRect.left) {
-            const leftOffset = this.getStickyLeftOffset(index)
-            this.setStickyStyle(col, index, 'left', leftOffset)
-          }
-        } else if (this.isScrollLeft && column.fixed === Fixed.right) {
-          if (col.style.position === 'sticky') return
-          if (childRect.right > parentRect.right) {
-            const rightOffset = this.getStickyRightOffset(index)
-            this.setStickyStyle(col, index, 'right', rightOffset)
-          }
-        }
-      })
-      this.lastScrollLeft = currentScrollLeft
-    },
-    setStickyStyle(col: never: never, index: number: number, direction: string: string, offset: number: number) {
-      col.style.position = 'sticky'
-      col.style[direction] = `${offset}px`
-      col.classList.add('table-main__cell--fixed')
-
-      this.dataSourceDisplay.forEach((item, rowIndex) => {
-        const cell = this.$refs[`content_cell_${rowIndex}_${index}_ref`]?.[0]
-        if (cell) {
-          cell.style.position = 'sticky'
-          cell.style[direction] = `${offset}px`
-          cell.classList.add('table-main__cell--fixed')
-        }
-      })
-    },
-  },
-  mounted() {
-    this.handleScroll(true)
-  },
-  setup() {
-    const { t } = useI18n()
-    const listSelected = ref<ITableProps[]>([])
-    const headerColRefs = ref<HTMLTableCellElement[]>([])
-    const isScrollLeft = ref(false)
-    const isScrollRight = ref(false)
-    const lastScrollLeft = ref(0)
-    const pagination = ref({
-      current: 1,
-      pageSize: 20,
-    })
-    const filterInputVal = ref('')
-    const filterVal = ref('')
-    return {
-      listSelected,
-      headerColRefs,
-      isScrollLeft,
-      isScrollRight,
-      lastScrollLeft,
-      pagination,
-      filterInputVal,
-      filterVal,
-      t,
+watch(
+  () => props.dataSource,
+  (val, oldVal) => {
+    if (val.length !== oldVal.length) {
+      handleScroll(true)
     }
   },
+)
+
+onMounted(() => {
+  handleScroll(true)
 })
 </script>
 

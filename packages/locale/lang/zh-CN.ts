@@ -7,6 +7,7 @@ export default {
   },
   colon: '：',
   operation: '操作',
+  noData: '空空如也',
   pagination: {
     total: '{items} 项',
     pageSize: '{items} 项/每页',

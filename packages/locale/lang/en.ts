@@ -1,12 +1,13 @@
 export default {
+  colon: ':',
+  operation: 'Operation',
+  noData: 'No Data',
   markdownPreview: {
     directory: 'Directory',
     empty: 'No Directory',
     show: 'Show Directory',
     hide: 'Hide Directory',
   },
-  colon: ':',
-  operation: 'Operation',
   pagination: {
     total: '{items} items',
     pageSize: '{items} items per page',

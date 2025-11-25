@@ -20,6 +20,7 @@ import FhSelect from '@fhtek-ui/components/select'
 import FhStep from '@fhtek-ui/components/step'
 import FhSwitch from '@fhtek-ui/components/switch'
 import FhTimePicker from '@fhtek-ui/components/time-picker'
+import FhTable from '@fhtek-ui/components/table'
 
 // plugins
 import { registerDialog, dialogManager as dialog } from '@fhtek-ui/components/dialog'
@@ -54,6 +55,7 @@ const components = [
   FhStep,
   FhSwitch,
   FhTimePicker,
+  FhTable,
 ]
 
 const install = (app: App, options: { i18n?: I18nConfig } = {}): void => {
@@ -127,3 +129,4 @@ export type { ISelectProps } from '@fhtek-ui/components/select'
 export type { IStepProps } from '@fhtek-ui/components/step'
 export type { ISwitchProps, ISwitchEmits } from '@fhtek-ui/components/switch'
 export type { ITimePickerProps, ITimePickerEmits } from '@fhtek-ui/components/time-picker'
+export type { ITableColumnProps, ITableEmits } from '@fhtek-ui/components/table'

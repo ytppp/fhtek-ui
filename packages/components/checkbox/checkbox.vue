@@ -19,6 +19,7 @@
         class="checkbox__original"
         type="checkbox"
         :checked="isChecked"
+        v-model="isChecked"
         :name="name"
         :disabled="isDisabled"
         :true-value="trueValue"
@@ -32,6 +33,7 @@
         class="checkbox__original"
         type="checkbox"
         :checked="isChecked"
+        v-model="isChecked"
         :disabled="isDisabled"
         :value="value"
         :name="name"
@@ -48,7 +50,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, inject, withDefaults } from 'vue'
+import { ref, computed, inject, withDefaults, watch } from 'vue'
 import {
   CheckboxGroupContextKey,
   type ICheckboxEmits,
@@ -113,7 +115,7 @@ const handleChange = (e: Event) => {
 
   const target = e.target as HTMLInputElement
   const checked = target.checked
-  let value: boolean | string | number | undefined
+  let value
   if (checked) {
     value = props.trueValue === undefined ? true : props.trueValue
   } else {
@@ -129,7 +131,13 @@ const handleChange = (e: Event) => {
   }
 }
 
-if (props.checked) isChecked.value = true
+// if (props.checked) isChecked.value = true
+watch(
+  () => props.checked,
+  (val) => {
+    isChecked.value = val
+  },
+)
 </script>
 
 <style lang="less">

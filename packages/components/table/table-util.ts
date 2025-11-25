@@ -1,4 +1,4 @@
-import { type IColumnProps } from './interface'
+import { type TableColumn } from './interface'
 
 /**
  * 从多维对象数组中提取指定维度的数据
@@ -8,10 +8,10 @@ import { type IColumnProps } from './interface'
  * @returns {Array} 包含指定维度所有元素的数组（不包含子维度）
  */
 export function extractDimension(
-  array: IColumnProps[],
+  array: TableColumn[],
   targetDepth: number,
   childrenKey = 'children',
-): IColumnProps[] {
+): TableColumn[] {
   // 参数验证
   if (!Array.isArray(array)) {
     throw new TypeError('第一个参数必须是数组')
@@ -25,14 +25,14 @@ export function extractDimension(
     throw new TypeError('子维度键名必须是字符串')
   }
 
-  const result: IColumnProps[] = []
+  const result: TableColumn[] = []
 
   /**
    * 递归遍历多维数组
    * @param {Array} currentArray - 当前处理的数组
    * @param {number} currentDepth - 当前深度
    */
-  const traverse = (currentArray: IColumnProps[], currentDepth: number) => {
+  const traverse = (currentArray: TableColumn[], currentDepth: number) => {
     for (const item of currentArray) {
       // 检查是否是对象（处理对象数组）
       const isObject = item !== null && typeof item === 'object' && !Array.isArray(item)
@@ -67,8 +67,8 @@ export function extractDimension(
  * @param {Array} columns - 包含嵌套列对象的数组，每个列对象可能包含 `children` 属性，该属性是一个子列数组。
  * @returns {Array} - 扁平化后的一维列数组。
  */
-export function flatten(columns: IColumnProps[]): Array<IColumnProps> {
-  return columns.reduce((acc: IColumnProps[], col: IColumnProps) => {
+export function flatten(columns: TableColumn[]): Array<TableColumn> {
+  return columns.reduce((acc: TableColumn[], col: TableColumn) => {
     if (Array.isArray(col.children) && col.children.length > 0) {
       return [...acc, ...flatten(col.children)]
     }
