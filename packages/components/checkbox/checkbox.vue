@@ -19,7 +19,6 @@
         class="checkbox__original"
         type="checkbox"
         :checked="isChecked"
-        v-model="isChecked"
         :name="name"
         :disabled="isDisabled"
         :true-value="trueValue"
@@ -33,7 +32,6 @@
         class="checkbox__original"
         type="checkbox"
         :checked="isChecked"
-        v-model="isChecked"
         :disabled="isDisabled"
         :value="value"
         :name="name"
@@ -50,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, inject, withDefaults, watch } from 'vue'
+import { ref, computed, inject, withDefaults } from 'vue'
 import {
   CheckboxGroupContextKey,
   type ICheckboxEmits,
@@ -65,7 +63,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<ICheckboxProps>(), {
   modelValue: false,
-  value: false, // value of the Checkbox is used inside a checkbox-group component
+  value: false, // 只有在 checkbox-group 中时有效, value of the Checkbox is used inside a checkbox-group component
   circle: false,
   label: '',
   disabled: false,
@@ -85,9 +83,11 @@ const isChecked = computed({
     if (checkboxGroup) {
       return checkboxGroup.modelValue.value.includes(props.value ?? props.trueValue) as boolean
     }
-    return (
-      props.trueValue === undefined ? props.modelValue : props.modelValue === props.trueValue
-    ) as boolean
+    if (props.trueValue === undefined) {
+      return !!props.modelValue || props.checked
+    } else {
+      return props.modelValue === props.trueValue
+    }
   },
   set: (value) => {
     if (checkboxGroup) {
@@ -130,14 +130,6 @@ const handleChange = (e: Event) => {
     emit('change', value, e)
   }
 }
-
-// if (props.checked) isChecked.value = true
-watch(
-  () => props.checked,
-  (val) => {
-    isChecked.value = true
-  },
-)
 </script>
 
 <style lang="less">

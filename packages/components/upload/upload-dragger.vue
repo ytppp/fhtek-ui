@@ -7,45 +7,46 @@
     @dragleave="handleDragLeave"
   >
     <div class="dragger__wrap" v-if="isDragOver">
-      {{ $t('trans0207') }}
+      {{ $t('upload.dragger') }}
     </div>
     <slot></slot>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts" setup>
+import { ref } from 'vue'
+
+defineOptions({
   name: 'FhUploadDragger',
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      isDragOver: false,
-    }
-  },
-  emits: ['file'],
-  methods: {
-    handleDragEnter() {
-      this.isDragOver = true
-    },
-    handleDragLeave() {
-      this.isDragOver = false
-    },
-    handleDrop(e) {
-      e.preventDefault()
-      this.isDragOver = false
-      if (this.disabled) {
-        return
-      }
-      this.$parent.initUploadStatus()
-      const { files } = e.dataTransfer
-      this.$emit('file', files)
-    },
-  },
+})
+
+export interface FhUploadDraggerProps {
+  disabled?: boolean
+}
+export interface FhUploadDraggerEmits {
+  (e: 'file', files: FileList): void
+}
+
+const isDragOver = ref(false)
+const props = withDefaults(defineProps<FhUploadDraggerProps>(), {
+  disabled: false,
+})
+const emit = defineEmits<FhUploadDraggerEmits>()
+const handleDragEnter = () => {
+  isDragOver.value = true
+}
+const handleDragLeave = () => {
+  isDragOver.value = false
+}
+const handleDrop = (e: DragEvent) => {
+  e.preventDefault()
+  isDragOver.value = false
+  if (props.disabled) {
+    return
+  }
+  // this.$parent.initUploadStatus()
+  const { files } = e.dataTransfer as DataTransfer
+  emit('file', files)
 }
 </script>
 

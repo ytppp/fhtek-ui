@@ -49,7 +49,7 @@
             <span v-else>{{ option.text }}</span>
           </li>
         </template>
-        <li class="select__popup-item--empty" v-else>{{ t('select.empty') }}</li>
+        <li class="select__popup-item--empty" v-else>{{ $t('select.empty') }}</li>
       </ul>
     </transition>
   </div>

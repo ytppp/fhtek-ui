@@ -14,7 +14,7 @@
         <fh-button size="small" @click="del">删除</fh-button>
       </template>
       <template #url="scope">
-        <fh-popover :title="scope.row.url" trigger="click">{{ scope.row.url }}</fh-popover>
+        <fh-popover :title="scope.row.url">{{ scope.row.url }}</fh-popover>
       </template>
       <template #enable="scope">
         <fh-switch v-model="scope.row.enable" @change="toggleStatus(scope.row)" />

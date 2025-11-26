@@ -24,5 +24,8 @@ export default {
     searchContent: 'Search content',
     search: 'Search',
     index: 'Index',
+  },
+  upload: {
+    dragger: 'Drag file to upload',
   }
 }

@@ -47,8 +47,8 @@
           </ul>
         </div>
         <div class="time-picker__button-wrap">
-          <fh-button type="text" @click.stop="close">{{ t('select.cancel') }}</fh-button>
-          <fh-button type="text" @click.stop="ok">{{ t('select.confirm') }}</fh-button>
+          <fh-button type="text" @click.stop="close">{{ $t('select.cancel') }}</fh-button>
+          <fh-button type="text" @click.stop="ok">{{ $t('select.confirm') }}</fh-button>
         </div>
       </div>
     </transition>

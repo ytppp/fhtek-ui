@@ -16,14 +16,14 @@
       <div class="table__filter-group">
         <fh-input
           v-model="filterInputVal"
-          :placeholder="t('table.searchContent')"
+          :placeholder="$t('table.searchContent')"
           class="table__header-search-input"
         ></fh-input>
         <fh-icon
           class="page__header-icon"
           @click="search"
           name="icon-search"
-          :title="t('table.search')"
+          :title="$t('table.search')"
         />
       </div>
     </div>
@@ -55,7 +55,7 @@
                 ref="headerColRefs"
                 v-else-if="col.key === 'index'"
               >
-                {{ t('table.index') }}
+                {{ $t('table.index') }}
               </th>
               <th
                 class="table-main__cell"
@@ -65,7 +65,7 @@
                 ref="headerColRefs"
                 v-else-if="col.key === 'operation'"
               >
-                {{ t('operation') }}
+                {{ $t('operation') }}
               </th>
               <th
                 class="table-main__cell"
@@ -138,7 +138,7 @@
           </template>
           <tr class="table-main__content-row empty-row" v-else>
             <td class="empty-row__cell" :colspan="columnsFlattened.length">
-              {{ t('noData') }}
+              {{ $t('noData') }}
             </td>
           </tr>
         </tbody>
@@ -170,7 +170,6 @@ import {
   type TableEmits,
   type align,
 } from './interface'
-import { useI18n } from '@fhtek-ui/locale'
 
 defineOptions({
   name: 'FhTable',
@@ -193,7 +192,6 @@ const props = withDefaults(defineProps<DataTableProps>(), {
   //   pageSize: 20,
   // }),
 })
-const { t } = useI18n()
 const slots = useSlots()
 const selectedRow = ref<any[]>([])
 const headerColRefs = ref<HTMLTableCellElement[]>([])

@@ -28,7 +28,7 @@
       <input
         type="file"
         @change="handleChange"
-        ref="upload"
+        ref="uploadRef"
         :multiple="multiple"
         :accept="accept"
         :name="name"
@@ -70,10 +70,10 @@
                   'upgradeing__loading-bar--loading': uploadLoading,
                   'upgradeing__loading-bar--success': uploadSuccess,
                 }"
-                :style="{ width: width }"
+                :style="{ width: uploadWidth }"
               ></div>
             </div>
-            <div v-if="uploadLoading" class="upgradeing__percent">{{ width }}</div>
+            <div v-if="uploadLoading" class="upgradeing__percent">{{ uploadWidth }}</div>
           </div>
           <div class="delete-wrap">
             <img src="@/assets/images/ic_delete.png" alt="" width="24" @click="cancel(file)" />
@@ -85,130 +85,89 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { computed, inject, ref, useTemplateRef } from 'vue'
+import {
+  FormContextKey,
+  FormItemContextKey,
+  type IFormContext,
+  type IFormItemContext,
+} from '@fhtek-ui/components/form'
+import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
 import FhUploadDragger from './upload-dragger.vue'
 import { toLocaleNumber } from '@/i18n/index'
 import { getFileExtendName } from '@/util/tool'
 import IcFolderError from '@/assets/images/ic_folder_error.png'
 import IcFolder from '@/assets/images/ic_folder.png'
+import { UploadStatus, type IUploadProps } from './interface'
 
-export enum UploadStatus {
-  ready = 'ready',
-  success = 'success',
-  fail = 'fail',
-  uploading = 'uploading',
+defineOptions({
+  name: 'FhUpload',
+})
+
+const from = inject<IFormContext | null>(FormContextKey, null)
+const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
+const disabledContext = useInjectDisabled()
+const props = withDefaults(defineProps<IUploadProps>(), {
+  multiple: false,
+  dragable: false,
+  limit: 500 * 1000 * 1000,
+  isFormUpload: false,
+  disabled: false,
+})
+const uploadRef = useTemplateRef('uploadRef')
+const files = ref([])
+const draggerFiles = ref<FileList | null>(null)
+const uploadPercentage = ref(0)
+const status = ref<UploadStatus>(UploadStatus.ready)
+const err = ref('')
+
+const id = computed(() => {
+  return formItem?.value.id
+})
+const uploadSuccess = computed(() => {
+  return status.value === UploadStatus.success
+})
+const uploadLoading = computed(() => {
+  return status.value === UploadStatus.uploading
+})
+const uploadFail = computed(() => {
+  return status.value === UploadStatus.fail
+})
+const uploadDisabled = computed(() => {
+  return props.disabled || disabledContext.value || uploadLoading.value
+})
+const uploadPercent = computed(() => {
+  return Math.min(uploadPercentage.value, 100)
+})
+const uploadWidth = computed(() => {
+  return `${uploadPercent.value}%`
+})
+const fileIcon = computed(() => {
+  return uploadFail.value ? IcFolderError : IcFolder
+})
+const labelText = computed(() => {
+  return props.label || formItem?.value.label || ''
+})
+
+const uploadDragFiles = (files: FileList) => {
+  if (files && !files.length) return
+  draggerFiles.value = files
+  let postFiles = [].slice.call(files)
+  if (!props.multiple) {
+    postFiles = postFiles.slice(0, 1)
+  }
+  files.value = postFiles
+  validateFileFormat()
 }
-export default {
-  components: {
-    FhUploadDragger,
-  },
-  inject: {
-    form: {
-      default: null,
-    },
-    formItem: {
-      default: null,
-    },
-  },
-  props: {
-    onSuccess: { type: Function },
-    onError: { type: Function },
-    onChange: { Function },
-    onCancel: { type: Function },
-    label: {
-      type: String,
-      default: '',
-    },
-    multiple: {
-      type: Boolean,
-      default: false,
-    },
-    accept: {
-      type: String,
-      default: '',
-    },
-    request: { type: Function },
-    beforeUpload: { type: Function },
-    packageInfo: {},
-    dragable: {
-      type: Boolean,
-      default: false,
-    },
-    limit: {
-      type: Number,
-      default: 500 * 1000 * 1000,
-    },
-    isFormUpload: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    name: String,
-  },
-  data() {
-    return {
-      files: [],
-      draggerFiles: [],
-      uploadPercentage: 0,
-      status: UploadStatus.ready,
-      err: '',
-      UploadStatus,
-    }
-  },
-  computed: {
-    id() {
-      return this.formItem?.id
-    },
-    uploadDisabled() {
-      return this.disabled || this.form?.disabled.value || this.uploadLoading
-    },
-    uploadSuccess() {
-      return this.status === UploadStatus.success
-    },
-    uploadLoading() {
-      return this.status === UploadStatus.uploading
-    },
-    uploadFail() {
-      return this.status === UploadStatus.fail
-    },
-    percent() {
-      return Math.min(this.uploadPercentage, 100)
-    },
-    width() {
-      return `${this.percent}%`
-    },
-    fileIcon() {
-      return this.uploadFail ? IcFolderError : IcFolder
-    },
-    labelText() {
-      return this.label
-        ? this.label
-        : this.accept
-          ? this.$t('trans0209').format(this.accept)
-          : '导入文件'
-    },
-  },
-  methods: {
-    uploadDragFiles(files) {
-      if (files && !files.length) return
-      this.draggerFiles = files
-      let postFiles = [].slice.call(files)
-      if (!this.multiple) {
-        postFiles = postFiles.slice(0, 1)
-      }
-      this.files = postFiles
-      this.validateFileFormat()
-    },
-    getSize(file) {
+
+const getSize = (file: File) => {
       return `${toLocaleNumber(file.size / 1000 / 1000, this.$i18n.locale, 2, 2)}MB`
-    },
+    }
     click() {
       this.initUploadStatus()
       this.$refs.upload.click()
-    },
+    }
     initUploadStatus() {
       this.files = []
       this.err = ''
@@ -216,7 +175,7 @@ export default {
       this.status = UploadStatus.ready
       this.$refs.upload.value = null
       this.onChange && this.onChange()
-    },
+    }
     validateFileFormat() {
       const isZeroSize = !!this.files.find((file) => file.size === 0)
       let flag = true
@@ -259,7 +218,7 @@ export default {
           this.onSuccess()
         }
       }
-    },
+    }
     handleChange(ev) {
       const { files } = ev.target
       if (files && !files.length) return
@@ -269,7 +228,7 @@ export default {
       }
       this.files = postFiles
       this.validateFileFormat()
-    },
+    }
     upload() {
       if (!this.request) {
         // 组件内部实现自己的上传逻辑
@@ -278,16 +237,14 @@ export default {
         this.request(this.files)
       }
       return true
-    },
+    }
     cancel(file) {
       // 组件内部的取消逻辑
       this.files = this.files.filter((v) => v.name !== file.name)
       this.$refs.upload.value = null
       this.status = UploadStatus.ready
       this.onCancel && this.onCancel(file)
-    },
-  },
-}
+    }
 </script>
 
 <style lang="less">

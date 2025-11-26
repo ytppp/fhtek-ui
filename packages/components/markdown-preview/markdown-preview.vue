@@ -6,7 +6,7 @@
       v-if="isShowToc"
     >
       <div class="toc__header">
-        <h3>{{ t('markdownPreview.directory') }}</h3>
+        <h3>{{ $t('markdownPreview.directory') }}</h3>
       </div>
       <nav class="toc__nav" ref="tocNavRef">
         <ul class="toc-list" v-if="tocItems.length" ref="tocListRef">
@@ -29,7 +29,7 @@
             </a>
           </li>
         </ul>
-        <p class="toc-list__empty" v-else>{{ t('markdownPreview.empty') }}</p>
+        <p class="toc-list__empty" v-else>{{ $t('markdownPreview.empty') }}</p>
       </nav>
       <div class="toc__footer" v-if="!isMobile">
         <fh-icon
@@ -48,7 +48,7 @@
       @click="isOpenMobileNoc = !isOpenMobileNoc"
       v-if="isMobile && showToc"
     >
-      {{ isOpenMobileNoc ? t('markdownPreview.show') : t('markdownPreview.hide') }}
+      {{ isOpenMobileNoc ? $t('markdownPreview.show') : $t('markdownPreview.hide') }}
     </fh-button>
   </div>
 </template>
@@ -61,7 +61,6 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
 import FhIcon from '@fhtek-ui/components/icon'
 import { useIsMobile } from '@fhtek-ui/hooks/is-mobile'
-import { useI18n } from '@fhtek-ui/locale'
 import './github-markdown.css'
 
 defineOptions({
@@ -87,7 +86,6 @@ const props = withDefaults(defineProps<IMarkdownPreviewProps>(), {
 })
 
 const { isMobile } = useIsMobile()
-const { t } = useI18n()
 const renderedMarkdown = ref<string>('')
 const tocItems = ref<ITocItem[]>([])
 const activeAnchor = ref<string>('')

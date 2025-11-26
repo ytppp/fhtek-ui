@@ -1,7 +1,7 @@
 import type { InjectionKey, Ref } from 'vue'
 
 type CheckboxGroupDirection = 'horizontal' | 'vertical'
-type CheckboxValuaType = boolean | string | number
+export type CheckboxValuaType = boolean | string | number
 
 export interface ICheckboxGroupProps {
   modelValue: CheckboxValuaType[]
