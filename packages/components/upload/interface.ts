@@ -20,19 +20,10 @@ export interface IUploadProps {
   isFormUpload?: boolean
   disabled?: boolean
   name?: string
-  request?: (file: File) => Promise<IUploadFile>
-  beforeUpload?: (file: File) => boolean | Promise<boolean>
-  onSuccess?: (file: IUploadFile) => void
-  onError?: (file: IUploadFile) => void
-  onChange?: (file: IUploadFile) => void
-  onCancel?: (file: IUploadFile, percent: number) => void
-}
-
-export interface IUploadFile {
-  id: string
-  name: string
-  size: number
-  type: string
-  url: string
-  status: UploadStatus
+  request?: (file: File[]) => void
+  beforeUpload?: (file: File[]) => boolean | Promise<boolean>
+  onSuccess?: (file: File[]) => void
+  onError?: (file: File[]) => void
+  onChange?: (file: File[]) => void
+  onCancel?: (file: File) => void
 }

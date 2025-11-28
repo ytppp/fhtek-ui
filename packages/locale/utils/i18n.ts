@@ -88,6 +88,18 @@ export class I18n implements I18nInstance {
   getSupportedLocales(): Language[] {
     return Object.keys(locales) as Language[]
   }
+
+  toLocaleNumber(num: number | string, decimal = 2) {
+    const { locale } = this.config
+    if (num === '' || num === null || num === undefined || isNaN(Number(num))) {
+      return ''
+    }
+    const number = Number(num)
+    return new Intl.NumberFormat(locale as string, {
+      minimumFractionDigits: decimal, // 最少小数位
+      maximumFractionDigits: decimal, // 最多小数位（避免四舍五入后补0）
+    }).format(number)
+  }
 }
 
 // 创建默认实例

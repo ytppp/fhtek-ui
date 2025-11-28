@@ -14,7 +14,7 @@ export function shallowMergeOptions<T extends Record<string, any>>(opt1: T, opt2
   return { ...opt1, ...opt2 }
 }
 
-export const isReal = (value: number | string) => {
+export function isReal(value: number | string) {
   value = Number(value)
   return value === 0 ? true : !!value
 }
@@ -42,4 +42,21 @@ export function scrollTo(el: HTMLElement, x = 0, y = 0) {
     el.scrollLeft = x
     el.scrollTop = y
   }
+}
+
+export function getFileExtendName(file: File) {
+  if (file) {
+    const r = file.name.split('.')
+    if (r.length) {
+      return r[r.length - 1] || ''
+    }
+  }
+  return ''
+}
+
+export function format(str: string, ...args: any[]) {
+  args.forEach((val) => {
+    str = str.replace(/%[abcdefghnostx]/, val)
+  })
+  return str
 }

@@ -1,8 +1,8 @@
 import { withInstall } from '@fhtek-ui/utils/type'
-import SelectPopup from './select.vue'
+import Select from './select.vue'
 
-const FhSelectPopup = withInstall(SelectPopup)
+const FhSelect = withInstall(Select)
 
-export default FhSelectPopup
-export { FhSelectPopup }
+export default FhSelect
+export { FhSelect }
 export type { ISelectProps, ISelectEmits } from './select.vue'

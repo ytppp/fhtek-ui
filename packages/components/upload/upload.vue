@@ -88,26 +88,24 @@
 <script lang="ts" setup>
 import { computed, inject, ref, useTemplateRef } from 'vue'
 import {
-  FormContextKey,
   FormItemContextKey,
-  type IFormContext,
   type IFormItemContext,
 } from '@fhtek-ui/components/form'
 import { useInjectDisabled } from '@fhtek-ui/components/config-provider/disabled-context'
 import FhUploadDragger from './upload-dragger.vue'
-import { toLocaleNumber } from '@/i18n/index'
-import { getFileExtendName } from '@/util/tool'
+import { useI18n } from '@fhtek-ui/locale'
+import { getFileExtendName, format } from '@fhtek-ui/utils/tool'
+import { UploadStatus, type IUploadProps } from './interface'
 import IcFolderError from '@/assets/images/ic_folder_error.png'
 import IcFolder from '@/assets/images/ic_folder.png'
-import { UploadStatus, type IUploadProps } from './interface'
 
 defineOptions({
   name: 'FhUpload',
 })
 
-const from = inject<IFormContext | null>(FormContextKey, null)
 const formItem = inject<IFormItemContext | null>(FormItemContextKey, null)
 const disabledContext = useInjectDisabled()
+const { i18n, t } = useI18n()
 const props = withDefaults(defineProps<IUploadProps>(), {
   multiple: false,
   dragable: false,
@@ -115,9 +113,8 @@ const props = withDefaults(defineProps<IUploadProps>(), {
   isFormUpload: false,
   disabled: false,
 })
-const uploadRef = useTemplateRef('uploadRef')
-const files = ref([])
-const draggerFiles = ref<FileList | null>(null)
+const uploadRef = useTemplateRef<HTMLInputElement | null>('uploadRef')
+const files = ref<File[]>([])
 const uploadPercentage = ref(0)
 const status = ref<UploadStatus>(UploadStatus.ready)
 const err = ref('')
@@ -150,10 +147,9 @@ const labelText = computed(() => {
   return props.label || formItem?.value.label || ''
 })
 
-const uploadDragFiles = (files: FileList) => {
-  if (files && !files.length) return
-  draggerFiles.value = files
-  let postFiles = [].slice.call(files)
+const uploadDragFiles = (fileList: FileList) => {
+  if (fileList && !fileList.length) return
+  let postFiles = [].slice.call(fileList)
   if (!props.multiple) {
     postFiles = postFiles.slice(0, 1)
   }
@@ -162,89 +158,87 @@ const uploadDragFiles = (files: FileList) => {
 }
 
 const getSize = (file: File) => {
-      return `${toLocaleNumber(file.size / 1000 / 1000, this.$i18n.locale, 2, 2)}MB`
+  return `${i18n.toLocaleNumber(file.size / 1000 / 1000, 2)}MB`
+}
+const click = () => {
+  initUploadStatus()
+  if (uploadRef.value) {
+    uploadRef.value.click()
+  }
+}
+const initUploadStatus = () => {
+  files.value = []
+  err.value = ''
+  uploadPercentage.value = 0
+  status.value = UploadStatus.ready
+  // props.onChange && props.onChange(files.value)
+}
+const validateFileFormat = () => {
+  const isZeroSize = !!files.value.find((file) => file.size === 0)
+  let flag = true
+  if (isZeroSize) {
+    status.value = UploadStatus.fail
+    err.value = t('trans0206')
+    flag = false
+  }
+  const isLimitOver = !!files.value.find((file) => file.size >= props.limit)
+  if (isLimitOver) {
+    status.value = UploadStatus.fail
+    err.value = t('trans0211')
+    flag = false
+  }
+  if (props.accept) {
+    const reg = new RegExp(`^${props.accept.slice(1)}$`, 'i')
+    const isInvalidFile = !!files.value.find((file) => {
+      const extendName = getFileExtendName(file)
+      return !reg.test(extendName)
+    })
+    if (isInvalidFile) {
+      status.value = UploadStatus.fail
+      err.value = format(t('trans0208'), props.accept)
+      flag = false
     }
-    click() {
-      this.initUploadStatus()
-      this.$refs.upload.click()
-    }
-    initUploadStatus() {
-      this.files = []
-      this.err = ''
-      this.uploadPercentage = 0
-      this.status = UploadStatus.ready
-      this.$refs.upload.value = null
-      this.onChange && this.onChange()
-    }
-    validateFileFormat() {
-      const isZeroSize = !!this.files.find((file) => file.size === 0)
-      let flag = true
-      if (isZeroSize) {
-        this.status = UploadStatus.fail
-        this.err = this.$t('trans0206')
-        flag = false
-      }
-      const isLimitOver = !!this.files.find((file) => file.size >= this.limit)
-      if (isLimitOver) {
-        this.status = UploadStatus.fail
-        this.err = this.$t('trans0211')
-        flag = false
-      }
-      if (this.accept) {
-        const reg = new RegExp(`^${this.accept.slice(1)}$`, 'i')
-        const isInvalidFile = !!this.files.find((file) => {
-          const entendName = getFileExtendName(file)
-          return !reg.test(entendName)
-        })
-        if (isInvalidFile) {
-          this.status = UploadStatus.fail
-          this.err = this.$t('trans0208').format(this.accept)
-          flag = false
-        }
-      }
-      if (this.beforeUpload && !this.beforeUpload(this.files)) {
-        this.status = UploadStatus.fail
-        flag = false
-      }
-      if (!flag && this.onError) {
-        this.onError()
-        return
-      }
-      if (this.isFormUpload) {
-        this.status = UploadStatus.success
-      } else {
-        this.upload()
-        if (this.onSuccess) {
-          this.onSuccess()
-        }
-      }
-    }
-    handleChange(ev) {
-      const { files } = ev.target
-      if (files && !files.length) return
-      let postFiles = Array.prototype.slice.call(files)
-      if (!this.multiple) {
-        postFiles = postFiles.slice(0, 1)
-      }
-      this.files = postFiles
-      this.validateFileFormat()
-    }
-    upload() {
-      if (!this.request) {
-        // 组件内部实现自己的上传逻辑
-      } else {
-        // 外部上传
-        this.request(this.files)
-      }
-      return true
-    }
-    cancel(file) {
-      // 组件内部的取消逻辑
-      this.files = this.files.filter((v) => v.name !== file.name)
-      this.$refs.upload.value = null
-      this.status = UploadStatus.ready
-      this.onCancel && this.onCancel(file)
-    }
+  }
+  if (props.beforeUpload && !props.beforeUpload(files.value)) {
+    status.value = UploadStatus.fail
+    flag = false
+  }
+  if (!flag && props.onError) {
+    props.onError(files.value)
+    return
+  }
+  if (props.isFormUpload) {
+    status.value = UploadStatus.success
+  } else {
+    upload()
+    props.onSuccess && props.onSuccess(files.value)
+  }
+}
+const handleChange = (e: Event) => {
+  const { files: filesData } = e.target as HTMLInputElement
+  if (filesData && !filesData.length) return
+  let postFiles = Array.prototype.slice.call(filesData) // Array.from(files)
+  if (!props.multiple) {
+    postFiles = postFiles.slice(0, 1)
+  }
+  files.value = postFiles
+  validateFileFormat()
+}
+const upload = () => {
+  if (!props.request) {
+    // 组件内部实现自己的上传逻辑
+  } else {
+    // 外部上传
+    props.request(files.value)
+  }
+  return true
+}
+const cancel = (file: File) => {
+  // 组件内部的取消逻辑
+  files.value = files.value.filter((v) => v.name !== file.name)
+  status.value = UploadStatus.ready
+  props.onCancel && props.onCancel(file)
+}
 </script>
 
 <style lang="less">
