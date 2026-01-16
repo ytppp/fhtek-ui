@@ -1,0 +1,452 @@
+{
+  "trans0280": {
+    "timezone": "GMT-12:00",
+    "zonename_openwrt": "Etc/GMT+12",
+    "timezone_openwrt": "<-12>12",
+    "id": 1
+  },
+  "trans0281": {
+    "timezone": "GMT-11:00",
+    "zonename_openwrt": "Etc/GMT+11",
+    "timezone_openwrt": "<-11>11",
+    "id": 2
+  },
+  "trans0282": {
+    "timezone": "GMT-10:00",
+    "zonename_openwrt": "Etc/GMT+10",
+    "timezone_openwrt": "<-10>10",
+    "id": 3
+  },
+  "trans0283": {
+    "timezone": "GMT-09:00",
+    "zonename_openwrt": "Etc/GMT+9",
+    "timezone_openwrt": "<-09>9",
+    "id": 4
+  },
+  "trans0284": {
+    "timezone": "GMT-08:00",
+    "zonename_openwrt": "Etc/GMT+8",
+    "timezone_openwrt": "<-08>8",
+    "id": 5
+  },
+  "trans0285": {
+    "timezone": "GMT-07:00",
+    "zonename_openwrt": "Etc/GMT+7",
+    "timezone_openwrt": "<-07>7",
+    "id": 6
+  },
+  "trans0286": {
+    "timezone": "GMT-07:00",
+    "zonename_openwrt": "Etc/GMT+7",
+    "timezone_openwrt": "<-07>7",
+    "id": 7
+  },
+  "trans0287": {
+    "timezone": "GMT-07:00",
+    "zonename_openwrt": "Etc/GMT+7",
+    "timezone_openwrt": "<-07>7",
+    "id": 8
+  },
+  "trans0288": {
+    "timezone": "GMT-06:00",
+    "zonename_openwrt": "Etc/GMT+6",
+    "timezone_openwrt": "<-06>6",
+    "id": 9
+  },
+  "trans0289": {
+    "timezone": "GMT-06:00",
+    "zonename_openwrt": "Etc/GMT+6",
+    "timezone_openwrt": "<-06>6",
+    "id": 10
+  },
+  "trans0290": {
+    "timezone": "GMT-06:00",
+    "zonename_openwrt": "Etc/GMT+6",
+    "timezone_openwrt": "<-06>6",
+    "id": 11
+  },
+  "trans0291": {
+    "timezone": "GMT-06:00",
+    "zonename_openwrt": "Etc/GMT+6",
+    "timezone_openwrt": "<-06>6",
+    "id": 12
+  },
+  "trans0292": {
+    "timezone": "GMT-05:00",
+    "zonename_openwrt": "Etc/GMT+5",
+    "timezone_openwrt": "<-05>5",
+    "id": 13
+  },
+  "trans0293": {
+    "timezone": "GMT-05:00",
+    "zonename_openwrt": "Etc/GMT+5",
+    "timezone_openwrt": "<-05>5",
+    "id": 14
+  },
+  "trans0294": {
+    "timezone": "GMT-05:00",
+    "zonename_openwrt": "Etc/GMT+5",
+    "timezone_openwrt": "<-05>5",
+    "id": 15
+  },
+  "trans0295": {
+    "timezone": "GMT-04:00",
+    "zonename_openwrt": "Etc/GMT+4",
+    "timezone_openwrt": "<-04>4",
+    "id": 16
+  },
+  "trans0296": {
+    "timezone": "GMT-04:00",
+    "zonename_openwrt": "Etc/GMT+4",
+    "timezone_openwrt": "<-04>4",
+    "id": 17
+  },
+  "trans0297": {
+    "timezone": "GMT-04:00",
+    "zonename_openwrt": "Etc/GMT+4",
+    "timezone_openwrt": "<-04>4",
+    "id": 18
+  },
+  "trans0298": {
+    "timezone": "GMT-03:30",
+    "zonename_openwrt": "America/St Johns",
+    "timezone_openwrt": "NST3:30NDT,M3.2.0,M11.1.0",
+    "id": 19
+  },
+  "trans0299": {
+    "timezone": "GMT-03:00",
+    "zonename_openwrt": "Etc/GMT+3",
+    "timezone_openwrt": "<-03>3",
+    "id": 20
+  },
+  "trans0300": {
+    "timezone": "GMT-03:00",
+    "zonename_openwrt": "Etc/GMT+3",
+    "timezone_openwrt": "<-03>3",
+    "id": 21
+  },
+  "trans0301": {
+    "timezone": "GMT-03:00",
+    "zonename_openwrt": "Etc/GMT+3",
+    "timezone_openwrt": "<-03>3",
+    "id": 22
+  },
+  "trans0302": {
+    "timezone": "GMT-02:00",
+    "zonename_openwrt": "Etc/GMT+2",
+    "timezone_openwrt": "<-02>2",
+    "id": 23
+  },
+  "trans0303": {
+    "timezone": "GMT-01:00",
+    "zonename_openwrt": "Etc/GMT+1",
+    "timezone_openwrt": "<-01>1",
+    "id": 24
+  },
+  "trans0304": {
+    "timezone": "GMT-01:00",
+    "zonename_openwrt": "Etc/GMT+1",
+    "timezone_openwrt": "<-01>1",
+    "id": 25
+  },
+  "trans0305": {
+    "timezone": "GMT-00:00",
+    "zonename_openwrt": "Etc/GMT",
+    "timezone_openwrt": "GMT0",
+    "id": 26
+  },
+  "trans0306": {
+    "timezone": "GMT-00:00",
+    "zonename_openwrt": "Etc/GMT",
+    "timezone_openwrt": "GMT0",
+    "id": 27
+  },
+  "trans0307": {
+    "timezone": "GMT+01:00",
+    "zonename_openwrt": "Etc/GMT-1",
+    "timezone_openwrt": "<+01>-1",
+    "id": 28
+  },
+  "trans0308": {
+    "timezone": "GMT+01:00",
+    "zonename_openwrt": "Etc/GMT-1",
+    "timezone_openwrt": "<+01>-1",
+    "id": 29
+  },
+  "trans0309": {
+    "timezone": "GMT+01:00",
+    "zonename_openwrt": "Etc/GMT-1",
+    "timezone_openwrt": "<+01>-1",
+    "id": 30
+  },
+  "trans0310": {
+    "timezone": "GMT+01:00",
+    "zonename_openwrt": "Etc/GMT-1",
+    "timezone_openwrt": "<+01>-1",
+    "id": 31
+  },
+  "trans0311": {
+    "timezone": "GMT+01:00",
+    "zonename_openwrt": "Etc/GMT-1",
+    "timezone_openwrt": "<+01>-1",
+    "id": 32
+  },
+  "trans0312": {
+    "timezone": "GMT+02:00",
+    "zonename_openwrt": "Etc/GMT-2",
+    "timezone_openwrt": "<+02>-2",
+    "id": 33
+  },
+  "trans0313": {
+    "timezone": "GMT+02:00",
+    "zonename_openwrt": "Etc/GMT-2",
+    "timezone_openwrt": "<+02>-2",
+    "id": 34
+  },
+  "trans0314": {
+    "timezone": "GMT+02:00",
+    "zonename_openwrt": "Etc/GMT-2",
+    "timezone_openwrt": "<+02>-2",
+    "id": 35
+  },
+  "trans0315": {
+    "timezone": "GMT+02:00",
+    "zonename_openwrt": "Etc/GMT-2",
+    "timezone_openwrt": "<+02>-2",
+    "id": 36
+  },
+  "trans0316": {
+    "timezone": "GMT+02:00",
+    "zonename_openwrt": "Etc/GMT-2",
+    "timezone_openwrt": "<+02>-2",
+    "id": 37
+  },
+  "trans0317": {
+    "timezone": "GMT+02:00",
+    "zonename_openwrt": "Etc/GMT-2",
+    "timezone_openwrt": "<+02>-2",
+    "id": 38
+  },
+  "trans0318": {
+    "timezone": "GMT+03:00",
+    "zonename_openwrt": "Etc/GMT-3",
+    "timezone_openwrt": "<+03>-3",
+    "id": 39
+  },
+  "trans0319": {
+    "timezone": "GMT+03:00",
+    "zonename_openwrt": "Etc/GMT-3",
+    "timezone_openwrt": "<+03>-3",
+    "id": 40
+  },
+  "trans0320": {
+    "timezone": "GMT+03:00",
+    "zonename_openwrt": "Etc/GMT-3",
+    "timezone_openwrt": "<+03>-3",
+    "id": 41
+  },
+  "trans0321": {
+    "timezone": "GMT+03:00",
+    "zonename_openwrt": "Etc/GMT-3",
+    "timezone_openwrt": "<+03>-3",
+    "id": 42
+  },
+  "trans0322": {
+    "timezone": "GMT+03:30",
+    "zonename_openwrt": "Asia/Tehran",
+    "timezone_openwrt": "<+0330>-3:30<+0430>,J79/24,J263/24",
+    "id": 43
+  },
+  "trans0323": {
+    "timezone": "GMT+04:00",
+    "zonename_openwrt": "Etc/GMT-4",
+    "timezone_openwrt": "<+04>-4",
+    "id": 44
+  },
+  "trans0324": {
+    "timezone": "GMT+04:00",
+    "zonename_openwrt": "Etc/GMT-4",
+    "timezone_openwrt": "<+04>-4",
+    "id": 45
+  },
+  "trans0325": {
+    "timezone": "GMT+04:30",
+    "zonename_openwrt": "Asia/Kabul",
+    "timezone_openwrt": "<+0430>-4:30",
+    "id": 46
+  },
+  "trans0326": {
+    "timezone": "GMT+05:00",
+    "zonename_openwrt": "Etc/GMT-5",
+    "timezone_openwrt": "<+05>-5",
+    "id": 47
+  },
+  "trans0327": {
+    "timezone": "GMT+05:00",
+    "zonename_openwrt": "Etc/GMT-5",
+    "timezone_openwrt": "<+05>-5",
+    "id": 48
+  },
+  "trans0328": {
+    "timezone": "GMT+05:30",
+    "zonename_openwrt": "Asia/Kolkata",
+    "timezone_openwrt": "IST-5:30",
+    "id": 49
+  },
+  "trans0329": {
+    "timezone": "GMT+05:45",
+    "zonename_openwrt": "Asia/Kathmandu",
+    "timezone_openwrt": "<+0545>-5:45",
+    "id": 50
+  },
+  "trans0330": {
+    "timezone": "GMT+06:00",
+    "zonename_openwrt": "Etc/GMT-6",
+    "timezone_openwrt": "<+06>-6",
+    "id": 51
+  },
+  "trans0331": {
+    "timezone": "GMT+06:00",
+    "zonename_openwrt": "Etc/GMT-6",
+    "timezone_openwrt": "<+06>-6",
+    "id": 52
+  },
+  "trans0332": {
+    "timezone": "GMT+06:00",
+    "zonename_openwrt": "Etc/GMT-6",
+    "timezone_openwrt": "<+06>-6",
+    "id": 53
+  },
+  "trans0333": {
+    "timezone": "GMT+06:30",
+    "zonename_openwrt": "Asia/Yangon",
+    "timezone_openwrt": "<+0630>-6:30",
+    "id": 54
+  },
+  "trans0334": {
+    "timezone": "GMT+07:00",
+    "zonename_openwrt": "Etc/GMT-7",
+    "timezone_openwrt": "<+07>-7",
+    "id": 55
+  },
+  "trans0335": {
+    "timezone": "GMT+07:00",
+    "zonename_openwrt": "Etc/GMT-7",
+    "timezone_openwrt": "<+07>-7",
+    "id": 56
+  },
+  "trans0336": {
+    "timezone": "GMT+08:00",
+    "zonename_openwrt": "Etc/GMT-8",
+    "timezone_openwrt": "<+08>-8",
+    "id": 57
+  },
+  "trans0337": {
+    "timezone": "GMT+08:00",
+    "zonename_openwrt": "Etc/GMT-8",
+    "timezone_openwrt": "<+08>-8",
+    "id": 58
+  },
+  "trans0338": {
+    "timezone": "GMT+08:00",
+    "zonename_openwrt": "Etc/GMT-8",
+    "timezone_openwrt": "<+08>-8",
+    "id": 59
+  },
+  "trans0339": {
+    "timezone": "GMT+08:00",
+    "zonename_openwrt": "Etc/GMT-8",
+    "timezone_openwrt": "<+08>-8",
+    "id": 60
+  },
+  "trans0340": {
+    "timezone": "GMT+08:00",
+    "zonename_openwrt": "Etc/GMT-8",
+    "timezone_openwrt": "<+08>-8",
+    "id": 61
+  },
+  "trans0341": {
+    "timezone": "GMT+09:00",
+    "zonename_openwrt": "Etc/GMT-9",
+    "timezone_openwrt": "<+09>-9",
+    "id": 62
+  },
+  "trans0342": {
+    "timezone": "GMT+09:00",
+    "zonename_openwrt": "Etc/GMT-9",
+    "timezone_openwrt": "<+09>-9",
+    "id": 63
+  },
+  "trans0343": {
+    "timezone": "GMT+09:00",
+    "zonename_openwrt": "Etc/GMT-9",
+    "timezone_openwrt": "<+09>-9",
+    "id": 64
+  },
+  "trans0344": {
+    "timezone": "GMT+09:30",
+    "zonename_openwrt": "Australia/Adelaide",
+    "timezone_openwrt": "ACST-9:30ACDT,M10.1.0,M4.1.0/3",
+    "id": 65
+  },
+  "trans0345": {
+    "timezone": "GMT+09:30",
+    "zonename_openwrt": "Australia/Darwin",
+    "timezone_openwrt": "ACST-9:30",
+    "id": 66
+  },
+  "trans0346": {
+    "timezone": "GMT+10:00",
+    "zonename_openwrt": "Etc/GMT-10",
+    "timezone_openwrt": "<+10>-10",
+    "id": 67
+  },
+  "trans0347": {
+    "timezone": "GMT+10:00",
+    "zonename_openwrt": "Etc/GMT-10",
+    "timezone_openwrt": "<+10>-10",
+    "id": 68
+  },
+  "trans0348": {
+    "timezone": "GMT+10:00",
+    "zonename_openwrt": "Etc/GMT-10",
+    "timezone_openwrt": "<+10>-10",
+    "id": 69
+  },
+  "trans0349": {
+    "timezone": "GMT+10:00",
+    "zonename_openwrt": "Etc/GMT-10",
+    "timezone_openwrt": "<+10>-10",
+    "id": 70
+  },
+  "trans0350": {
+    "timezone": "GMT+10:00",
+    "zonename_openwrt": "Etc/GMT-10",
+    "timezone_openwrt": "<+10>-10",
+    "id": 71
+  },
+  "trans0351": {
+    "timezone": "GMT+11:00",
+    "zonename_openwrt": "Etc/GMT-11",
+    "timezone_openwrt": "<+11>-11",
+    "id": 72
+  },
+  "trans0352": {
+    "timezone": "GMT+11:00",
+    "zonename_openwrt": "Etc/GMT-11",
+    "timezone_openwrt": "<+11>-11",
+    "id": 73
+  },
+  "trans0353": {
+    "timezone": "GMT+12:00",
+    "zonename_openwrt": "Etc/GMT-12",
+    "timezone_openwrt": "<+12>-12",
+    "id": 74
+  },
+  "trans0354": {
+    "timezone": "GMT+12:00",
+    "zonename_openwrt": "Etc/GMT-12",
+    "timezone_openwrt": "<+12>-12",
+    "id": 75
+  }
+}

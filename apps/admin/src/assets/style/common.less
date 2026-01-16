@@ -1,0 +1,119 @@
+.page {
+  width: 1000px;
+  background-color: #fff;
+  border-radius: 6px;
+  box-sizing: border-box;
+  padding: 20px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding: 0;
+    background-color: #f5f6f8;
+  }
+  .page__header {
+    padding: 0 20px 10px 20px;
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+    .page__title {
+      font-size: 20px;
+    }
+  }
+  .page__sub-header {
+    padding: 10px 0;
+    border-bottom: 1px solid #474747;
+    margin-bottom: 20px;
+    .page__title {
+      font-size: 18px;
+    }
+  }
+  .page__title {
+    color: #262626;
+    font-weight: 600;
+  }
+  .page__content {
+    box-sizing: border-box;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    padding: 20px;
+    @media screen and (max-width: 768px) {
+      border: none;
+      border-radius: 8px;
+      width: 90%;
+      margin: 20px auto;
+      background-color: #fff;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.075);
+      padding: 10px;
+    }
+    &.page__content--border-no {
+      border: none;
+    }
+  }
+  .page__table {
+    margin: 20px 0;
+    &.page__table--padding {
+      padding: 20px;
+    }
+  }
+}
+.page__header-icon {
+  font-size: 20px;
+  &:hover {
+    color: @primaryColor;
+  }
+}
+.form {
+  &.form--small {
+    .form-item {
+      margin-bottom: 10px;
+    }
+    .form__submit-btn {
+      margin-top: 30px;
+    }
+  }
+  &.form--padding {
+    box-sizing: border-box;
+    margin: 20px;
+    @media screen and (max-width: 768px) {
+      margin: 10px;
+    }
+  }
+  &.modal-form {
+    margin: 0 auto;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
+  }
+  .form-item__content,
+  .form-item__extra {
+    width: 300px;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
+  }
+  .switch {
+    display: flex;
+  }
+  .alert {
+    margin-top: 12px;
+  }
+  .form__tips {
+    &.form__tips--error {
+      color: #f56c6c;
+    }
+  }
+  .form__submit-btn {
+    margin-top: 50px;
+  }
+}
+
+.clearfix:before,
+.clearfix:after {
+  content: '';
+  clear: both;
+  display: table;
+}
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,45 +1,51 @@
 <template>
   <div
+    ref="formItemRef"
     class="form-item"
     :class="{
       'is-success': success,
       'is-error': error,
     }"
-    ref="formItemRef"
   >
-    <label-wrap
+    <LabelWrap
       :is-auto-width="labelStyle && labelStyle.width === 'auto'"
       :update-all="labelWidthCom === 'auto'"
       :label-position="labelPositionCom"
     >
       <label
+        v-if="label || slots.label"
         class="form-item__label"
         :title="label"
         :for="labelFor"
         :class="`form-item__label--${labelPositionCom}`"
         :style="labelStyle"
-        v-if="label || slots.label"
       >
         <slot name="label">{{ label }}</slot>
       </label>
-    </label-wrap>
+    </LabelWrap>
     <div class="form-item__content" :style="contentStyle">
       <slot></slot>
     </div>
     <transition name="form-item-error">
       <div v-if="error" class="form-item__error" :style="contentStyle">{{ validateMessage }}</div>
     </transition>
-    <div class="form-item__extra" :style="contentStyle" v-if="slots.extra">
+    <div v-if="slots.extra" class="form-item__extra" :style="contentStyle">
       <slot name="extra"></slot>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, provide, inject, useSlots, useTemplateRef, useId, withDefaults } from 'vue'
+import { ref, computed, provide, inject, useSlots, useTemplateRef, useId } from 'vue'
 // import Schema from 'async-validator'
 import LabelWrap from './label-wrap.vue'
-import type { FormExpose, IFormContext, IFormItemContext, IFormItemProps, IFormItemRule } from './interface'
+import type {
+  FormExpose,
+  IFormContext,
+  IFormItemContext,
+  IFormItemProps,
+  IFormItemRule,
+} from './interface'
 import { FormContextKey, FormItemContextKey } from './interface'
 
 defineOptions({

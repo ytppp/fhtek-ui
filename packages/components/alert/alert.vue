@@ -1,32 +1,32 @@
 <template>
   <transition name="alert-fade">
     <div
+      v-if="visible"
       class="alert"
       :class="[typeClass, center ? 'is-center' : '', 'is-' + effect]"
-      v-if="visible"
     >
-      <fh-icon class="alert__icon" :class="[isBigIcon]" :name="iconClass" v-if="showIcon"></fh-icon>
+      <FhIcon v-if="showIcon" class="alert__icon" :class="[isBigIcon]" :name="iconClass"></FhIcon>
       <div class="alert__content">
         <span
+          v-if="title || $slots.title"
           class="alert__title"
           :class="[isBoldTitle]"
-          v-if="title || $slots.title"
           :style="`${$slots.default || description ? 'margin-bottom: 5px;' : ''}`"
         >
           <slot name="title">{{ title }}</slot>
         </span>
-        <div class="alert__description" v-if="$slots.default && !description">
+        <div v-if="$slots.default && !description" class="alert__description">
           <slot></slot>
         </div>
-        <p class="alert__description" v-if="!$slots.default && description">
+        <p v-if="!$slots.default && description" class="alert__description">
           {{ description }}
         </p>
         <template v-if="closable">
-          <i class="alert__closebtn is-customed" @click="close()" v-if="closeText">
+          <i v-if="closeText" class="alert__closebtn is-customed" @click="close()">
             {{ closeText }}
           </i>
-          <fh-icon class="alert__closebtn" @click="close()" name="icon-circle-close" v-else>
-          </fh-icon>
+          <FhIcon v-else class="alert__closebtn" name="icon-circle-close" @click="close()">
+          </FhIcon>
         </template>
       </div>
     </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, withDefaults, useSlots } from 'vue'
+import { computed, ref, useSlots } from 'vue'
 import FhIcon from '@fhtek-ui/components/icon'
 
 defineOptions({

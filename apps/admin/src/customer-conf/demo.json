@@ -1,0 +1,9 @@
+{
+  "name": "demo",
+  "title": "Demo",
+  "languages": ["zh-CN", "en-US"],
+  "defaultLanguage": "en-US",
+  "favicon": "/images/customer-conf/demo/favicon.png",
+  "logo": "/images/customer-conf/demo/logo.png",
+  "clubWifiVlanId": null
+}
