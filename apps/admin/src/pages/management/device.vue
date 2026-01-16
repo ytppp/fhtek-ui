@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, useTemplateRef, inject, onMounted } from 'vue'
+import { ref, useTemplateRef, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   startReboot,
@@ -69,6 +69,7 @@ import {
 import { useCountDown } from '@/hooks/countdown'
 import { useAppStore } from '@/stores/modules/app-store'
 import { handleLogout } from '@/util/tool'
+import { loading, dialog, toast } from '@fhtek-ui/components'
 
 defineOptions({
   name: 'DevicePage',
@@ -85,9 +86,6 @@ const timeout = 1000 * 60 * 2 // 2 minutes
 const interval = 5000 // 5 second
 const accept = '.tgz'
 const saveBtnDisabled = ref(false)
-const dialog = inject('dialog')
-const loading = inject('loading')
-const toast = inject('toast')
 const uploader = useTemplateRef('uploader')
 const lanIp = ref('')
 const appStore = useAppStore()
@@ -110,7 +108,9 @@ function createDoneHandle(key: string) {
   }
 }
 
+// eslint-disable-next-line prefer-const
 let cleanRebootCountDown: () => void
+// eslint-disable-next-line prefer-const
 let cleanResetCountDown: () => void
 const checkRebootStatus = () => rebootStatus().then(({ data }) => data.status)
 const checkResetStatus = () => resetStatus().then(({ data }) => data.status)

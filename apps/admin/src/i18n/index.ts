@@ -1,6 +1,6 @@
 import type { App } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { getLangUsed } from '../util/tool'
+import { getLangUsed } from '@/util/tool'
 import zhCN from './locales/zh-CN.json'
 import enUS from './locales/en-US.json'
 

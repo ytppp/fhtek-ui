@@ -7,7 +7,7 @@
 <script lang="ts" setup>
 import FhLayout from '@/components/layout/layout.vue'
 import { onMounted } from 'vue'
-import { setFavicon, getPublicFile, setDocTitle } from './util/tool'
+import { setFavicon, getPublicFile, setDocTitle } from '@/util/tool'
 import { useAppStore } from '@/stores/modules/app-store'
 import type { WifiVersion } from './util/constant'
 
