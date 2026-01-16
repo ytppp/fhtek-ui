@@ -8,10 +8,11 @@
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "pnpm -F playground dev",
-    "lib:build": "pnpm run -C packages/components build",
-    "?lib:build:types": "vue-tsc --outDir dist",
-    "lib:preview": "pnpm -F playground build-only && pnpm -F playground preview",
+    "dev": "pnpm run -C apps/admin dev",
+    "playground:dev": "pnpm -F playground dev",
+    "components:build": "pnpm run -C packages/components build",
+    "?components:build:types": "vue-tsc --outDir dist",
+    "components:preview": "pnpm -F playground build-only && pnpm -F playground preview",
     "gen:i18n": "pnpm run -C i18n transform",
     "docs:dev": "pnpm -F docs dev",
     "docs:build": "pnpm -F docs docs:build",
@@ -36,7 +37,8 @@
     "marked": "^16.4.1",
     "marked-highlight": "^2.2.2",
     "vue": "^3.5.22",
-    "vue-i18n": "^11.1.12"
+    "vue-i18n": "^11.1.12",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",

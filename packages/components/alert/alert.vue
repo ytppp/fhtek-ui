@@ -47,12 +47,12 @@ type AlertEffectType = 'light' | 'dark'
 export interface IAlertProps {
   title?: string
   description?: string
-  type: AlertIconType
-  closable: boolean
-  center: boolean
+  type?: AlertIconType
+  closable?: boolean
+  center?: boolean
   closeText?: string
-  showIcon: boolean
-  effect: AlertEffectType
+  showIcon?: boolean
+  effect?: AlertEffectType
 }
 
 // Emits 类型

@@ -20,6 +20,7 @@
 - [x] radio
 - [x] radio-group
 - [x] select
+- tree-select
 - [x] step
 - [x] switch
 - table

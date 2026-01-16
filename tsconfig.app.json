@@ -10,7 +10,10 @@
     "playground/**/*.d.ts",
     "playground/**/*.tsx",
     "playground/**/*.vue",
-    "vite.config.lib.ts"
+    "apps/admin/**/*.ts",
+    "apps/admin/**/*.d.ts",
+    "apps/admin/**/*.tsx",
+    "apps/admin/**/*.vue"
   ],
   "exclude": ["packages/**/__tests__/*", "packages/**/*.spec.ts"],
   "compilerOptions": {
